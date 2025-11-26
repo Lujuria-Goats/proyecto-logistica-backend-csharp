@@ -1,0 +1,51 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio code coverage results
+*.coverage
+*.coveragexml
+
+# Visual Studio symbol files
+*.pdb
+*.ipdb
+*.pgd
+
+# Visual Studio profiling files
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual Studio test results
+*.trx
+
+# Rider files
+.idea/
+
+# Secrets and settings
+appsettings.json
+appsettings.Development.json
+secrets.json
+
+# Other
+*.vspscc
+*.vssscc
+.vs
