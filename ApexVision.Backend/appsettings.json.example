@@ -1,0 +1,18 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=apexvision;Username=postgres;Password=YOUR_PASSWORD"
+  },
+  "Jwt": {
+    "Key": "YOUR_SECRET_KEY_HERE_MUST_BE_AT_LEAST_32_CHARACTERS",
+    "Issuer": "ApexVision",
+    "Audience": "ApexVisionUsers",
+    "ExpirationMinutes": 60
+  }
+}
