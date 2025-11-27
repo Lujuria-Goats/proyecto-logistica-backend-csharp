@@ -1,49 +1,97 @@
-# ApexVision
+# ApexVision - Backend
 
-## Configuración de Variables de Entorno
+Sistema de gestión logística con autenticación JWT, gestión de archivos y optimización de rutas.
 
-Este proyecto utiliza variables de entorno para gestionar la configuración sensible. No se incluyen archivos `appsettings.json` en el repositorio por razones de seguridad.
+## 🚀 Características Principales
 
-### Pasos para configurar el proyecto
+- **Autenticación JWT** segura
+- **Gestión de archivos** con Cloudinary
+- **Optimización de rutas** para entregas
+- Documentación con **Swagger UI**
+- **PostgreSQL** como base de datos
+- **Entity Framework Core** para ORM
 
-1. **Copia el archivo de ejemplo**:
-   ```bash
-   cp .env.example .env
-   ```
+## ⚙️ Configuración
 
-2. **Edita el archivo `.env`** con tus valores reales:
-   - `ConnectionStrings__DefaultConnection`: Cadena de conexión a PostgreSQL
-   - `Jwt__Key`: Clave secreta para firmar tokens JWT (mínimo 32 caracteres)
-   - `Jwt__Issuer`: Emisor del token JWT
-   - `Jwt__Audience`: Audiencia del token JWT
-   - `Jwt__ExpirationMinutes`: Tiempo de expiración del token en minutos
+### Variables de Entorno
 
-3. **Crea el archivo `appsettings.json`** (opcional):
-   ```bash
-   cp ApexVision.Backend/appsettings.json.example ApexVision.Backend/appsettings.json
-   ```
-   Luego edita el archivo con tus valores reales.
-
-### Variables de Entorno Disponibles
-
-Consulta el archivo `.env.example` para ver todas las variables de entorno disponibles.
-
-### Ejecutar el proyecto
+Copia el archivo de ejemplo y configura tus variables:
 
 ```bash
-cd ApexVision.Backend
-dotnet run
+cp .env.example .env
 ```
 
-### Base de Datos
+### Variables Requeridas
 
-El proyecto utiliza PostgreSQL. Asegúrate de tener una instancia de PostgreSQL ejecutándose y actualiza la cadena de conexión en las variables de entorno.
-
-### Migraciones
-
-Para aplicar las migraciones de base de datos:
-
-```bash
-cd ApexVision.Backend
-dotnet ef database update
 ```
+# Base de datos
+ConnectionStrings__DefaultConnection=Host=tu_host;Database=tu_db;Username=tu_usuario;Password=tu_contraseña
+
+# JWT
+Jwt__Key=tu_clave_secreta_muy_segura
+Jwt__Issuer=ApexVision
+Jwt__Audience=ApexVisionUsers
+Jwt__ExpirationMinutes=60
+
+# Cloudinary
+Cloudinary__CloudName=tu_cloud_name
+Cloudinary__ApiKey=tu_api_key
+Cloudinary__ApiSecret=tu_api_secret
+```
+
+## 🛠 Instalación
+
+1. Clona el repositorio
+2. Configura las variables de entorno
+3. Instala las dependencias:
+   ```bash
+   dotnet restore
+   ```
+4. Ejecuta las migraciones:
+   ```bash
+   cd ApexVision.Backend
+   dotnet ef database update
+   ```
+5. Inicia el servidor:
+   ```bash
+   dotnet run
+   ```
+
+## 📚 Documentación de la API
+
+La documentación interactiva está disponible en:
+```
+http://localhost:5000/swagger
+```
+
+## 🔒 Autenticación
+
+El sistema utiliza JWT para autenticación. Incluye el token en el header de tus peticiones:
+```
+Authorization: Bearer tu_token_jwt_aquí
+```
+
+## 📦 Servicios
+
+### CloudinaryService
+Manejo de carga y eliminación de imágenes.
+
+### OptimizationService
+Servicio para optimización de rutas de entrega.
+
+## 📄 Estructura del Proyecto
+
+```
+ApexVision.Backend/
+├── Controllers/     # Controladores de la API
+├── Data/           # Contexto de base de datos
+├── DTOs/           # Objetos de transferencia de datos
+├── Filters/        # Filtros personalizados
+├── Migrations/     # Migraciones de base de datos
+├── Models/         # Modelos de dominio
+└── Services/       # Servicios de negocio
+```
+
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT.
