@@ -9,49 +9,54 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using CloudinaryDotNet;
+using DotNetEnv;
+using ApexVision.Backend.Filters; // Asegúrate de tener este namespace o borra la línea si no usas filtros
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
 
-// Add services to the container.
-
-// 1. Configure DbContext for PostgreSQL
+// 1. Base de Datos
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add Identity services
+// Identity
 builder.Services.AddIdentity<User, Role>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
+    options.Password.RequireDigit = false; // Bajamos seguridad para desarrollo
+    options.Password.RequiredLength = 6;
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// 2. Register JWT Service
+// 2. JWT Service
 builder.Services.AddScoped<JwtService>();
 
-// Configure Cloudinary
+// 3. CLOUDINARY (Configuración Corregida)
 var cloudinaryAccount = new Account(
     builder.Configuration["Cloudinary:CloudName"],
     builder.Configuration["Cloudinary:ApiKey"],
     builder.Configuration["Cloudinary:ApiSecret"]
 );
 builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
-builder.Services.AddScoped<CloudinaryService>();
 
+// ¡OJO! Aquí registramos la Interfaz con su Implementación
+builder.Services.AddScoped<IPhotoService, CloudinaryService>();
+
+// 4. SERVICIO DE OPTIMIZACIÓN (Java)
+builder.Services.AddHttpClient(); // Necesario para llamar APIs externas
+builder.Services.AddScoped<IOptimizationService, OptimizationService>();
+
+// Configuración de subida de archivos (10MB)
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10 MB
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024;
 });
 
 builder.Services.AddControllers();
 
-// 3. Configure JWT Authentication
+// 5. Autenticación JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -65,27 +70,32 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = configuration["Jwt:Issuer"],
-        ValidAudience = configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado")))
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "ClaveSecretaSuperSeguraParaDesarrollo12345"))
     };
 });
 
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
+
+// Swagger Config
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApexVision API", Version = "v1" });
 
-    // Configure Swagger to use JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Scheme = "Bearer",
+        Description = "Ingrese 'Bearer' [espacio] y su token"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -93,31 +103,35 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
-            new string[] {}
+            new List<string>()
         }
     });
+    
+    // Filtro para subida de archivos en Swagger
+    c.OperationFilter<FileUploadOperation>();
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => 
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApexVision API V1");
+        c.RoutePrefix = string.Empty; // Serve Swagger UI at the root URL
+    });
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication(); // Enable authentication
+app.UseRouting();
+app.UseCors();
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
