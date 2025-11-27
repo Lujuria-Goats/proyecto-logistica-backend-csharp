@@ -3,10 +3,12 @@ using ApexVision.Backend.Data;
 using ApexVision.Backend.Models;
 using ApexVision.Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -32,6 +34,20 @@ builder.Services.AddIdentity<User, Role>(options =>
 
 // 2. Register JWT Service
 builder.Services.AddScoped<JwtService>();
+
+// Configure Cloudinary
+var cloudinaryAccount = new Account(
+    builder.Configuration["Cloudinary:CloudName"],
+    builder.Configuration["Cloudinary:ApiKey"],
+    builder.Configuration["Cloudinary:ApiSecret"]
+);
+builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
+builder.Services.AddScoped<CloudinaryService>();
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10 MB
+});
 
 builder.Services.AddControllers();
 
