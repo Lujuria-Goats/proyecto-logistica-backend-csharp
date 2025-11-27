@@ -44,6 +44,7 @@ bld/
 appsettings.json
 appsettings.Development.json
 secrets.json
+.env
 
 # Other
 *.vspscc
