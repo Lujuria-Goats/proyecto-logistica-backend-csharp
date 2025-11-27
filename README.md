@@ -1,12 +1,13 @@
 # ApexVision - Backend
 
-Sistema de gestión logística con autenticación JWT, gestión de archivos y optimización de rutas.
+Sistema de gestión logística con autenticación JWT, gestión de archivos, optimización de rutas y procesamiento asíncrono con RabbitMQ.
 
 ## 🚀 Características Principales
 
 - **Autenticación JWT** segura
 - **Gestión de archivos** con Cloudinary
 - **Optimización de rutas** para entregas
+- **Procesamiento asíncrono** con RabbitMQ
 - Documentación con **Swagger UI**
 - **PostgreSQL** como base de datos
 - **Entity Framework Core** para ORM
@@ -37,6 +38,12 @@ Jwt__ExpirationMinutes=60
 Cloudinary__CloudName=tu_cloud_name
 Cloudinary__ApiKey=tu_api_key
 Cloudinary__ApiSecret=tu_api_secret
+
+# RabbitMQ
+RabbitMQ__Host=localhost
+RabbitMQ__Username=guest
+RabbitMQ__Password=guest
+RabbitMQ__QueueName=command_queue
 ```
 
 ## 🛠 Instalación
@@ -79,6 +86,11 @@ Manejo de carga y eliminación de imágenes.
 ### OptimizationService
 Servicio para optimización de rutas de entrega.
 
+### RabbitMQ Services
+- **RabbitMqConnection**: Maneja la conexión con RabbitMQ
+- **CommandConsumer**: Consume mensajes de la cola de comandos
+- **CommandExecutor**: Ejecuta los comandos recibidos
+
 ## 📄 Estructura del Proyecto
 
 ```
@@ -89,7 +101,8 @@ ApexVision.Backend/
 ├── Filters/        # Filtros personalizados
 ├── Migrations/     # Migraciones de base de datos
 ├── Models/         # Modelos de dominio
-└── Services/       # Servicios de negocio
+├── Services/       # Servicios de negocio
+└── Workers/        # Procesos en segundo plano (RabbitMQ)
 ```
 
 ## 📝 Licencia
