@@ -1,6 +1,7 @@
 using ApexVision.Backend.DTOs.Auth;
 using ApexVision.Backend.Models;
 using ApexVision.Backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,13 +23,15 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterDto registerDto)
         {
             var user = new User
             {
                 UserName = registerDto.Email,
                 Email = registerDto.Email,
-                FullName = registerDto.FullName
+                FullName = registerDto.FullName,
+                PhoneNumber = registerDto.PhoneNumber
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -38,9 +41,8 @@ namespace ApexVision.Backend.Controllers
                 return BadRequest(result.Errors);
             }
 
-            // Assign role to the user
-            // Assuming registerDto.Role is a string like "Admin" or "Driver"
-            await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
+            // Assign "Driver" role by default
+            await _userManager.AddToRoleAsync(user, "Driver");
 
             return Ok(new { message = "Usuario registrado exitosamente." });
         }

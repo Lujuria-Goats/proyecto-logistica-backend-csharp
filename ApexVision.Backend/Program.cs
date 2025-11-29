@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using CloudinaryDotNet;
+using DotNetEnv;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -42,11 +45,30 @@ var cloudinaryAccount = new Account(
     builder.Configuration["Cloudinary:ApiSecret"]
 );
 builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
-builder.Services.AddScoped<CloudinaryService>();
+builder.Services.AddScoped<IPhotoService, CloudinaryService>();
+builder.Services.AddScoped<IOptimizationService, OptimizationService>();
+
+builder.Services.AddHttpClient("JavaOptimizationApi", client =>
+{
+    client.BaseAddress = new Uri("http://apex-java:8081/");
+    // Configure other HttpClient settings like headers if needed
+});
+
 
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10 MB
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
 });
 
 builder.Services.AddControllers();
@@ -115,7 +137,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); // Enable authentication
+app.UseCors("AllowAll"); // Apply the CORS policy
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

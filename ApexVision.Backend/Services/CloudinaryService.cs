@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ApexVision.Backend.Services
 {
-    public class CloudinaryService
+    public class CloudinaryService : IPhotoService
     {
         private readonly Cloudinary _cloudinary;
 
@@ -20,13 +20,12 @@ namespace ApexVision.Backend.Services
             _cloudinary = new Cloudinary(account);
         }
 
-        public async Task<ImageUploadResult> UploadImageAsync(IFormFile file, string? folder = null)
+        public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
         {
             await using var stream = file.OpenReadStream();
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                Folder = string.IsNullOrWhiteSpace(folder) ? null : folder,
                 Transformation = new Transformation().Quality("auto").FetchFormat("auto")
             };
 
@@ -40,10 +39,10 @@ namespace ApexVision.Backend.Services
             return uploadResult;
         }
 
-        public async Task DeleteResourceAsync(string publicId)
+        public async Task<DeletionResult> DeletePhotoAsync(string publicId)
         {
             var deleteParams = new DeletionParams(publicId);
-            await _cloudinary.DestroyAsync(deleteParams);
+            return await _cloudinary.DestroyAsync(deleteParams);
         }
     }
 }

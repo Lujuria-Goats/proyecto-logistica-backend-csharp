@@ -19,6 +19,8 @@ namespace ApexVision.Backend.Models
 
         public OrderStatus Status { get; set; }
 
+        public bool RequiresEvidence { get; set; }
+
         public int? DriverId { get; set; }
 
         [ForeignKey("DriverId")]

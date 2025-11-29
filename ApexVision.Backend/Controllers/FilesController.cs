@@ -12,15 +12,15 @@ namespace ApexVision.Backend.Controllers
     [Authorize]
     public class FilesController : ControllerBase
     {
-        private readonly CloudinaryService _cloudinaryService;
+        private readonly IPhotoService _photoService;
         private readonly ILogger<FilesController> _logger;
 
         private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
         private const long MaxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
 
-        public FilesController(CloudinaryService cloudinaryService, ILogger<FilesController> logger)
+        public FilesController(IPhotoService photoService, ILogger<FilesController> logger)
         {
-            _cloudinaryService = cloudinaryService;
+            _photoService = photoService;
             _logger = logger;
         }
 
@@ -57,7 +57,7 @@ namespace ApexVision.Backend.Controllers
 
             try
             {
-                var uploadResult = await _cloudinaryService.UploadImageAsync(file, "apexvision");
+                var uploadResult = await _photoService.AddPhotoAsync(file);
 
                 return Ok(new FileUploadResponse
                 {
@@ -88,7 +88,7 @@ namespace ApexVision.Backend.Controllers
 
             try
             {
-                await _cloudinaryService.DeleteResourceAsync(publicId);
+                await _photoService.DeletePhotoAsync(publicId);
                 return NoContent();
             }
             catch (Exception ex)

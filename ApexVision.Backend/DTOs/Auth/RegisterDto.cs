@@ -17,5 +17,9 @@ namespace ApexVision.Backend.DTOs.Auth
         public required string Password { get; set; }
         
         public required string Role { get; set; } = "Driver"; // Default role as string
+
+        [Required(ErrorMessage = "El número de teléfono es obligatorio.")]
+        [Phone(ErrorMessage = "El formato del número de teléfono no es válido.")]
+        public required string PhoneNumber { get; set; }
     }
 }
