@@ -118,7 +118,7 @@ namespace ApexVision.Backend.Controllers
         
         [HttpPost("{id}/complete")]
         [Authorize(Roles = "Driver")]
-        public async Task<IActionResult> CompleteOrder(int id, [FromForm] IFormFile? file)
+        public async Task<IActionResult> CompleteOrder(int id, IFormFile? file)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order == null)

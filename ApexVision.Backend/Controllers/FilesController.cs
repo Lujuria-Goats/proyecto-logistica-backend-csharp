@@ -25,7 +25,7 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file)
+        public async Task<IActionResult> Upload(IFormFile file)
         {
             if (file is null || file.Length == 0)
             {
