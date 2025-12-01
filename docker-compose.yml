@@ -1,9 +1,9 @@
 ﻿version: '3.8'
 
 services:
-  # ============================================
+  # ================================================
   # 🗄️ BASE DE DATOS POSTGRESQL
-  # ============================================
+  # ================================================
   db:
     image: postgres:15-alpine
     container_name: apex_postgres
@@ -24,9 +24,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # ============================================
+  # ================================================
   # 🐰 RABBITMQ
-  # ============================================
+  # ================================================
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: apex_rabbit
@@ -47,12 +47,11 @@ services:
       timeout: 5s
       retries: 5
 
-  # ============================================
+  # ================================================
   # 🦅 APEX VISION - BACKEND .NET
-  # ============================================
+  # ================================================
   apex-backend:
     image: tu-usuario/apex-vision:latest
-    # O si usas archivo local:
     # build:
     #   context: ./ApexVision.Backend
     #   dockerfile: Dockerfile
@@ -60,37 +59,34 @@ services:
     container_name: apex_backend
     
     environment:
-      # ========== BASE DE DATOS ==========
-      # IMPORTANTE: Host=db (nombre del servicio, no localhost)
-      ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=postgres;Username=root;Password=xbI4PLOvlMwRwHn7SdZXHivFOZwc99
+      # BASE DE DATOS - IMPORTANTE: Host=db (nombre del servicio, no localhost)
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=postgres;Username=root;Password=xbI4PLOvlMwRwHn7SdZXHivFOZwc99
       
-      # ========== JWT ==========
-      Jwt__Key=977df0f8dd4634f798c6440f74d29fb0ea5dd55eb3ea49a2c7097a98951dc515
-      Jwt__Issuer=ApexVision
-      Jwt__Audience=ApexVisionUsers
-      Jwt__ExpirationMinutes=60
+      # JWT
+      - Jwt__Key=977df0f8dd4634f798c6440f74d29fb0ea5dd55eb3ea49a2c7097a98951dc515
+      - Jwt__Issuer=ApexVision
+      - Jwt__Audience=ApexVisionUsers
+      - Jwt__ExpirationMinutes=60
       
-      # ========== CLOUDINARY ==========
-      Cloudinary__CloudName=dqxblxx8y
-      Cloudinary__ApiKey=189848418239129
-      Cloudinary__ApiSecret=yvKKf2Q_eW1UFlu55_sLMd38XUw
+      # CLOUDINARY
+      - Cloudinary__CloudName=dqxblxx8y
+      - Cloudinary__ApiKey=189848418239129
+      - Cloudinary__ApiSecret=yvKKf2Q_eW1UFlu55_sLMd38XUw
       
-      # ========== RABBITMQ ==========
-      # Nota: Si RabbitMQ está en contenedor local, usa "rabbitmq" como hostname
-      # Si está en servidor remoto, usa la URL remota
-      RABBITMQ_HOSTNAME=rabbitmq
-      RABBITMQ_USERNAME=admin
-      RABBITMQ_PASSWORD=Kj9#mP2$qR5@vX8&
-      RABBITMQ_VIRTUALHOST=/
-      RABBITMQ_QUEUENAME=pc_commands
+      # RABBITMQ - Si está en contenedor local, usa "rabbitmq" como hostname
+      - RABBITMQ_HOSTNAME=rabbitmq
+      - RABBITMQ_USERNAME=admin
+      - RABBITMQ_PASSWORD=Kj9#mP2$qR5@vX8&
+      - RABBITMQ_VIRTUALHOST=/
+      - RABBITMQ_QUEUENAME=pc_commands
       
-      # ========== ENTORNO ==========
-      ASPNETCORE_ENVIRONMENT=Production
-      ASPNETCORE_URLS=http://+:8080
+      # ENTORNO
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
       
-      # ========== LOGGING ==========
-      Logging__LogLevel__Default=Information
-      Logging__LogLevel__Microsoft.AspNetCore=Warning
+      # LOGGING
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft.AspNetCore=Warning
     
     ports:
       - "8080:8080"    # Backend API
@@ -105,32 +101,20 @@ services:
       - apex-network
     
     restart: unless-stopped
-    
-    # Opcional: Limits de recursos
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '1'
-    #       memory: 512M
-    #     reservations:
-    #       cpus: '0.5'
-    #       memory: 256M
 
-  # ============================================
+  # ================================================
   # ☕ JAVA OPTIMIZATION SERVICE (Jeferson)
-  # ============================================
+  # ================================================
   apex-java:
     image: jeferson/apex-java:latest
-    # O la imagen que Jeferson proporcionará
     
     container_name: apex_java
     
     environment:
-      # Configurar según lo que Jeferson especifique
-      SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      SPRING_DATASOURCE_USERNAME=root
-      SPRING_DATASOURCE_PASSWORD=xbI4PLOvlMwRwHn7SdZXHivFOZwc99
-      JAVA_OPTS=-Xms256m -Xmx512m
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=xbI4PLOvlMwRwHn7SdZXHivFOZwc99
+      - JAVA_OPTS=-Xms256m -Xmx512m
     
     ports:
       - "8081:8081"    # Java API
@@ -143,16 +127,16 @@ services:
     
     restart: unless-stopped
 
-# ============================================
+# ================================================
 # 🌐 NETWORK
-# ============================================
+# ================================================
 networks:
   apex-network:
     driver: bridge
 
-# ============================================
+# ================================================
 # 💾 VOLUMES
-# ============================================
+# ================================================
 volumes:
   postgres_data:
     driver: local
