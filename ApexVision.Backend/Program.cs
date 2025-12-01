@@ -2,6 +2,7 @@ using System.Text;
 using ApexVision.Backend.Data;
 using ApexVision.Backend.Models;
 using ApexVision.Backend.Services;
+using ApexVision.Backend.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -10,15 +11,27 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using CloudinaryDotNet;
 using DotNetEnv;
+using Serilog;
 
 Env.Load();
 
-var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("logs/apex-vision-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
-// Add services to the container.
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Host.UseSerilog();
+    
+    var configuration = builder.Configuration;
 
-// 1. Configure DbContext for PostgreSQL
+    // Add services to the container.
+
+    // 1. Configure DbContext for PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
@@ -132,6 +145,9 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Add exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -147,4 +163,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
