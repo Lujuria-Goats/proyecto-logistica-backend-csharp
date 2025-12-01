@@ -144,17 +144,83 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// --- ZONA DE DESPLIEGUE AUTOMÁTICO (Migraciones y Seed) ---
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        var userManager = services.GetRequiredService<UserManager<User>>();
+        var roleManager = services.GetRequiredService<RoleManager<Role>>();
+
+        // 1. Aplicar Migraciones pendientes (Crea las tablas si no existen)
+        Log.Information("Aplicando migraciones de base de datos...");
+        context.Database.Migrate();
+
+        // 2. Crear Roles si no existen
+        if (!await roleManager.RoleExistsAsync("Admin"))
+        {
+            await roleManager.CreateAsync(new Role { Name = "Admin" });
+            Log.Information("Rol 'Admin' creado.");
+        }
+        
+        if (!await roleManager.RoleExistsAsync("Driver"))
+        {
+            await roleManager.CreateAsync(new Role { Name = "Driver" });
+            Log.Information("Rol 'Driver' creado.");
+        }
+
+        // 3. Crear Usuario Admin por defecto (Para que puedas entrar)
+        var adminEmail = "admin@apexvision.com";
+        if (await userManager.FindByEmailAsync(adminEmail) == null)
+        {
+            var adminUser = new User
+            {
+                UserName = "admin",
+                Email = adminEmail,
+                FullName = "Admin Principal",
+                PhoneNumber = "+573001234567"
+            };
+            var result = await userManager.CreateAsync(adminUser, "Admin123!");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+                Log.Information("Usuario Admin creado: admin@apexvision.com / Admin123!");
+            }
+            else
+            {
+                Log.Error("Error al crear usuario Admin: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+        }
+        else
+        {
+            Log.Information("Usuario Admin ya existe.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Ocurrió un error durante la migración o el seeding.");
+    }
+}
+// -----------------------------------------------------------
+
 // Configure the HTTP request pipeline.
 // Add exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-if (app.Environment.IsDevelopment())
+// SWAGGER SIEMPRE HABILITADO (necesario para Docker/VPS y demostración)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApexVision API v1");
+    c.RoutePrefix = "swagger";  // Disponible en /swagger en lugar de /swagger/index.html
+});
 
-app.UseHttpsRedirection();
+// COMENTADO PARA EVITAR BUCLES CON NGINX
+// Nginx Proxy Manager ya maneja HTTPS→HTTP internamente
+// Si dejamos esta línea activa, crea un bucle infinito de redirecciones
+// app.UseHttpsRedirection();
 
 app.UseCors("AllowAll"); // Apply the CORS policy
 
@@ -163,7 +229,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-    app.Run();
+app.Run();
 }
 catch (Exception ex)
 {
