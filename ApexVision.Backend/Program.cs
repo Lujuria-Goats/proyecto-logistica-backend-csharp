@@ -124,6 +124,9 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
+
+    // Handle IFormFile properly in Swagger
+    c.OperationFilter<ApexVision.Backend.Filters.FileUploadOperationFilter>();
 });
 
 var app = builder.Build();
