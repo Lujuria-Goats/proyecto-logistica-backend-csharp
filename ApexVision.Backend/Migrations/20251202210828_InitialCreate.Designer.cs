@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ApexVision.Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251126210328_InitialCreate")]
+    [Migration("20251202210828_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -52,6 +52,9 @@ namespace ApexVision.Backend.Migrations
 
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
+
+                    b.Property<bool>("RequiresEvidence")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -176,16 +179,17 @@ namespace ApexVision.Backend.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "930c468b-0bb0-46ef-9901-207c79d0e8d9",
+                            ConcurrencyStamp = "c584fd7d-98b8-4f02-9f8a-74a0257c62bd",
                             Email = "admin@apexvision.com",
                             EmailConfirmed = true,
                             FullName = "Admin User",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@APEXVISION.COM",
                             NormalizedUserName = "ADMIN@APEXVISION.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEErLUZQyIunin3X0OjiQmEOGDh6FZFgnxcZR2T2tQ1JJTX1m6wAIn/NTo5EWJUIb8Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHh0UCvVS1e5S8lDAzkRwqqanhx/jGN8UXWo9b5B9r0V7bGXUUZqm2OsRgrCEJQiHQ==",
+                            PhoneNumber = "+1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d5cfff65-3779-4c36-8442-340fe63f9743",
+                            SecurityStamp = "eab08912-35d9-469b-883e-7c471d4659d6",
                             TwoFactorEnabled = false,
                             UserName = "admin@apexvision.com"
                         });

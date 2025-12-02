@@ -1,52 +1,24 @@
+# Dependencies
+/bin
+/obj
+
 # User-specific files
-*.rsuser
-*.suo
 *.user
-*.userosscache
-*.sln.docstates
+*.suo
 
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-
-# Visual Studio code coverage results
-*.coverage
-*.coveragexml
-
-# Visual Studio symbol files
-*.pdb
-*.ipdb
-*.pgd
-
-# Visual Studio profiling files
-*.psess
-*.vsp
-*.vspx
-*.sap
-
-# Visual Studio test results
-*.trx
-
-# Rider files
+# Rider specific files
 .idea/
 
-# Secrets and settings
-appsettings.json
-appsettings.Development.json
-secrets.json
+# Secrets and environment files
 .env
+appsettings.Development.json
+docker-compose.yml
 
-# Other
-*.vspscc
-*.vssscc
-.vs
+# Logs
+logs/
+*.log
+
+# Build results
+[Bb]in/
+[Oo]bj/
+

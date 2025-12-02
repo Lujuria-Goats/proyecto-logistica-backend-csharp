@@ -31,6 +31,7 @@ namespace ApexVision.Backend.Data
                 FullName = "Admin User",
                 Email = "admin@apexvision.com",
                 UserName = "admin@apexvision.com", // Set UserName for Identity
+                PhoneNumber = "+1234567890", // Add a default phone number
                 NormalizedEmail = "ADMIN@APEXVISION.COM",
                 NormalizedUserName = "ADMIN@APEXVISION.COM",
                 EmailConfirmed = true,

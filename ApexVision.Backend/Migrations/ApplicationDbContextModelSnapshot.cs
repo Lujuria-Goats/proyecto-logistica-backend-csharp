@@ -176,16 +176,17 @@ namespace ApexVision.Backend.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "059a85dc-362e-4314-8ebf-ed296f0d49fd",
+                            ConcurrencyStamp = "c584fd7d-98b8-4f02-9f8a-74a0257c62bd",
                             Email = "admin@apexvision.com",
                             EmailConfirmed = true,
                             FullName = "Admin User",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@APEXVISION.COM",
                             NormalizedUserName = "ADMIN@APEXVISION.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBramUyEPGzC3qMrScogITBCpONLE328OF2o24rkEHJpVGxOPXZrPqWyqZYt5+vhCw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHh0UCvVS1e5S8lDAzkRwqqanhx/jGN8UXWo9b5B9r0V7bGXUUZqm2OsRgrCEJQiHQ==",
+                            PhoneNumber = "+1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4570275c-190f-4e44-add4-57ad3a435fa8",
+                            SecurityStamp = "eab08912-35d9-469b-883e-7c471d4659d6",
                             TwoFactorEnabled = false,
                             UserName = "admin@apexvision.com"
                         });

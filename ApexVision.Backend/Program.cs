@@ -48,8 +48,6 @@ builder.Services.AddIdentity<User, Role>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// ...existing code...
-
 // 2. Register JWT Service
 builder.Services.AddScoped<JwtService>();
 
@@ -64,8 +62,8 @@ builder.Services.AddScoped<IPhotoService, CloudinaryService>();
 
 // Configure Azure AI Vision (Análisis de fotos con IA)
 builder.Services.AddScoped<IImageAnalysisService, AzureImageAnalysisService>();
-
-// ...existing code...
+builder.Services.Configure<ApexVision.Backend.DTOs.AzureVisionSettings>(builder.Configuration.GetSection("AzureVisionSettings"));
+builder.Services.AddScoped<IAiValidationService, AiValidationService>();
 
 builder.Services.AddHttpClient("JavaOptimizationApi", client =>
 {

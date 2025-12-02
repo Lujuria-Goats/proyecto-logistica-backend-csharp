@@ -18,12 +18,14 @@ namespace ApexVision.Backend.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IPhotoService _photoService;
         private readonly IOptimizationService _optimizationService;
+        private readonly IAiValidationService _aiValidationService;
 
-        public OrdersController(ApplicationDbContext context, IPhotoService photoService, IOptimizationService optimizationService)
+        public OrdersController(ApplicationDbContext context, IPhotoService photoService, IOptimizationService optimizationService, IAiValidationService aiValidationService)
         {
             _context = context;
             _photoService = photoService;
             _optimizationService = optimizationService;
+            _aiValidationService = aiValidationService;
         }
 
         [HttpPost]
@@ -139,6 +141,12 @@ namespace ApexVision.Backend.Controllers
                     return BadRequest(uploadResult.Error.Message);
                 }
                 order.EvidenceUrl = uploadResult.SecureUrl.AbsoluteUri;
+
+                var isValid = await _aiValidationService.ValidateDeliveryEvidenceAsync(order.EvidenceUrl);
+                if (!isValid)
+                {
+                    return BadRequest("Invalid evidence. The image does not seem to be a valid delivery evidence.");
+                }
             }
 
             order.Status = OrderStatus.Completed;

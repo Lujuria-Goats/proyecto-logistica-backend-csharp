@@ -171,6 +171,7 @@ namespace ApexVision.Backend.Migrations
                     Longitude = table.Column<double>(type: "double precision", nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
+                    RequiresEvidence = table.Column<bool>(type: "boolean", nullable: false),
                     DriverId = table.Column<int>(type: "integer", nullable: true),
                     EvidenceUrl = table.Column<string>(type: "text", nullable: true)
                 },
@@ -193,7 +194,7 @@ namespace ApexVision.Backend.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FullName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, "930c468b-0bb0-46ef-9901-207c79d0e8d9", "admin@apexvision.com", true, "Admin User", false, null, "ADMIN@APEXVISION.COM", "ADMIN@APEXVISION.COM", "AQAAAAIAAYagAAAAEErLUZQyIunin3X0OjiQmEOGDh6FZFgnxcZR2T2tQ1JJTX1m6wAIn/NTo5EWJUIb8Q==", null, false, "d5cfff65-3779-4c36-8442-340fe63f9743", false, "admin@apexvision.com" });
+                values: new object[] { 1, 0, "c584fd7d-98b8-4f02-9f8a-74a0257c62bd", "admin@apexvision.com", true, "Admin User", false, null, "ADMIN@APEXVISION.COM", "ADMIN@APEXVISION.COM", "AQAAAAIAAYagAAAAEHh0UCvVS1e5S8lDAzkRwqqanhx/jGN8UXWo9b5B9r0V7bGXUUZqm2OsRgrCEJQiHQ==", "+1234567890", false, "eab08912-35d9-469b-883e-7c471d4659d6", false, "admin@apexvision.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

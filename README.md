@@ -1,371 +1,109 @@
 # Apex Vision - Backend 🦅
 
-![.NET](https://img.shields.io/badge/.NET-8-blueviolet) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue) ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-orange) ![JWT](https://img.shields.io/badge/Auth-JWT-green) ![Cloudinary](https://img.shields.io/badge/Storage-Cloudinary-blue) ![Serilog](https://img.shields.io/badge/Logging-Serilog-red) ![xUnit](https://img.shields.io/badge/Testing-xUnit-success)
+![.NET](https://img.shields.io/badge/.NET-8-blueviolet) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue) ![Docker](https://img.shields.io/badge/Docker-blue) ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-orange) ![Azure AI](https://img.shields.io/badge/Azure_AI-Vision-blue) ![JWT](https://img.shields.io/badge/Auth-JWT-green)
 
 ## 🚀 Descripción General
 
-**Apex Vision** es una plataforma de logística que optimiza y gestiona rutas de entrega en tiempo real. Construida con **.NET 8**, utiliza una arquitectura escalable que integra inteligencia artificial para optimización de rutas, almacenamiento en la nube y procesamiento asíncrono.
+**Apex Vision** es el backend para una plataforma de logística avanzada que optimiza y gestiona rutas de entrega. Construido con **.NET 8** y diseñado para ser desplegado con **Docker**, utiliza una arquitectura de microservicios escalable que integra inteligencia artificial para la validación de entregas, almacenamiento en la nube y procesamiento asíncrono de tareas.
 
 ### Características Clave
 
-✨ **Autenticación Segura** - JWT con roles (Admin, Driver)  
-📍 **Gestión de Rutas** - Dos tipos: Simple y Verificada (con evidencia fotográfica)  
-☁️ **Almacenamiento en Nube** - Integración con Cloudinary  
-🤖 **Optimización de Rutas** - Microservicio Java para algoritmos de optimización  
-📨 **Mensajería Asíncrona** - RabbitMQ para procesamiento en background  
-📊 **Logging Estructurado** - Serilog para trazabilidad completa  
-🧪 **Testing Completo** - xUnit + Moq + FluentAssertions
+✨ **Autenticación Segura**: JWT con roles (Admin, Driver).  
+📍 **Gestión de Pedidos**: Creación, asignación y seguimiento de estados.  
+🛣️ **Rutas Verificadas vs. Simples**: Lógica para requerir o no evidencia fotográfica.  
+🤖 **Validación con IA**: Integración con **Azure Computer Vision** para analizar las fotos de evidencia y asegurar que sean legítimas.  
+☁️ **Almacenamiento en Nube**: Subida de imágenes a Cloudinary.  
+🚚 **Optimización de Rutas**: Microservicio Java para algoritmos de optimización de rutas.  
+📨 **Mensajería Asíncrona**: RabbitMQ para la comunicación con otros microservicios.  
+📊 **Logging Estructurado**: Serilog para una trazabilidad completa de la aplicación.  
+🚀 **Listo para Despliegue**: Configuración completa con Docker y Docker Compose para un despliegue sencillo en cualquier VPS.
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
-| Componente | Tecnología | Versión |
-|-----------|-----------|---------|
-| Framework | .NET | 8.0 |
-| API | ASP.NET Core | 8.0 |
-| Base de Datos | PostgreSQL | 15 |
-| ORM | Entity Framework Core | 8.0 |
-| Autenticación | Identity + JWT | - |
-| Almacenamiento | Cloudinary | Latest |
-| Mensajería | RabbitMQ | 3.13 |
-| Logging | Serilog | 4.3.0 |
-| Testing | xUnit + Moq | 2.6.2 + 4.20.0 |
+| Componente | Tecnología |
+|:-----------|:-----------|
+| Framework | .NET 8 |
+| Base de Datos | PostgreSQL 15 |
+| Contenerización | Docker & Docker Compose |
+| ORM | Entity Framework Core 8 |
+| Autenticación | ASP.NET Core Identity + JWT |
+| Almacenamiento | Cloudinary |
+| Validación IA | Azure Computer Vision |
+| Mensajería | RabbitMQ |
+| Logging | Serilog |
 
 ---
 
-## 📋 Requisitos Previos
+## 🚀 Guía de Despliegue Rápido (con Docker)
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- [Git](https://git-scm.com/)
-- [PostgreSQL Client](https://www.postgresql.org/download/) (Opcional)
+Este proyecto está diseñado para ser ejecutado con Docker Compose, lo que simplifica enormemente la configuración del entorno de desarrollo y producción.
 
----
-
-## 🚀 Guía de Instalación
-
-### 1. Clonar Repositorio
+### 1. Clonar el Repositorio
 
 ```bash
 git clone https://github.com/Lujuria-Goats/proyecto-logistica-backend-csharp.git
 cd proyecto-logistica-backend-csharp
 ```
 
-### 2. Iniciar Servicios con Docker
+### 2. Configurar el Entorno
 
-#### PostgreSQL
-```bash
-docker run -d \
-  --name apex_db \
-  -e POSTGRES_USER=root \
-  -e POSTGRES_PASSWORD=xbI4PLOvlMwRwHn7SdZXHivFOZwc99 \
-  -e POSTGRES_DB=ApexVisionDb \
-  -p 5432:5432 \
-  -v postgres_data:/var/lib/postgresql/data \
-  --restart always \
-  postgres:15-alpine
-```
+El archivo `docker-compose.yml` ya contiene todas las variables de entorno necesarias para levantar los servicios. Asegúrate de revisar y, si es necesario, ajustar los valores (especialmente las claves secretas como `Jwt__Key`).
 
-#### RabbitMQ
-```bash
-docker run -d \
-  --name apex_rabbit \
-  -p 5672:5672 \
-  -p 15672:15672 \
-  -e RABBITMQ_DEFAULT_USER=admin \
-  -e RABBITMQ_DEFAULT_PASS='Kj9#mP2$qR5@vX8&' \
-  --restart always \
-  rabbitmq:3-management
-```
+### 3. Levantar los Servicios
 
-### 3. Configurar Variables de Entorno
-
-Crea archivo `.env` en `ApexVision.Backend/`:
-
-```dotenv
-# Database
-Jwt__Key=977df0f8dd4634f798c6440f74d29fb0ea5dd55eb3ea49a2c7097a98951dc515
-Jwt__Issuer=ApexVision
-Jwt__Audience=ApexVisionUsers
-Jwt__ExpirationMinutes=60
-ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=ApexVisionDb;Username=root;Password=xbI4PLOvlMwRwHn7SdZXHivFOZwc99
-
-# Cloudinary (Obtén credenciales en https://cloudinary.com)
-Cloudinary__CloudName=your-cloud-name
-Cloudinary__ApiKey=your-api-key
-Cloudinary__ApiSecret=your-api-secret
-
-# RabbitMQ
-RABBITMQ_HOSTNAME=localhost
-RABBITMQ_USERNAME=admin
-RABBITMQ_PASSWORD=Kj9#mP2$qR5@vX8&
-RABBITMQ_VIRTUALHOST=/
-RABBITMQ_QUEUENAME=apex_orders
-
-ASPNETCORE_ENVIRONMENT=Development
-```
-
-### 4. Restaurar Paquetes y Aplicar Migraciones
+Desde la raíz del proyecto, ejecuta el siguiente comando:
 
 ```bash
-cd ApexVision.Backend
-
-# Restaurar dependencias NuGet
-dotnet restore
-
-# Aplicar migraciones a la BD
-dotnet ef database update
+docker-compose up --build -d
 ```
 
-### 5. Ejecutar la Aplicación
+Este comando hará lo siguiente:
 
-```bash
-dotnet run
-```
+- **Construirá la imagen Docker** de la aplicación .NET.
+- **Levantará los contenedores** para el backend, la base de datos PostgreSQL.
+- **Configurará la red** para que los servicios se comuniquen entre sí.
 
-La aplicación se abrirá automáticamente en: **http://localhost:5132/swagger/index.html**
+¡Y eso es todo! La API estará corriendo y accesible en `http://localhost:8080`.
 
 ---
 
-## 📚 API Endpoints
+## 📖 Endpoints de la API (Swagger)
 
-### 🔐 Autenticación
+Una vez que la aplicación esté corriendo, puedes acceder a la documentación interactiva de la API a través de Swagger en la siguiente URL:
 
-```
-POST /api/auth/register
-Descripción: Registro público para nuevos choferes
-Body:
-{
-  "fullName": "Juan García",
-  "email": "juan@example.com",
-  "phoneNumber": "+573001234567",
-  "password": "SecurePass123!"
-}
-Response: { "message": "Usuario registrado exitosamente." }
-```
+**[http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)**
 
-```
-POST /api/auth/login
-Descripción: Iniciar sesión y obtener token JWT
-Body:
-{
-  "email": "juan@example.com",
-  "password": "SecurePass123!"
-}
-Response: { "token": "eyJhbGc..." }
-```
+Desde Swagger, podrás ver todos los endpoints, probarlos, y ver los modelos de datos que la API espera y devuelve.
 
-### 📦 Pedidos
+### Credenciales de Administrador por Defecto
 
-```
-POST /api/orders
-Descripción: Crear nuevo pedido (Solo Admin)
-Headers: Authorization: Bearer {token}
-Body:
-{
-  "address": "Cra. 30 #45-25, Medellín",
-  "latitude": 6.2442,
-  "longitude": -75.5898,
-  "description": "Paquete urgente",
-  "requiresEvidence": true
-}
-```
+El sistema crea automáticamente un usuario administrador para que puedas empezar a probar:
 
-```
-GET /api/orders
-Descripción: Listar todos los pedidos (Solo Admin)
-Headers: Authorization: Bearer {token}
-Response: [ { id: 1, address: "...", status: "Pending", ... } ]
-```
-
-```
-GET /api/orders/my-route
-Descripción: Obtener mis pedidos asignados (Solo Driver)
-Headers: Authorization: Bearer {token}
-Response: [ { id: 1, address: "...", requiresEvidence: true } ]
-```
-
-```
-PUT /api/orders/{id}/assign/{driverId}
-Descripción: Asignar chofer a pedido (Solo Admin)
-Headers: Authorization: Bearer {token}
-Response: { "message": "Driver assigned successfully." }
-```
-
-```
-POST /api/orders/{id}/complete
-Descripción: Completar entrega con evidencia (Solo Driver)
-Headers: Authorization: Bearer {token}
-Content-Type: multipart/form-data
-Body: file (image, optional si requiresEvidence=false)
-Response: { "message": "Order completed successfully." }
-```
-
-```
-POST /api/orders/my-route/optimize
-Descripción: Optimizar mi ruta (Solo Driver)
-Headers: Authorization: Bearer {token}
-Response: { "message": "Route optimization initiated." }
-```
-
-### 👥 Usuarios
-
-```
-GET /api/users/drivers
-Descripción: Listar choferes disponibles (Solo Admin)
-Headers: Authorization: Bearer {token}
-Response: [ { id: "1", fullName: "Juan", phoneNumber: "+57..." } ]
-```
-
-### 📁 Archivos
-
-```
-POST /api/files/upload
-Descripción: Subir archivo a Cloudinary (Protegido)
-Headers: Authorization: Bearer {token}
-Body: multipart/form-data { file: image.jpg }
-Response: { "success": true, "url": "https://...", "publicId": "..." }
-```
-
-```
-DELETE /api/files/{publicId}
-Descripción: Eliminar archivo de Cloudinary (Protegido)
-Headers: Authorization: Bearer {token}
-Response: 204 No Content
-```
+- **Email**: `admin@apexvision.com`
+- **Contraseña**: `Admin123!`
 
 ---
 
-## 🧪 Testing
+## ⚙️ Configuración de Variables de Entorno
 
-### Ejecutar Pruebas
+Todas las configuraciones sensibles se gestionan a través de variables de entorno, definidas en el archivo `docker-compose.yml`.
 
-```bash
-# Ejecutar todos los tests
-dotnet test
-
-# Ejecutar con verbose output
-dotnet test --verbosity detailed
-
-# Ejecutar tests específicos
-dotnet test --filter "AuthControllerTests"
-```
-
-### Cobertura de Tests
-
-- ✅ **AuthController** - Registro, Login, validaciones
-- ✅ **OrdersController** - CRUD de pedidos, asignación
-- ✅ **Modelos** - Validaciones de dominio
-- ⏳ **Servicios** - En progreso
-- ⏳ **Integración** - En progreso
+| Variable | Descripción | Ejemplo |
+|:---|:---|:---|
+| `ConnectionStrings__DefaultConnection` | Cadena de conexión a PostgreSQL. | `Host=db;...` |
+| `Jwt__Key` | Clave secreta para firmar los tokens JWT. | `UNA_CLAVE_SUPER_SECRETA_Y_LARGA` |
+| `Cloudinary__CloudName` | Nombre de tu nube en Cloudinary. | `my-cloud` |
+| `Cloudinary__ApiKey` | API Key de Cloudinary. | `1234567890` |
+| `Cloudinary__ApiSecret` | API Secret de Cloudinary. | `ABCDEFG-HIJKLMNOP` |
+| `RabbitMQ__HostName` | Dominio o nombre del servicio de RabbitMQ. | `rabbitmq.lujuria.crudzaso.com` |
+| `AZURE_VISION_ENDPOINT` | Endpoint de tu servicio Azure Computer Vision. | `https://my-vision.cognitiveservices.azure.com/` |
+| `AZURE_VISION_KEY` | Clave de tu servicio Azure Computer Vision. | `0987654321-ABCDEF` |
 
 ---
 
-## 📊 Logging y Monitoreo
-
-### Configuración de Serilog
-
-Los logs se almacenan en:
-- **Console** - Salida en tiempo real
-- **Archivos** - `logs/apex-vision-{date}.txt`
-
-### Niveles de Log
-
-```
-Information - Eventos normales (inicio de app, requests)
-Warning - Comportamientos inesperados
-Error - Errores que no detienen la app
-Fatal - Errores críticos
-```
-
-### Ejemplo de Log
-
-```json
-{
-  "Timestamp": "2025-12-01T17:30:45.1234567Z",
-  "Level": "Information",
-  "MessageTemplate": "Order {OrderId} created by {AdminId}",
-  "Properties": {
-    "OrderId": 42,
-    "AdminId": "admin-user-id",
-    "RequestId": "0HN1GFPJ7BGGE:00000001"
-  }
-}
-```
-
----
-
-## ⚙️ Estructura del Proyecto
-
-```
-ApexVision/
-├── ApexVision.Backend/           # API principal
-│   ├── Controllers/              # Endpoints
-│   ├── Models/                   # Entidades de dominio
-│   ├── DTOs/                     # Data Transfer Objects
-│   ├── Services/                 # Lógica de negocio
-│   ├── Middleware/               # Manejo centralizado de errores
-│   ├── Filters/                  # Filtros de Swagger
-│   ├── Migrations/               # Migraciones EF Core
-│   ├── Data/                     # DbContext
-│   └── Program.cs                # Configuración principal
-│
-├── ApexVision.Tests/             # Pruebas unitarias
-│   ├── Controllers/              # Tests de controladores
-│   ├── Services/                 # Tests de servicios
-│   └── Models/                   # Tests de modelos
-│
-├── README.md                      # Este archivo
-└── ApexVision.sln               # Solución Visual Studio
-```
-
----
-
-## 🔒 Seguridad
-
-- ✅ **JWT con expiración** - Tokens expiran en 60 minutos
-- ✅ **HTTPS Redirection** - Fuerza HTTPS en producción
-- ✅ **CORS Configurado** - Permite acceso desde frontend/móvil
-- ✅ **Roles y Permisos** - Admin y Driver separados
-- ✅ **Contraseñas Hash** - Bcrypt via Identity
-- ✅ **Rate Limiting** - En planificación
-
----
-
-## 🚀 Deployment
-
-### Variables de Entorno en Producción
-
-```bash
-# En hosting (AWS, Azure, etc.)
-ASPNETCORE_ENVIRONMENT=Production
-ConnectionStrings__DefaultConnection=... # BD remota
-Jwt__Key=... # Clave muy segura
-Cloudinary__ApiSecret=... # Credentials seguros
-RABBITMQ_HOSTNAME=rabbitmq.lujuria.crudzaso.com
-```
-
-### Docker Build
-
-```bash
-docker build -t apex-vision-api .
-docker run -p 5132:8080 apex-vision-api
-```
-
----
-
-## 🤝 Contribución
-
-1. Fork el repositorio
-2. Crea rama: `git checkout -b feature/nueva-funcionalidad`
-3. Commit cambios: `git commit -m "feat: agregar nueva funcionalidad"`
-4. Push: `git push origin feature/nueva-funcionalidad`
-5. Pull Request
-
----
-
-## 📖 Documentación Adicional
+## 📚 Documentación Adicional
 
 - [.NET 8 Docs](https://docs.microsoft.com/dotnet/)
 - [Entity Framework Core](https://docs.microsoft.com/ef/core/)
@@ -384,6 +122,7 @@ MIT License - Ver LICENSE file para más detalles
 ## 📞 Contacto
 
 **Equipo Apex Vision**
+
 - Backend Lead: Abrahan
 - Frontend: Juan
 - Mobile: Jeims
@@ -393,4 +132,3 @@ MIT License - Ver LICENSE file para más detalles
 
 **Última actualización:** Diciembre 1, 2025  
 **Versión:** 1.0.0
-

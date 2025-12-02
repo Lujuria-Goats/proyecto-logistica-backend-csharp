@@ -1,0 +1,62 @@
+2025-12-02 15:28:16.513 -05:00 [INF] User profile is available. Using 'C:\Users\user\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-12-02 15:28:16.549 -05:00 [INF] Aplicando migraciones de base de datos...
+2025-12-02 15:28:19.488 -05:00 [INF] Executed DbCommand (200ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2025-12-02 15:28:19.682 -05:00 [INF] Executed DbCommand (170ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-12-02 15:28:20.717 -05:00 [INF] Executed DbCommand (167ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2025-12-02 15:28:21.859 -05:00 [INF] Executed DbCommand (169ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2025-12-02 15:28:22.034 -05:00 [INF] Executed DbCommand (166ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-12-02 15:28:22.070 -05:00 [INF] No migrations were applied. The database is already up to date.
+2025-12-02 15:28:22.393 -05:00 [INF] Executed DbCommand (176ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-12-02 15:28:22.612 -05:00 [INF] Executed DbCommand (187ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-12-02 15:28:22.812 -05:00 [INF] Executed DbCommand (182ms) [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."FullName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2025-12-02 15:28:22.845 -05:00 [INF] Usuario Admin ya existe.
+2025-12-02 15:28:22.942 -05:00 [INF] Now listening on: http://localhost:5132
+2025-12-02 15:28:22.947 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-12-02 15:28:22.949 -05:00 [INF] Hosting environment: Development
+2025-12-02 15:28:22.950 -05:00 [INF] Content root path: C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Backend
+2025-12-02 15:28:54.717 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5132/index.html - null null
+2025-12-02 15:28:54.858 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5132/index.html - 404 0 null 143.7043ms
+2025-12-02 15:28:54.867 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5132/index.html, Response status code: 404
+2025-12-02 15:29:02.346 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5132/index.html - null null
+2025-12-02 15:29:02.360 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5132/index.html - 404 0 null 13.8584ms
+2025-12-02 15:29:02.364 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5132/index.html, Response status code: 404
+2025-12-02 15:29:06.407 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5132/swagger/index.html - null null
+2025-12-02 15:29:06.511 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5132/swagger/index.html - 200 null text/html;charset=utf-8 103.8523ms
+2025-12-02 15:29:06.703 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5132/swagger/v1/swagger.json - null null
+2025-12-02 15:29:06.807 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5132/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 103.4722ms
