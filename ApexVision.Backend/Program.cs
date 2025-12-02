@@ -10,10 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using CloudinaryDotNet;
-using DotNetEnv;
 using Serilog;
-
-Env.Load();
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
