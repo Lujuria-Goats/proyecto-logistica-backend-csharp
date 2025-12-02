@@ -48,6 +48,8 @@ builder.Services.AddIdentity<User, Role>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// ...existing code...
+
 // 2. Register JWT Service
 builder.Services.AddScoped<JwtService>();
 
@@ -59,7 +61,11 @@ var cloudinaryAccount = new Account(
 );
 builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
 builder.Services.AddScoped<IPhotoService, CloudinaryService>();
-builder.Services.AddScoped<IOptimizationService, OptimizationService>();
+
+// Configure Azure AI Vision (Análisis de fotos con IA)
+builder.Services.AddScoped<IImageAnalysisService, AzureImageAnalysisService>();
+
+// ...existing code...
 
 builder.Services.AddHttpClient("JavaOptimizationApi", client =>
 {
