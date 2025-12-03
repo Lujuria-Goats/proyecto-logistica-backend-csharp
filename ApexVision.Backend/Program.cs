@@ -50,9 +50,9 @@ builder.Services.AddScoped<JwtService>();
 
 // Configure Cloudinary
 var cloudinaryAccount = new Account(
-    builder.Configuration["Cloudinary__CloudName"],
-    builder.Configuration["Cloudinary__ApiKey"],
-    builder.Configuration["Cloudinary__ApiSecret"]
+    builder.Configuration["Cloudinary:CloudName"],
+    builder.Configuration["Cloudinary:ApiKey"],
+    builder.Configuration["Cloudinary:ApiSecret"]
 );
 builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
 builder.Services.AddScoped<IPhotoService, CloudinaryService>();
