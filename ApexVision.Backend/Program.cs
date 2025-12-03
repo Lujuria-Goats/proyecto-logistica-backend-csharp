@@ -104,8 +104,8 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = configuration["Jwt:Issuer"],
         ValidAudience = configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"))),
-        // Añadir una tolerancia de 5 minutos para el reloj del servidor
-        ClockSkew = TimeSpan.FromMinutes(5)
+        // Aumentar la tolerancia a 30 minutos para compensar el desfase del servidor
+        ClockSkew = TimeSpan.FromMinutes(30)
     };
 });
 
