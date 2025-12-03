@@ -97,10 +97,8 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        // --- INICIO: CAMBIO TEMPORAL PARA DIAGNÓSTICO ---
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        // --- FIN: CAMBIO TEMPORAL PARA DIAGNÓSTICO ---
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = configuration["Jwt:Issuer"],
@@ -147,6 +145,17 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// --- DIAGNOSTIC LOGGING FOR JWT ---
+var jwtKeyForLogging = app.Configuration["Jwt:Key"];
+var jwtIssuerForLogging = app.Configuration["Jwt:Issuer"];
+var jwtAudienceForLogging = app.Configuration["Jwt:Audience"];
+Log.Information("--- JWT Configuration Loaded for Validation ---");
+Log.Information("Jwt:Key      = {JwtKey}", jwtKeyForLogging);
+Log.Information("Jwt:Issuer   = {JwtIssuer}", jwtIssuerForLogging);
+Log.Information("Jwt:Audience = {JwtAudience}", jwtAudienceForLogging);
+Log.Information("-------------------------------------------");
+// --- END DIAGNOSTIC LOGGING ---
 
 // --- ZONA DE DESPLIEGUE AUTOMÁTICO (Migraciones y Seed) ---
 using (var scope = app.Services.CreateScope())
