@@ -50,9 +50,9 @@ builder.Services.AddScoped<JwtService>();
 
 // Configure Cloudinary
 var cloudinaryAccount = new Account(
-    builder.Configuration["Cloudinary:CloudName"],
-    builder.Configuration["Cloudinary:ApiKey"],
-    builder.Configuration["Cloudinary:ApiSecret"]
+    builder.Configuration["Cloudinary__CloudName"],
+    builder.Configuration["Cloudinary__ApiKey"],
+    builder.Configuration["Cloudinary__ApiSecret"]
 );
 builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
 builder.Services.AddScoped<IPhotoService, CloudinaryService>();
@@ -186,9 +186,11 @@ using (var scope = app.Services.CreateScope())
 
         // 3. Crear Usuario Admin por defecto (Para que puedas entrar)
         var adminEmail = "admin@apexvision.com";
-        if (await userManager.FindByEmailAsync(adminEmail) == null)
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+        if (adminUser == null)
         {
-            var adminUser = new User
+            adminUser = new User
             {
                 UserName = "admin",
                 Email = adminEmail,
@@ -199,7 +201,7 @@ using (var scope = app.Services.CreateScope())
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(adminUser, "Admin");
-                Log.Information("Usuario Admin creado: admin@apexvision.com / Admin123!");
+                Log.Information("Usuario Admin creado y asignado al rol 'Admin'.");
             }
             else
             {
@@ -208,7 +210,16 @@ using (var scope = app.Services.CreateScope())
         }
         else
         {
-            Log.Information("Usuario Admin ya existe.");
+            // Si el usuario ya existe, nos aseguramos de que tenga el rol Admin
+            if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+                Log.Information("Usuario Admin existente fue asignado al rol 'Admin'.");
+            }
+            else
+            {
+                Log.Information("Usuario Admin ya existe y tiene el rol correcto.");
+            }
         }
     }
     catch (Exception ex)
