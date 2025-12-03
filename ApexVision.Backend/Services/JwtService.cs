@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using ApexVision.Backend.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ApexVision.Backend.Services
@@ -11,19 +12,28 @@ namespace ApexVision.Backend.Services
     {
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> _roleManager;
+        private readonly ILogger<JwtService> _logger;
 
-        public JwtService(IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager)
+        public JwtService(IConfiguration configuration, UserManager<User> userManager, ILogger<JwtService> logger)
         {
             _configuration = configuration;
             _userManager = userManager;
-            _roleManager = roleManager;
+            _logger = logger;
         }
 
         public async Task<string> GenerateToken(User user)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
             var jwtKey = _configuration["Jwt:Key"];
+            var jwtIssuer = _configuration["Jwt:Issuer"];
+            var jwtAudience = _configuration["Jwt:Audience"];
+
+            _logger.LogInformation("--- Generating JWT Token with following configuration ---");
+            _logger.LogInformation("Jwt:Key      = {JwtKey}", jwtKey);
+            _logger.LogInformation("Jwt:Issuer   = {JwtIssuer}", jwtIssuer);
+            _logger.LogInformation("Jwt:Audience = {JwtAudience}", jwtAudience);
+            _logger.LogInformation("----------------------------------------------------");
+
+            var tokenHandler = new JwtSecurityTokenHandler();
             if (string.IsNullOrEmpty(jwtKey))
             {
                 throw new InvalidOperationException("La clave JWT no está configurada.");
