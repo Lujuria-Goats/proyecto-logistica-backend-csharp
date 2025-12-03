@@ -48,14 +48,40 @@ builder.Services.AddIdentity<User, Role>(options =>
 // 2. Register JWT Service
 builder.Services.AddScoped<JwtService>();
 
-// Configure Cloudinary
-var cloudinaryAccount = new Account(
-    builder.Configuration["Cloudinary:CloudName"],
-    builder.Configuration["Cloudinary:ApiKey"],
-    builder.Configuration["Cloudinary:ApiSecret"]
-);
-builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
-builder.Services.AddScoped<IPhotoService, CloudinaryService>();
+// --- CONFIGURACIÓN DE CLOUDINARY ROBUSTA ---
+var cloudName = builder.Configuration["Cloudinary:CloudName"];
+var apiKey = builder.Configuration["Cloudinary:ApiKey"];
+var apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
+
+// Log de depuración para ver qué está leyendo (sin mostrar el secreto completo)
+Log.Information("☁️ Intentando cargar Cloudinary. CloudName: '{CloudName}', ApiKey: '{ApiKey}'",
+     cloudName ?? "NULL", apiKey ?? "NULL");
+
+if (string.IsNullOrEmpty(cloudName) || string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
+{
+    Log.Error("❌ ERROR CRÍTICO: Faltan las credenciales de Cloudinary en la configuración.");
+    // Intentar leer con la otra estructura común por si acaso (CloudinarySettings)
+    cloudName = builder.Configuration["CloudinarySettings:CloudName"];
+    apiKey = builder.Configuration["CloudinarySettings:ApiKey"];
+    apiSecret = builder.Configuration["CloudinarySettings:ApiSecret"];
+
+         if(!string.IsNullOrEmpty(cloudName))
+         Log.Information("✅ Recuperado usando sección 'CloudinarySettings'.");
+}
+
+if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(apiSecret))
+{
+    var cloudinaryAccount = new Account(cloudName, apiKey, apiSecret);
+    builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount));
+    builder.Services.AddScoped<IPhotoService, CloudinaryService>();
+    Log.Information("✅ Cloudinary configurado correctamente.");
+}
+else
+{
+    Log.Warning("⚠️ Cloudinary NO se pudo configurar. La subida de fotos fallará.");
+    // No registramos el servicio para que la app arranque al menos
+}
+// ------------------------------------------------
 
 // Configure Azure AI Vision (Análisis de fotos con IA)
 builder.Services.AddScoped<IImageAnalysisService, AzureImageAnalysisService>();
