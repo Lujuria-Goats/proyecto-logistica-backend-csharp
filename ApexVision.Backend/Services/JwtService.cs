@@ -52,6 +52,14 @@ namespace ApexVision.Backend.Services
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            // --- LOG DE DIAGNÓSTICO DE ROLES ---
+            var rolesInClaims = claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
+            _logger.LogInformation("Roles being added to JWT for user {UserEmail}: {Roles}", user.Email, string.Join(", ", rolesInClaims));
+            // ------------------------------------
+
             var expirationMinutes = _configuration.GetValue<double>("Jwt:ExpirationMinutes", 60);
 
             var tokenDescriptor = new SecurityTokenDescriptor
