@@ -97,14 +97,15 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        // --- INICIO: CAMBIO TEMPORAL PARA DIAGNÓSTICO ---
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        // --- FIN: CAMBIO TEMPORAL PARA DIAGNÓSTICO ---
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = configuration["Jwt:Issuer"],
         ValidAudience = configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"))),
-        // Aumentar la tolerancia a 30 minutos para compensar el desfase del servidor
         ClockSkew = TimeSpan.FromMinutes(30)
     };
 });
