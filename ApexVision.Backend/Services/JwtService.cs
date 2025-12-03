@@ -28,7 +28,7 @@ namespace ApexVision.Backend.Services
             {
                 throw new InvalidOperationException("La clave JWT no está configurada.");
             }
-            var key = Encoding.ASCII.GetBytes(jwtKey);
+            var key = Encoding.UTF8.GetBytes(jwtKey); // Corregido de ASCII a UTF8
 
             var claims = new List<Claim>
             {
