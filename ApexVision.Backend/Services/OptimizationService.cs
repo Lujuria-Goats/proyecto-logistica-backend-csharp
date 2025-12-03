@@ -1,70 +1,59 @@
-﻿using ApexVision.Backend.Data;
-using ApexVision.Backend.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
+using ApexVision.Backend.Data;
+using ApexVision.Backend.DTOs.Optimization;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApexVision.Backend.Services
 {
     public class OptimizationService : IOptimizationService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ApplicationDbContext _context;
 
-        public OptimizationService(IHttpClientFactory httpClientFactory, IServiceScopeFactory scopeFactory)
+        public OptimizationService(IHttpClientFactory httpClientFactory, ApplicationDbContext context)
         {
             _httpClientFactory = httpClientFactory;
-            _scopeFactory = scopeFactory;
+            _context = context;
         }
 
         public async Task OptimizeRouteAsync(string driverId)
         {
-            using (var scope = _scopeFactory.CreateScope())
+            var pendingOrders = await _context.Orders
+                .Where(o => o.DriverId.ToString() == driverId && o.Status != Models.OrderStatus.Completed)
+                .ToListAsync();
+
+            if (!pendingOrders.Any())
             {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                var pendingOrders = await context.Orders
-                    .Where(o => o.Driver != null && o.Driver.Id.ToString() == driverId && o.Status != OrderStatus.Completed)
-                    .OrderBy(o => o.Id) // Consistent ordering
-                    .ToListAsync();
-
-                if (!pendingOrders.Any())
-                {
-                    return; // No orders to optimize
-                }
-
-                var payload = pendingOrders.Select(o => new { o.Latitude, o.Longitude }).ToList();
-                var jsonPayload = JsonSerializer.Serialize(payload);
-                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-                var httpClient = _httpClientFactory.CreateClient("JavaOptimizationApi");
-                var response = await httpClient.PostAsync("api/v1/optimize", content);
-
-                response.EnsureSuccessStatusCode();
-
-                var optimizedRoute = await response.Content.ReadFromJsonAsync<List<OptimizedStop>>();
-                if (optimizedRoute == null) return;
-
-                for (int i = 0; i < optimizedRoute.Count; i++)
-                {
-                    var optimizedStop = optimizedRoute[i];
-                    // This assumes the Java service returns coordinates that can be matched back.
-                    // A more robust implementation would involve passing and returning order IDs.
-                    var orderToUpdate = pendingOrders.FirstOrDefault(o => o.Latitude == optimizedStop.Latitude && o.Longitude == optimizedStop.Longitude);
-                    if (orderToUpdate != null)
-                    {
-                        // orderToUpdate.VisitOrder = i; // Assuming an 'VisitOrder' property exists
-                    }
-                }
-
-                await context.SaveChangesAsync();
+                // No orders to optimize
+                return;
             }
-        }
 
-        private class OptimizedStop
-        {
-            public double Latitude { get; set; }
-            public double Longitude { get; set; }
+            var optimizationRequest = new OptimizationRequestDto
+            {
+                FleetId = $"driver-{driverId}", // Example fleet ID
+                Locations = pendingOrders.Select(o => new LocationDto
+                {
+                    Id = o.Id,
+                    Latitude = o.Latitude,
+                    Longitude = o.Longitude,
+                    SequenceNumber = null // Java will fill this
+                }).ToList()
+            };
+
+            var client = _httpClientFactory.CreateClient("JavaOptimizationApi");
+            var jsonContent = JsonSerializer.Serialize(optimizationRequest);
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("api/v1/optimize", content);
+
+            response.EnsureSuccessStatusCode();
+
+            // Here you would typically process the response from the Java service
+            // to update the VisitOrder of your orders, but for now, we just ensure the call was successful.
         }
     }
 }
