@@ -42,10 +42,12 @@ namespace ApexVision.Backend.Services
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            var expirationMinutes = _configuration.GetValue<double>("Jwt:ExpirationMinutes", 60);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(1), // Token expiration
+                Expires = DateTime.UtcNow.AddMinutes(expirationMinutes), // Corregido para usar la configuración
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"]
