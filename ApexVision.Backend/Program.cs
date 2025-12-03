@@ -41,6 +41,8 @@ builder.Services.AddIdentity<User, Role>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
+    // Asegura que el sistema use el tipo de claim estándar para roles
+    options.ClaimsIdentity.RoleClaimType = System.Security.Claims.ClaimTypes.Role;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
@@ -130,7 +132,9 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = configuration["Jwt:Issuer"],
         ValidAudience = configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"))),
-        ClockSkew = TimeSpan.FromMinutes(30)
+        ClockSkew = TimeSpan.FromMinutes(30),
+        // Asegura que la validación busque el tipo de claim estándar para roles
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role
     };
 });
 
