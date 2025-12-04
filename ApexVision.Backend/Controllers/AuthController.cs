@@ -41,10 +41,19 @@ namespace ApexVision.Backend.Controllers
                 return BadRequest(result.Errors);
             }
 
-            // Assign "Driver" role by default
-            await _userManager.AddToRoleAsync(user, "Driver");
+            // Asignar rol basado en lo especificado en el registro
+            // Por defecto es "Driver" si no se especifica otro
+            string roleToAssign = !string.IsNullOrEmpty(registerDto.Role) ? registerDto.Role : "Driver";
+            
+            // Validar que el rol sea válido (solo Admin o Driver permitidos)
+            if (roleToAssign != "Admin" && roleToAssign != "Driver")
+            {
+                roleToAssign = "Driver"; // Fallback a Driver si rol inválido
+            }
 
-            return Ok(new { message = "Usuario registrado exitosamente." });
+            await _userManager.AddToRoleAsync(user, roleToAssign);
+
+            return Ok(new { message = "Usuario registrado exitosamente.", role = roleToAssign });
         }
 
         [HttpPost("login")]

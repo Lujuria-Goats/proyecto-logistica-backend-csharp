@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace ApexVision.Backend.Models
@@ -10,5 +10,7 @@ namespace ApexVision.Backend.Models
         public required string FullName { get; set; }
         
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+
+        public ICollection<SavedRoute> SavedRoutes { get; set; } = new List<SavedRoute>();
     }
 }
