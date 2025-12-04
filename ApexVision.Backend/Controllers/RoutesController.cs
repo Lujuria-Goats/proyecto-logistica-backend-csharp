@@ -12,7 +12,6 @@ namespace ApexVision.Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Driver")] // Solo drivers pueden acceder
     public class RoutesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -44,6 +43,7 @@ namespace ApexVision.Backend.Controllers
         /// Guarda la ruta actual del conductor con un nombre
         /// </summary>
         [HttpPost("save")]
+        [Authorize(Roles = "Driver")]
         public async Task<IActionResult> SaveCurrentRoute([FromBody] SaveRouteDto saveRouteDto)
         {
             var driver = await GetCurrentDriverAsync();
@@ -100,6 +100,7 @@ namespace ApexVision.Backend.Controllers
         /// Obtiene todas las rutas guardadas del conductor actual
         /// </summary>
         [HttpGet("saved")]
+        [Authorize(Roles = "Driver")]
         public async Task<IActionResult> GetSavedRoutes()
         {
             var driver = await GetCurrentDriverAsync();
@@ -137,6 +138,7 @@ namespace ApexVision.Backend.Controllers
         /// Obtiene los detalles de una ruta guardada específica
         /// </summary>
         [HttpGet("saved/{routeId}")]
+        [Authorize(Roles = "Driver")]
         public async Task<IActionResult> GetSavedRoute(int routeId)
         {
             var driver = await GetCurrentDriverAsync();
@@ -187,6 +189,7 @@ namespace ApexVision.Backend.Controllers
         /// Elimina una ruta guardada (solo desactiva, no borra)
         /// </summary>
         [HttpDelete("saved/{routeId}")]
+        [Authorize(Roles = "Driver")]
         public async Task<IActionResult> DeleteSavedRoute(int routeId)
         {
             var driver = await GetCurrentDriverAsync();
@@ -217,6 +220,7 @@ namespace ApexVision.Backend.Controllers
         /// Carga/activa una ruta guardada
         /// </summary>
         [HttpPost("saved/{routeId}/load")]
+        [Authorize(Roles = "Driver")]
         public async Task<IActionResult> LoadSavedRoute(int routeId)
         {
             var driver = await GetCurrentDriverAsync();
@@ -272,6 +276,7 @@ namespace ApexVision.Backend.Controllers
         /// Renombra una ruta guardada
         /// </summary>
         [HttpPost("saved/{routeId}/rename")]
+        [Authorize(Roles = "Driver")]
         public async Task<IActionResult> RenameSavedRoute(int routeId, [FromBody] dynamic request)
         {
             var driver = await GetCurrentDriverAsync();

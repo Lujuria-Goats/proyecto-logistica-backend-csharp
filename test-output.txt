@@ -1,0 +1,53 @@
+TEST DE GUARDAR RUTAS
+
+1. Login Admin...
+? OK
+
+2. Crear pedido...
+Enviando: {
+    "Longitude":  -75.53,
+    "Description":  "Test",
+    "RequiresEvidence":  false,
+    "Address":  "Test Address",
+    "Latitude":  6.22
+}
+? Pedido creado: 18
+
+3. Registrar driver...
+Invoke-WebRequest : Error en el servidor remoto: (400) Solicitud incorrecta.
+En C:\Users\user\OneDrive\Desktop\ApexVision\test-simple-rutas.ps1: 39 Carácter: 1
++ Invoke-WebRequest -Uri "$api/api/auth/register" -Method POST -Content ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+ 
+? OK
+
+4. Login driver...
+? OK
+
+5. Asignar pedido al driver...
+Invoke-WebRequest : Error en el servidor remoto: (500) Error interno del servidor.
+En C:\Users\user\OneDrive\Desktop\ApexVision\test-simple-rutas.ps1: 51 Carácter: 1
++ Invoke-WebRequest -Uri "$api/api/Orders/$orderId/assign/1" -Method PU ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+ 
+? OK
+
+6. GUARDAR RUTA...
+Enviando: {
+    "orderIds":  [
+                     18
+                 ],
+    "routeName":  "Mi Primera Ruta"
+}
+? ERROR: Error en el servidor remoto: (404) No se encontró.
+   Status: NotFound
+
+7. VER RUTAS GUARDADAS...
+? ERROR: Error en el servidor remoto: (404) No se encontró.
+   Status: NotFound
+
+? TEST COMPLETADO

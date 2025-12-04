@@ -1,0 +1,16 @@
+
+╔════════════════════════════════════════════════════════════╗
+║         TEST COMPLETO - GUARDAR Y CARGAR RUTAS             ║
+║                   ApexVision Backend                       ║
+╚════════════════════════════════════════════════════════════╝
+
+
+[1/9] Verificando que API está en vivo...
+? API RESPONDIENDO (Status: 200)
+
+[2/9] Login como Admin...
+? Admin autenticado
+   Token: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...
+
+[3/9] Creando 3 pedidos...
+? Error creando pedidos - Error en el servidor remoto: (400) Solicitud incorrecta.
