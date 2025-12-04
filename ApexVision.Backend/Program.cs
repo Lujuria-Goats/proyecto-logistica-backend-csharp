@@ -1,4 +1,5 @@
 using System.Text;
+using System.Security.Claims;
 using ApexVision.Backend.Data;
 using ApexVision.Backend.Models;
 using ApexVision.Backend.Services;
@@ -57,11 +58,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidAudience = configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"))),
         ClockSkew = TimeSpan.FromMinutes(30),
-        // Usar "role" (minúsculas) para que sea consistente con lo que genera JwtService
-        RoleClaimType = "role"
+        // Usar ClaimTypes.Role para que funcione con [Authorize(Roles = "...")] 
+        RoleClaimType = ClaimTypes.Role
     };
-    // Mantener MapInboundClaims = false para preservar los tipos de claim originales
-    options.MapInboundClaims = false;
+    // Permitir remapeo de claims para que "role" se mapee a ClaimTypes.Role
+    options.MapInboundClaims = true;
 
     options.Events = new JwtBearerEvents
     {
@@ -117,36 +118,55 @@ builder.Services.AddIdentity<User, Role>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
-    // Asegura que todo el sistema (Identity y JWT) use "role" como el tipo de claim para roles.
-    options.ClaimsIdentity.RoleClaimType = "role";
+    // Usar ClaimTypes.Role para consistencia con JWT
+    options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Se añade una política de autorización por defecto para forzar el uso de JWT.
+// Evitar que las cookies de Identity redirijan en APIs: devolver 401/403 en lugar de 302 a /Account/Login
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+    {
+        OnRedirectToLogin = ctx =>
+        {
+            ctx.Response.StatusCode = Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        },
+        OnRedirectToAccessDenied = ctx =>
+        {
+            ctx.Response.StatusCode = Microsoft.AspNetCore.Http.StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+    };
+});
+
+
+// 3. Register JWT Service
+builder.Services.AddScoped<JwtService>();
+
+// 4. Configure Authorization Policies
 builder.Services.AddAuthorization(options =>
 {
     options.DefaultPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
         .Build();
-    
+
     // Política específica para roles que también requiere JWT
     options.AddPolicy("AdminOnly", new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .RequireRole("Admin")
         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
         .Build());
-    
+
     options.AddPolicy("DriverOnly", new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .RequireRole("Driver")
         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
         .Build());
 });
-
-// 3. Register JWT Service
-builder.Services.AddScoped<JwtService>();
 
 // --- CONFIGURACIÓN DE CLOUDINARY ROBUSTA ---
 var cloudName = builder.Configuration["Cloudinary:CloudName"];
@@ -183,6 +203,9 @@ builder.Services.AddScoped<IAiValidationService, AiValidationService>();
 
 // Configure Optimization Service (Optimización de rutas con Java backend)
 builder.Services.AddScoped<IOptimizationService, OptimizationService>();
+
+// Configure Route Service (Guardar y cargar rutas)
+builder.Services.AddScoped<IRouteService, RouteService>();
 
 // Register HttpClientFactory for services that need it
 builder.Services.AddHttpClient();

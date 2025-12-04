@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿﻿using System.ComponentModel.DataAnnotations;
 
 namespace ApexVision.Backend.DTOs.Auth
 {
@@ -16,10 +16,10 @@ namespace ApexVision.Backend.DTOs.Auth
         [MinLength(6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres.")]
         public required string Password { get; set; }
         
-        public required string Role { get; set; } = "Driver"; // Default role as string
+        public required string Role { get; set; } = "Driver";
 
         [Required(ErrorMessage = "El número de teléfono es obligatorio.")]
-        [Phone(ErrorMessage = "El formato del número de teléfono no es válido.")]
+        [RegularExpression(@"^[\d\+\-\(\)\s]{7,}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
         public required string PhoneNumber { get; set; }
     }
 }

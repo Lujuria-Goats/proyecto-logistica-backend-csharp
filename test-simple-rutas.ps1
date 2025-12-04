@@ -32,7 +32,7 @@ $reg = @{
     fullName="TestDriver"
     email="testdriver@test.com"
     password="Pass@123456!"
-    phoneNumber="+573001234567"
+    phoneNumber="3001234567"
     role="Driver"
 } | ConvertTo-Json
 

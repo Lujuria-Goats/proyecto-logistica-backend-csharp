@@ -25,49 +25,32 @@ namespace ApexVision.Backend.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Obtiene el ID del conductor actual desde el JWT
-        /// </summary>
         private async Task<User?> GetCurrentDriverAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out _))
-            {
                 return null;
-            }
             return await _userManager.FindByIdAsync(userId);
         }
 
-        /// <summary>
-        /// POST /api/Routes/save
-        /// Guarda la ruta actual del conductor con un nombre
-        /// </summary>
         [HttpPost("save")]
-        [Authorize(Roles = "Driver")]
+        [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> SaveCurrentRoute([FromBody] SaveRouteDto saveRouteDto)
         {
             var driver = await GetCurrentDriverAsync();
             if (driver == null)
-            {
                 return Unauthorized("No se pudo identificar al conductor.");
-            }
 
             if (saveRouteDto.OrderIds.Count == 0)
-            {
                 return BadRequest("Debe incluir al menos un pedido en la ruta.");
-            }
 
-            // Validar que todos los pedidos existan y pertenezcan al conductor
             var orders = await _context.Orders
                 .Where(o => saveRouteDto.OrderIds.Contains(o.Id) && o.DriverId == driver.Id)
                 .ToListAsync();
 
             if (orders.Count != saveRouteDto.OrderIds.Count)
-            {
                 return BadRequest("Algunos pedidos no existen o no pertenecen a este conductor.");
-            }
 
-            // Serializar los IDs de los pedidos
             var orderIdsJson = JsonSerializer.Serialize(saveRouteDto.OrderIds);
 
             var savedRoute = new SavedRoute
@@ -82,8 +65,8 @@ namespace ApexVision.Backend.Controllers
             _context.SavedRoutes.Add(savedRoute);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Ruta '{RouteName}' guardada para conductor {DriverId} ({PhoneNumber})", 
-                saveRouteDto.RouteName, driver.Id, driver.PhoneNumber);
+            _logger.LogInformation("Ruta '{RouteName}' guardada para conductor {DriverId}", 
+                saveRouteDto.RouteName, driver.Id);
 
             return Ok(new 
             { 
@@ -95,19 +78,13 @@ namespace ApexVision.Backend.Controllers
             });
         }
 
-        /// <summary>
-        /// GET /api/Routes/saved
-        /// Obtiene todas las rutas guardadas del conductor actual
-        /// </summary>
         [HttpGet("saved")]
-        [Authorize(Roles = "Driver")]
+        [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> GetSavedRoutes()
         {
             var driver = await GetCurrentDriverAsync();
             if (driver == null)
-            {
                 return Unauthorized("No se pudo identificar al conductor.");
-            }
 
             var savedRoutes = await _context.SavedRoutes
                 .Where(r => r.DriverId == driver.Id && r.IsActive)
@@ -133,27 +110,19 @@ namespace ApexVision.Backend.Controllers
             });
         }
 
-        /// <summary>
-        /// GET /api/Routes/saved/{routeId}
-        /// Obtiene los detalles de una ruta guardada específica
-        /// </summary>
         [HttpGet("saved/{routeId}")]
-        [Authorize(Roles = "Driver")]
+        [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> GetSavedRoute(int routeId)
         {
             var driver = await GetCurrentDriverAsync();
             if (driver == null)
-            {
                 return Unauthorized("No se pudo identificar al conductor.");
-            }
 
             var savedRoute = await _context.SavedRoutes
                 .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driver.Id);
 
             if (savedRoute == null)
-            {
                 return NotFound("Ruta guardada no encontrada.");
-            }
 
             var orderIds = JsonSerializer.Deserialize<List<int>>(savedRoute.OrderIds) ?? new();
             var orders = await _context.Orders
@@ -184,60 +153,20 @@ namespace ApexVision.Backend.Controllers
             });
         }
 
-        /// <summary>
-        /// DELETE /api/Routes/saved/{routeId}
-        /// Elimina una ruta guardada (solo desactiva, no borra)
-        /// </summary>
-        [HttpDelete("saved/{routeId}")]
-        [Authorize(Roles = "Driver")]
-        public async Task<IActionResult> DeleteSavedRoute(int routeId)
-        {
-            var driver = await GetCurrentDriverAsync();
-            if (driver == null)
-            {
-                return Unauthorized("No se pudo identificar al conductor.");
-            }
-
-            var savedRoute = await _context.SavedRoutes
-                .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driver.Id);
-
-            if (savedRoute == null)
-            {
-                return NotFound("Ruta guardada no encontrada.");
-            }
-
-            savedRoute.IsActive = false;
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Ruta '{RouteName}' desactivada para conductor {DriverId} ({PhoneNumber})", 
-                savedRoute.RouteName, driver.Id, driver.PhoneNumber);
-
-            return Ok(new { message = "Ruta eliminada exitosamente." });
-        }
-
-        /// <summary>
-        /// POST /api/Routes/saved/{routeId}/load
-        /// Carga/activa una ruta guardada
-        /// </summary>
         [HttpPost("saved/{routeId}/load")]
-        [Authorize(Roles = "Driver")]
+        [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> LoadSavedRoute(int routeId)
         {
             var driver = await GetCurrentDriverAsync();
             if (driver == null)
-            {
                 return Unauthorized("No se pudo identificar al conductor.");
-            }
 
             var savedRoute = await _context.SavedRoutes
                 .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driver.Id && r.IsActive);
 
             if (savedRoute == null)
-            {
                 return NotFound("Ruta guardada no encontrada.");
-            }
 
-            // Actualizar última fecha de uso
             savedRoute.LastUsedDate = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
@@ -258,8 +187,8 @@ namespace ApexVision.Backend.Controllers
                 })
                 .ToListAsync();
 
-            _logger.LogInformation("Ruta '{RouteName}' cargada para conductor {DriverId} ({PhoneNumber})", 
-                savedRoute.RouteName, driver.Id, driver.PhoneNumber);
+            _logger.LogInformation("Ruta '{RouteName}' cargada para conductor {DriverId}", 
+                savedRoute.RouteName, driver.Id);
 
             return Ok(new 
             { 
@@ -271,35 +200,44 @@ namespace ApexVision.Backend.Controllers
             });
         }
 
-        /// <summary>
-        /// POST /api/Routes/saved/{routeId}/rename
-        /// Renombra una ruta guardada
-        /// </summary>
-        [HttpPost("saved/{routeId}/rename")]
-        [Authorize(Roles = "Driver")]
-        public async Task<IActionResult> RenameSavedRoute(int routeId, [FromBody] dynamic request)
+        [HttpDelete("saved/{routeId}")]
+        [Authorize(Policy = "DriverOnly")]
+        public async Task<IActionResult> DeleteSavedRoute(int routeId)
         {
             var driver = await GetCurrentDriverAsync();
             if (driver == null)
-            {
                 return Unauthorized("No se pudo identificar al conductor.");
-            }
 
             var savedRoute = await _context.SavedRoutes
                 .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driver.Id);
 
             if (savedRoute == null)
-            {
                 return NotFound("Ruta guardada no encontrada.");
-            }
 
-            string newName = request.newName;
-            if (string.IsNullOrWhiteSpace(newName) || newName.Length > 100)
-            {
+            savedRoute.IsActive = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Ruta eliminada exitosamente." });
+        }
+
+        [HttpPost("saved/{routeId}/rename")]
+        [Authorize(Policy = "DriverOnly")]
+        public async Task<IActionResult> RenameSavedRoute(int routeId, [FromBody] RenameRouteDto request)
+        {
+            var driver = await GetCurrentDriverAsync();
+            if (driver == null)
+                return Unauthorized("No se pudo identificar al conductor.");
+
+            var savedRoute = await _context.SavedRoutes
+                .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driver.Id);
+
+            if (savedRoute == null)
+                return NotFound("Ruta guardada no encontrada.");
+
+            if (string.IsNullOrWhiteSpace(request.NewName) || request.NewName.Length > 100)
                 return BadRequest("El nombre debe tener entre 1 y 100 caracteres.");
-            }
 
-            savedRoute.RouteName = newName;
+            savedRoute.RouteName = request.NewName;
             await _context.SaveChangesAsync();
 
             return Ok(new 
@@ -312,4 +250,3 @@ namespace ApexVision.Backend.Controllers
         }
     }
 }
-

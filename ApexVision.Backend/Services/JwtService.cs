@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using ApexVision.Backend.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ApexVision.Backend.Services
@@ -48,8 +47,8 @@ namespace ApexVision.Backend.Services
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
-                // Se agrega el claim "role" que está configurado como el RoleClaimType en Program.cs
-                claims.Add(new Claim("role", role));
+                // Usar ClaimTypes.Role para que sea el tipo de claim estándar
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             _logger.LogInformation("Roles being added to JWT for user {UserEmail}: {Roles}", user.Email, string.Join(", ", roles));
