@@ -7,10 +7,10 @@ namespace ApexVision.Backend.Services
     {
         Task<SavedRoute> SaveRouteAsync(int driverId, SaveRouteDto saveRouteDto);
         Task<List<SavedRoute>> GetSavedRoutesAsync(int driverId);
-        Task<SavedRoute> GetSavedRouteAsync(int routeId, int driverId);
-        Task<SavedRoute> LoadSavedRouteAsync(int routeId, int driverId);
+        Task<SavedRoute?> GetSavedRouteAsync(int routeId, int driverId);
+        Task<SavedRoute?> LoadSavedRouteAsync(int routeId, int driverId);
         Task DeleteSavedRouteAsync(int routeId, int driverId);
-        Task<SavedRoute> RenameSavedRouteAsync(int routeId, int driverId, string newName);
+        Task<SavedRoute?> RenameSavedRouteAsync(int routeId, int driverId, string newName);
     }
 }
 

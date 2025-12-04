@@ -47,13 +47,13 @@ namespace ApexVision.Backend.Services
                 .ToListAsync();
         }
 
-        public async Task<SavedRoute> GetSavedRouteAsync(int routeId, int driverId)
+        public async Task<SavedRoute?> GetSavedRouteAsync(int routeId, int driverId)
         {
             return await _context.SavedRoutes
                 .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driverId);
         }
 
-        public async Task<SavedRoute> LoadSavedRouteAsync(int routeId, int driverId)
+        public async Task<SavedRoute?> LoadSavedRouteAsync(int routeId, int driverId)
         {
             var route = await _context.SavedRoutes
                 .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driverId && r.IsActive);
@@ -70,6 +70,8 @@ namespace ApexVision.Backend.Services
             return route;
         }
 
+        // ...existing code...
+
         public async Task DeleteSavedRouteAsync(int routeId, int driverId)
         {
             var route = await _context.SavedRoutes
@@ -85,7 +87,7 @@ namespace ApexVision.Backend.Services
             }
         }
 
-        public async Task<SavedRoute> RenameSavedRouteAsync(int routeId, int driverId, string newName)
+        public async Task<SavedRoute?> RenameSavedRouteAsync(int routeId, int driverId, string newName)
         {
             var route = await _context.SavedRoutes
                 .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driverId);
