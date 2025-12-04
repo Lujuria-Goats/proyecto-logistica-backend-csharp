@@ -11,10 +11,19 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using CloudinaryDotNet;
 using Serilog;
+using System.IdentityModel.Tokens.Jwt; // Necesario para JwtSecurityTokenHandler
+using Microsoft.Extensions.DependencyInjection; // Necesario para GetRequiredService
+using Microsoft.AspNetCore.Authorization; // Añadido para AuthorizationPolicyBuilder
+
+// Limpiar el mapa de claims predeterminado para evitar remapeos automáticos.
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
+    .ReadFrom.Configuration(new ConfigurationBuilder()
+        .AddJsonFile("appsettings.Development.json")
+        .Build())
+    .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("logs/apex-vision-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
@@ -32,6 +41,73 @@ try
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+// 2. Configure JWT Authentication BEFORE AddIdentity
+// Se configura JWT como esquema de autenticación predeterminado ANTES de AddIdentity
+// para que Identity respete esta configuración.
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = configuration["Jwt:Issuer"],
+        ValidAudience = configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"))),
+        ClockSkew = TimeSpan.FromMinutes(30),
+        // Usar "role" (minúsculas) para que sea consistente con lo que genera JwtService
+        RoleClaimType = "role"
+    };
+    // Mantener MapInboundClaims = false para preservar los tipos de claim originales
+    options.MapInboundClaims = false;
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            var accessToken = context.Request.Headers["Authorization"].ToString();
+            // No loguear el token completo por seguridad. Solo indicar si se recibió.
+            logger.LogDebug("OnMessageReceived: Token de autorización recibido: {Status}", string.IsNullOrEmpty(accessToken) ? "[No token]" : "[Token presente]");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogDebug("OnTokenValidated: Token validado. Claims en el principal:");
+            if (context.Principal != null && context.Principal.Claims != null)
+            {
+                foreach (var claim in context.Principal.Claims)
+                {
+                    logger.LogDebug("- Tipo: {ClaimType}, Valor: {ClaimValue}", claim.Type, claim.Value);
+                }
+                // Asegurarse de que context.Principal no sea nulo antes de llamar a IsInRole
+                bool isAdminInPrincipal = context.Principal.IsInRole("Admin");
+                logger.LogDebug("OnTokenValidated: context.Principal.IsInRole(\"Admin\"): {IsAdmin}", isAdminInPrincipal);
+            }
+            else
+            {
+                logger.LogDebug("OnTokenValidated: No hay principal o claims para loguear.");
+            }
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError(context.Exception, "OnAuthenticationFailed: Fallo de autenticación.");
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogDebug("OnChallenge: Desafío de autenticación. Motivo: {Error}, Descripción: {ErrorDescription}", context.Error ?? "[No Error]", context.ErrorDescription ?? "[No Description]");
+            return Task.CompletedTask;
+        }
+    };
+});
+
 // Add Identity services
 builder.Services.AddIdentity<User, Role>(options =>
 {
@@ -41,13 +117,35 @@ builder.Services.AddIdentity<User, Role>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
-    // Asegura que el sistema use el tipo de claim estándar para roles
-    options.ClaimsIdentity.RoleClaimType = System.Security.Claims.ClaimTypes.Role;
+    // Asegura que todo el sistema (Identity y JWT) use "role" como el tipo de claim para roles.
+    options.ClaimsIdentity.RoleClaimType = "role";
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// 2. Register JWT Service
+// Se añade una política de autorización por defecto para forzar el uso de JWT.
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+        .Build();
+    
+    // Política específica para roles que también requiere JWT
+    options.AddPolicy("AdminOnly", new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .RequireRole("Admin")
+        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+        .Build());
+    
+    options.AddPolicy("DriverOnly", new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .RequireRole("Driver")
+        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+        .Build());
+});
+
+// 3. Register JWT Service
 builder.Services.AddScoped<JwtService>();
 
 // --- CONFIGURACIÓN DE CLOUDINARY ROBUSTA ---
@@ -55,20 +153,13 @@ var cloudName = builder.Configuration["Cloudinary:CloudName"];
 var apiKey = builder.Configuration["Cloudinary:ApiKey"];
 var apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
 
-// Log de depuración para ver qué está leyendo (sin mostrar el secreto completo)
-Log.Information("☁️ Intentando cargar Cloudinary. CloudName: '{CloudName}', ApiKey: '{ApiKey}'",
-     cloudName ?? "NULL", apiKey ?? "NULL");
-
 if (string.IsNullOrEmpty(cloudName) || string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
 {
-    Log.Error("❌ ERROR CRÍTICO: Faltan las credenciales de Cloudinary en la configuración.");
+    Log.Warning("⚠️ Credenciales de Cloudinary incompletas en la sección 'Cloudinary'. Intentando con 'CloudinarySettings'.");
     // Intentar leer con la otra estructura común por si acaso (CloudinarySettings)
     cloudName = builder.Configuration["CloudinarySettings:CloudName"];
     apiKey = builder.Configuration["CloudinarySettings:ApiKey"];
     apiSecret = builder.Configuration["CloudinarySettings:ApiSecret"];
-
-         if(!string.IsNullOrEmpty(cloudName))
-         Log.Information("✅ Recuperado usando sección 'CloudinarySettings'.");
 }
 
 if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(apiSecret))
@@ -80,7 +171,7 @@ if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string
 }
 else
 {
-    Log.Warning("⚠️ Cloudinary NO se pudo configurar. La subida de fotos fallará.");
+    Log.Error("❌ ERROR CRÍTICO: Cloudinary NO se pudo configurar. La subida de fotos fallará.");
     // No registramos el servicio para que la app arranque al menos
 }
 // ------------------------------------------------
@@ -89,6 +180,12 @@ else
 builder.Services.AddScoped<IImageAnalysisService, AzureImageAnalysisService>();
 builder.Services.Configure<ApexVision.Backend.DTOs.AzureVisionSettings>(builder.Configuration.GetSection("AzureVisionSettings"));
 builder.Services.AddScoped<IAiValidationService, AiValidationService>();
+
+// Configure Optimization Service (Optimización de rutas con Java backend)
+builder.Services.AddScoped<IOptimizationService, OptimizationService>();
+
+// Register HttpClientFactory for services that need it
+builder.Services.AddHttpClient();
 
 builder.Services.AddHttpClient("JavaOptimizationApi", client =>
 {
@@ -114,30 +211,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-
-// 3. Configure JWT Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = configuration["Jwt:Issuer"],
-        ValidAudience = configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"))),
-        ClockSkew = TimeSpan.FromMinutes(30),
-        // Asegura que la validación busque el tipo de claim estándar para roles
-        RoleClaimType = System.Security.Claims.ClaimTypes.Role
-    };
-});
-
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -175,17 +248,6 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-
-// --- DIAGNOSTIC LOGGING FOR JWT ---
-var jwtKeyForLogging = app.Configuration["Jwt:Key"];
-var jwtIssuerForLogging = app.Configuration["Jwt:Issuer"];
-var jwtAudienceForLogging = app.Configuration["Jwt:Audience"];
-Log.Information("--- JWT Configuration Loaded for Validation ---");
-Log.Information("Jwt:Key      = {JwtKey}", jwtKeyForLogging);
-Log.Information("Jwt:Issuer   = {JwtIssuer}", jwtIssuerForLogging);
-Log.Information("Jwt:Audience = {JwtAudience}", jwtAudienceForLogging);
-Log.Information("-------------------------------------------");
-// --- END DIAGNOSTIC LOGGING ---
 
 // --- ZONA DE DESPLIEGUE AUTOMÁTICO (Migraciones y Seed) ---
 using (var scope = app.Services.CreateScope())
@@ -276,7 +338,9 @@ app.UseSwaggerUI(c =>
 // Si dejamos esta línea activa, crea un bucle infinito de redirecciones
 // app.UseHttpsRedirection();
 
-app.UseCors("AllowAll"); // Apply the CORS policy
+app.UseRouting(); // Mover UseRouting aquí
+
+app.UseCors("AllowAll"); // Mover UseCors aquí, después de UseRouting
 
 app.UseAuthentication();
 app.UseAuthorization();

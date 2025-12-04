@@ -27,18 +27,17 @@ namespace ApexVision.Backend.Services
             var jwtIssuer = _configuration["Jwt:Issuer"];
             var jwtAudience = _configuration["Jwt:Audience"];
 
-            _logger.LogInformation("--- Generating JWT Token with following configuration ---");
-            _logger.LogInformation("Jwt:Key      = {JwtKey}", jwtKey);
+            _logger.LogInformation("--- Generating JWT Token ---");
             _logger.LogInformation("Jwt:Issuer   = {JwtIssuer}", jwtIssuer);
             _logger.LogInformation("Jwt:Audience = {JwtAudience}", jwtAudience);
-            _logger.LogInformation("----------------------------------------------------");
+            _logger.LogInformation("----------------------------");
 
             var tokenHandler = new JwtSecurityTokenHandler();
             if (string.IsNullOrEmpty(jwtKey))
             {
                 throw new InvalidOperationException("La clave JWT no está configurada.");
             }
-            var key = Encoding.UTF8.GetBytes(jwtKey); // Corregido de ASCII a UTF8
+            var key = Encoding.UTF8.GetBytes(jwtKey);
 
             var claims = new List<Claim>
             {
@@ -49,23 +48,18 @@ namespace ApexVision.Backend.Services
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                // Se agrega el claim "role" que está configurado como el RoleClaimType en Program.cs
+                claims.Add(new Claim("role", role));
             }
 
-            // --- LOG DE DIAGNÓSTICO DE ROLES ---
-            var rolesInClaims = claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
-            _logger.LogInformation("Roles being added to JWT for user {UserEmail}: {Roles}", user.Email, string.Join(", ", rolesInClaims));
-            // ------------------------------------
+            _logger.LogInformation("Roles being added to JWT for user {UserEmail}: {Roles}", user.Email, string.Join(", ", roles));
 
             var expirationMinutes = _configuration.GetValue<double>("Jwt:ExpirationMinutes", 60);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(expirationMinutes), // Corregido para usar la configuración
+                Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = jwtIssuer,
                 Audience = jwtAudience

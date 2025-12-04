@@ -1,15 +1,14 @@
-﻿using ApexVision.Backend.DTOs;
+using ApexVision.Backend.DTOs;
 using ApexVision.Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApexVision.Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;

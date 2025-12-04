@@ -1,4 +1,4 @@
-﻿using ApexVision.Backend.Data;
+using ApexVision.Backend.Data;
 using ApexVision.Backend.DTOs;
 using ApexVision.Backend.Models;
 using ApexVision.Backend.Services;
@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Net.Http;
 
 namespace ApexVision.Backend.Controllers
 {
@@ -18,17 +17,19 @@ namespace ApexVision.Backend.Controllers
         private readonly IPhotoService _photoService;
         private readonly IOptimizationService _optimizationService;
         private readonly IAiValidationService _aiValidationService;
+        private readonly ILogger<OrdersController> _logger;
 
-        public OrdersController(ApplicationDbContext context, IPhotoService photoService, IOptimizationService optimizationService, IAiValidationService aiValidationService)
+        public OrdersController(ApplicationDbContext context, IPhotoService photoService, IOptimizationService optimizationService, IAiValidationService aiValidationService, ILogger<OrdersController> logger)
         {
             _context = context;
             _photoService = photoService;
             _optimizationService = optimizationService;
             _aiValidationService = aiValidationService;
+            _logger = logger;
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto createOrderDto)
         {
             if (createOrderDto.Latitude == 0 && createOrderDto.Longitude == 0)
@@ -53,7 +54,7 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpPut("{id}/assign/{driverId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AssignDriver(int id, int driverId)
         {
             var order = await _context.Orders.FindAsync(id);
@@ -69,7 +70,7 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetAllOrders()
         {
             var orders = await _context.Orders.Select(o => new OrderDto
@@ -89,8 +90,8 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpGet("my-route")]
-        [Authorize(Roles = "Driver")]
-        public async Task<IActionResult> GetMyRoute()
+        [Authorize(Policy = "DriverOnly")]
+        public virtual async Task<IActionResult> GetMyRoute()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -98,7 +99,15 @@ namespace ApexVision.Backend.Controllers
                 return Unauthorized();
             }
 
-            var orders = await _context.Orders
+            var orders = await GetDriverOrdersAsync(userId);
+            return Ok(orders);
+        }
+
+        // Método protegido virtual para facilitar las pruebas
+        protected virtual async Task<List<OrderDto>> GetDriverOrdersAsync(string userId)
+        {
+            return await _context.Orders
+                .Include(o => o.Driver)  // Asegurarse de cargar la relación Driver
                 .Where(o => o.Driver != null && o.Driver.Id.ToString() == userId && o.Status != OrderStatus.Completed)
                 .Select(o => new OrderDto
                 {
@@ -113,12 +122,10 @@ namespace ApexVision.Backend.Controllers
                     EvidenceUrl = o.EvidenceUrl
                 })
                 .ToListAsync();
-
-            return Ok(orders);
         }
         
         [HttpPost("{id}/complete")]
-        [Authorize(Roles = "Driver")]
+        [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> CompleteOrder(int id, IFormFile? file)
         {
             var order = await _context.Orders.FindAsync(id);
@@ -149,14 +156,14 @@ namespace ApexVision.Backend.Controllers
             }
 
             order.Status = OrderStatus.Completed;
-            // In a real app, you'd probably set a completion timestamp here
+            // In a real app, you\'d probably set a completion timestamp here
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Order completed successfully." });
         }
 
         [HttpPost("my-route/optimize")]
-        [Authorize(Roles = "Driver")]
+        [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> OptimizeMyRoute()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
