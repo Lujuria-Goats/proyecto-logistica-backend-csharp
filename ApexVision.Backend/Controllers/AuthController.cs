@@ -120,31 +120,40 @@ namespace ApexVision.Backend.Controllers
 
 
         /// <summary>
-        /// Login de usuario (Admin o Driver) - Acepta email, username o número de teléfono
+        /// Login de usuario (Admin o Driver) - Acepta email, username, teléfono o NIT/documento
         /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             User? user = null;
+            var identifier = loginDto.Identifier?.Trim();
+
+            if (string.IsNullOrEmpty(identifier))
+                return BadRequest(new { message = "El identificador es obligatorio." });
 
             // 1. Buscar por email
-            user = await _userManager.FindByEmailAsync(loginDto.Email);
+            user = await _userManager.FindByEmailAsync(identifier);
             
             // 2. Si no encontró por email, buscar por username
             if (user == null)
-                user = await _userManager.FindByNameAsync(loginDto.Email);
+                user = await _userManager.FindByNameAsync(identifier);
             
             // 3. Si no encontró por username, buscar por número de teléfono
             if (user == null)
             {
-                var users = _userManager.Users.Where(u => u.PhoneNumber == loginDto.Email).ToList();
-                user = users.FirstOrDefault();
+                user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == identifier);
+            }
+
+            // 4. Si no encontró por teléfono, buscar por NIT/documento (para Admin)
+            if (user == null)
+            {
+                user = _userManager.Users.FirstOrDefault(u => u.CompanyNit == identifier);
             }
 
             if (user == null)
             {
-                _logger.LogWarning("Intento de login fallido con identificador: {Identifier}", loginDto.Email);
+                _logger.LogWarning("Intento de login fallido con identificador: {Identifier}", identifier);
                 return Unauthorized(new { message = "Credenciales inválidas." });
             }
 

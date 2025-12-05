@@ -5,10 +5,10 @@ namespace ApexVision.Backend.DTOs.Auth
     public class LoginDto
     {
         /// <summary>
-        /// Email, nombre de usuario o número de teléfono
+        /// Identificador: puede ser email, username, teléfono o NIT/documento
         /// </summary>
-        [Required(ErrorMessage = "El correo electrónico, nombre de usuario o teléfono es obligatorio.")]
-        public required string Email { get; set; }
+        [Required(ErrorMessage = "El identificador es obligatorio (email, usuario, teléfono o documento).")]
+        public required string Identifier { get; set; }
 
         [Required(ErrorMessage = "La contraseña es obligatoria.")]
         public required string Password { get; set; }

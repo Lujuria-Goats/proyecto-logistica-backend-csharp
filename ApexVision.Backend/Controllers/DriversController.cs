@@ -11,7 +11,8 @@ using System.Security.Claims;
 namespace ApexVision.Backend.Controllers
 {
     /// <summary>
-    /// Controlador para que el Admin gestione sus conductores
+    /// Controlador para que el Admin gestione sus conductores vinculados
+    /// Los conductores se registran en la app móvil y el Admin los vincula por teléfono
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
@@ -39,7 +40,7 @@ namespace ApexVision.Backend.Controllers
         }
 
         /// <summary>
-        /// Obtener todos los conductores del Admin
+        /// Obtener todos los conductores vinculados al Admin
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetMyDrivers()
@@ -48,79 +49,77 @@ namespace ApexVision.Backend.Controllers
             if (adminId == 0)
                 return Unauthorized();
 
-            var drivers = await _context.Users
-                .Where(u => u.AdminId == adminId)
-                .Select(d => new DriverResponseDto
+            var linkedDrivers = await _context.AdminDrivers
+                .Where(ad => ad.AdminId == adminId)
+                .Include(ad => ad.Driver)
+                .ThenInclude(d => d.Orders)
+                .Select(ad => new DriverResponseDto
                 {
-                    Id = d.Id,
-                    UserName = d.UserName ?? "",
-                    FullName = d.FullName,
-                    Email = d.Email ?? "",
-                    PhoneNumber = d.PhoneNumber ?? "",
-                    TotalOrders = d.Orders.Count,
-                    PendingOrders = d.Orders.Count(o => o.Status == OrderStatus.Pending)
+                    Id = ad.Driver.Id,
+                    UserName = ad.Driver.UserName ?? "",
+                    FullName = ad.Driver.FullName,
+                    Email = ad.Driver.Email ?? "",
+                    PhoneNumber = ad.Driver.PhoneNumber ?? "",
+                    TotalOrders = ad.Driver.Orders.Count(o => o.AdminId == adminId),
+                    PendingOrders = ad.Driver.Orders.Count(o => o.AdminId == adminId && o.Status == OrderStatus.Pending),
+                    LinkedAt = ad.LinkedAt
                 })
                 .ToListAsync();
 
             return Ok(new
             {
-                totalDrivers = drivers.Count,
-                drivers = drivers
+                totalDrivers = linkedDrivers.Count,
+                drivers = linkedDrivers
             });
         }
 
         /// <summary>
-        /// Agregar un nuevo conductor a la empresa
+        /// Vincular un conductor existente por número de teléfono
+        /// El conductor debe haberse registrado previamente en la app móvil
         /// </summary>
-        [HttpPost]
-        public async Task<IActionResult> AddDriver([FromBody] AddDriverDto dto)
+        [HttpPost("link")]
+        public async Task<IActionResult> LinkDriver([FromBody] LinkDriverDto dto)
         {
             var adminId = GetCurrentAdminId();
             if (adminId == 0)
                 return Unauthorized();
 
-            // Verificar que el admin existe
-            var admin = await _userManager.FindByIdAsync(adminId.ToString());
-            if (admin == null)
-                return Unauthorized();
+            // Buscar el conductor por teléfono
+            var driver = await _context.Users
+                .FirstOrDefaultAsync(u => u.PhoneNumber == dto.PhoneNumber);
 
-            // Verificar username duplicado
-            var existingUser = await _userManager.FindByNameAsync(dto.UserName);
-            if (existingUser != null)
-                return BadRequest(new { message = "El nombre de usuario ya está en uso." });
+            if (driver == null)
+                return NotFound(new { message = "No se encontró un conductor con ese número de teléfono. El conductor debe registrarse primero en la app móvil." });
 
-            // Verificar email duplicado
-            existingUser = await _userManager.FindByEmailAsync(dto.Email);
-            if (existingUser != null)
-                return BadRequest(new { message = "El correo electrónico ya está registrado." });
+            // Verificar que sea un Driver
+            var roles = await _userManager.GetRolesAsync(driver);
+            if (!roles.Contains("Driver"))
+                return BadRequest(new { message = "El usuario encontrado no es un conductor." });
 
-            // Verificar teléfono duplicado
-            var phoneExists = await _context.Users.AnyAsync(u => u.PhoneNumber == dto.PhoneNumber);
-            if (phoneExists)
-                return BadRequest(new { message = "El número de teléfono ya está registrado." });
+            // Verificar si ya está vinculado
+            var alreadyLinked = await _context.AdminDrivers
+                .AnyAsync(ad => ad.AdminId == adminId && ad.DriverId == driver.Id);
 
-            var driver = new User
+            if (alreadyLinked)
+                return BadRequest(new { message = "Este conductor ya está vinculado a tu cuenta." });
+
+            // Crear la vinculación
+            var adminDriver = new AdminDriver
             {
-                UserName = dto.UserName,
-                Email = dto.Email,
-                FullName = dto.FullName,
-                PhoneNumber = dto.PhoneNumber,
-                AdminId = adminId
+                AdminId = adminId,
+                DriverId = driver.Id,
+                LinkedAt = DateTime.UtcNow
             };
 
-            var result = await _userManager.CreateAsync(driver, dto.Password);
+            _context.AdminDrivers.Add(adminDriver);
+            await _context.SaveChangesAsync();
 
-            if (!result.Succeeded)
-                return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
-
-            await _userManager.AddToRoleAsync(driver, "Driver");
-
-            _logger.LogInformation("Admin {AdminId} agregó conductor {DriverId}: {DriverName}", 
-                adminId, driver.Id, driver.FullName);
+            _logger.LogInformation("Admin {AdminId} vinculó al conductor {DriverId} ({Phone})", 
+                adminId, driver.Id, dto.PhoneNumber);
 
             return Ok(new
             {
-                message = "Conductor agregado exitosamente.",
+                message = "Conductor vinculado exitosamente.",
                 driver = new DriverResponseDto
                 {
                     Id = driver.Id,
@@ -129,13 +128,14 @@ namespace ApexVision.Backend.Controllers
                     Email = driver.Email ?? "",
                     PhoneNumber = driver.PhoneNumber ?? "",
                     TotalOrders = 0,
-                    PendingOrders = 0
+                    PendingOrders = 0,
+                    LinkedAt = adminDriver.LinkedAt
                 }
             });
         }
 
         /// <summary>
-        /// Obtener un conductor específico
+        /// Obtener un conductor específico vinculado
         /// </summary>
         [HttpGet("{driverId}")]
         public async Task<IActionResult> GetDriver(int driverId)
@@ -144,114 +144,62 @@ namespace ApexVision.Backend.Controllers
             if (adminId == 0)
                 return Unauthorized();
 
-            var driver = await _context.Users
-                .Where(u => u.Id == driverId && u.AdminId == adminId)
-                .Select(d => new DriverResponseDto
+            var linkedDriver = await _context.AdminDrivers
+                .Where(ad => ad.AdminId == adminId && ad.DriverId == driverId)
+                .Include(ad => ad.Driver)
+                .ThenInclude(d => d.Orders)
+                .Select(ad => new DriverResponseDto
                 {
-                    Id = d.Id,
-                    UserName = d.UserName ?? "",
-                    FullName = d.FullName,
-                    Email = d.Email ?? "",
-                    PhoneNumber = d.PhoneNumber ?? "",
-                    TotalOrders = d.Orders.Count,
-                    PendingOrders = d.Orders.Count(o => o.Status == OrderStatus.Pending)
+                    Id = ad.Driver.Id,
+                    UserName = ad.Driver.UserName ?? "",
+                    FullName = ad.Driver.FullName,
+                    Email = ad.Driver.Email ?? "",
+                    PhoneNumber = ad.Driver.PhoneNumber ?? "",
+                    TotalOrders = ad.Driver.Orders.Count(o => o.AdminId == adminId),
+                    PendingOrders = ad.Driver.Orders.Count(o => o.AdminId == adminId && o.Status == OrderStatus.Pending),
+                    LinkedAt = ad.LinkedAt
                 })
                 .FirstOrDefaultAsync();
 
-            if (driver == null)
-                return NotFound(new { message = "Conductor no encontrado." });
+            if (linkedDriver == null)
+                return NotFound(new { message = "Conductor no encontrado o no está vinculado a tu cuenta." });
 
-            return Ok(driver);
+            return Ok(linkedDriver);
         }
 
         /// <summary>
-        /// Actualizar datos de un conductor
-        /// </summary>
-        [HttpPut("{driverId}")]
-        public async Task<IActionResult> UpdateDriver(int driverId, [FromBody] UpdateDriverDto dto)
-        {
-            var adminId = GetCurrentAdminId();
-            if (adminId == 0)
-                return Unauthorized();
-
-            var driver = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == driverId && u.AdminId == adminId);
-
-            if (driver == null)
-                return NotFound(new { message = "Conductor no encontrado." });
-
-            // Actualizar campos si se proporcionan
-            if (!string.IsNullOrEmpty(dto.FullName))
-                driver.FullName = dto.FullName;
-
-            if (!string.IsNullOrEmpty(dto.PhoneNumber))
-            {
-                var phoneExists = await _context.Users.AnyAsync(u => u.PhoneNumber == dto.PhoneNumber && u.Id != driverId);
-                if (phoneExists)
-                    return BadRequest(new { message = "El número de teléfono ya está registrado." });
-                driver.PhoneNumber = dto.PhoneNumber;
-            }
-
-            if (!string.IsNullOrEmpty(dto.Email))
-            {
-                var emailExists = await _context.Users.AnyAsync(u => u.Email == dto.Email && u.Id != driverId);
-                if (emailExists)
-                    return BadRequest(new { message = "El correo electrónico ya está registrado." });
-                driver.Email = dto.Email;
-            }
-
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Admin {AdminId} actualizó conductor {DriverId}", adminId, driverId);
-
-            return Ok(new
-            {
-                message = "Conductor actualizado exitosamente.",
-                driver = new DriverResponseDto
-                {
-                    Id = driver.Id,
-                    UserName = driver.UserName ?? "",
-                    FullName = driver.FullName,
-                    Email = driver.Email ?? "",
-                    PhoneNumber = driver.PhoneNumber ?? ""
-                }
-            });
-        }
-
-        /// <summary>
-        /// Eliminar un conductor (soft delete - lo desvincula del admin)
+        /// Desvincular un conductor (no lo elimina, solo quita la vinculación)
         /// </summary>
         [HttpDelete("{driverId}")]
-        public async Task<IActionResult> RemoveDriver(int driverId)
+        public async Task<IActionResult> UnlinkDriver(int driverId)
         {
             var adminId = GetCurrentAdminId();
             if (adminId == 0)
                 return Unauthorized();
 
-            var driver = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == driverId && u.AdminId == adminId);
+            var adminDriver = await _context.AdminDrivers
+                .FirstOrDefaultAsync(ad => ad.AdminId == adminId && ad.DriverId == driverId);
 
-            if (driver == null)
-                return NotFound(new { message = "Conductor no encontrado." });
+            if (adminDriver == null)
+                return NotFound(new { message = "Conductor no encontrado o no está vinculado a tu cuenta." });
 
-            // Verificar si tiene pedidos pendientes
+            // Verificar si tiene pedidos pendientes con este admin
             var hasPendingOrders = await _context.Orders
-                .AnyAsync(o => o.DriverId == driverId && o.Status == OrderStatus.Pending);
+                .AnyAsync(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.Pending);
 
             if (hasPendingOrders)
-                return BadRequest(new { message = "No se puede eliminar un conductor con pedidos pendientes." });
+                return BadRequest(new { message = "No se puede desvincular un conductor con pedidos pendientes." });
 
-            // Desvincular el conductor del admin (no eliminar el usuario)
-            driver.AdminId = null;
+            _context.AdminDrivers.Remove(adminDriver);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Admin {AdminId} eliminó conductor {DriverId}", adminId, driverId);
+            _logger.LogInformation("Admin {AdminId} desvinculó al conductor {DriverId}", adminId, driverId);
 
-            return Ok(new { message = "Conductor eliminado exitosamente." });
+            return Ok(new { message = "Conductor desvinculado exitosamente." });
         }
 
         /// <summary>
-        /// Buscar conductor por teléfono
+        /// Buscar conductor por teléfono (para verificar si existe antes de vincular)
         /// </summary>
         [HttpGet("search")]
         public async Task<IActionResult> SearchByPhone([FromQuery] string phone)
@@ -263,41 +211,46 @@ namespace ApexVision.Backend.Controllers
             if (string.IsNullOrWhiteSpace(phone))
                 return BadRequest(new { message = "Debe proporcionar un número de teléfono." });
 
+            // Buscar el conductor por teléfono
             var driver = await _context.Users
-                .Where(u => u.AdminId == adminId && u.PhoneNumber != null && u.PhoneNumber.Contains(phone))
-                .Select(d => new DriverResponseDto
-                {
-                    Id = d.Id,
-                    UserName = d.UserName ?? "",
-                    FullName = d.FullName,
-                    Email = d.Email ?? "",
-                    PhoneNumber = d.PhoneNumber ?? "",
-                    TotalOrders = d.Orders.Count,
-                    PendingOrders = d.Orders.Count(o => o.Status == OrderStatus.Pending)
-                })
-                .ToListAsync();
+                .Where(u => u.PhoneNumber != null && u.PhoneNumber.Contains(phone))
+                .FirstOrDefaultAsync();
+
+            if (driver == null)
+                return NotFound(new { message = "No se encontró un conductor con ese número. Debe registrarse primero en la app móvil." });
+
+            // Verificar que sea un Driver
+            var roles = await _userManager.GetRolesAsync(driver);
+            if (!roles.Contains("Driver"))
+                return NotFound(new { message = "No se encontró un conductor con ese número." });
+
+            // Verificar si ya está vinculado
+            var isLinked = await _context.AdminDrivers
+                .AnyAsync(ad => ad.AdminId == adminId && ad.DriverId == driver.Id);
 
             return Ok(new
             {
-                results = driver.Count,
-                drivers = driver
+                found = true,
+                alreadyLinked = isLinked,
+                driver = new
+                {
+                    id = driver.Id,
+                    fullName = driver.FullName,
+                    phoneNumber = driver.PhoneNumber,
+                    email = driver.Email
+                }
             });
         }
     }
 
     /// <summary>
-    /// DTO para actualizar conductor
+    /// DTO para vincular conductor por teléfono
     /// </summary>
-    public class UpdateDriverDto
+    public class LinkDriverDto
     {
-        [MaxLength(100)]
-        public string? FullName { get; set; }
-
-        [EmailAddress(ErrorMessage = "El formato del correo no es válido.")]
-        public string? Email { get; set; }
-
+        [Required(ErrorMessage = "El número de teléfono es obligatorio.")]
         [RegularExpression(@"^[\d\+\-\(\)\s]{7,}$", ErrorMessage = "Formato de teléfono inválido.")]
-        public string? PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
     }
 }
 

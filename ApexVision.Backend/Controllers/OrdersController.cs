@@ -37,6 +37,10 @@ namespace ApexVision.Backend.Controllers
                 return BadRequest("Coordinates (0,0) are not allowed.");
             }
 
+            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            if (adminId == 0)
+                return Unauthorized();
+
             var order = new Order
             {
                 Description = createOrderDto.Description ?? "No description",
@@ -45,6 +49,8 @@ namespace ApexVision.Backend.Controllers
                 Address = createOrderDto.Address ?? "No address",
                 RequiresEvidence = createOrderDto.RequiresEvidence,
                 Status = OrderStatus.Pending,
+                AdminId = adminId,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Orders.Add(order);

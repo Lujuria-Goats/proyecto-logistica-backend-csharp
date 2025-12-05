@@ -14,6 +14,8 @@ namespace ApexVision.Backend.Data
         public virtual DbSet<Order> Orders { get; set; }
 
         public virtual DbSet<SavedRoute> SavedRoutes { get; set; }
+        
+        public virtual DbSet<AdminDriver> AdminDrivers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +35,21 @@ namespace ApexVision.Backend.Data
                 .HasForeignKey(r => r.DriverId)
                 .OnDelete(DeleteBehavior.Cascade); // If a driver is deleted, their saved routes are deleted
             
+            // Configure AdminDriver (many-to-many between Admin and Driver)
+            modelBuilder.Entity<AdminDriver>()
+                .HasKey(ad => new { ad.AdminId, ad.DriverId });
+            
+            modelBuilder.Entity<AdminDriver>()
+                .HasOne(ad => ad.Admin)
+                .WithMany(u => u.LinkedDrivers)
+                .HasForeignKey(ad => ad.AdminId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<AdminDriver>()
+                .HasOne(ad => ad.Driver)
+                .WithMany(u => u.LinkedToAdmins)
+                .HasForeignKey(ad => ad.DriverId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

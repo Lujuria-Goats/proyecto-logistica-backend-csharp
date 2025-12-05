@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApexVision.Backend.Models
@@ -21,11 +21,21 @@ namespace ApexVision.Backend.Models
 
         public bool RequiresEvidence { get; set; }
 
+        /// <summary>
+        /// ID del Admin que creó el pedido
+        /// </summary>
+        public int AdminId { get; set; }
+        
+        [ForeignKey("AdminId")]
+        public virtual User? Admin { get; set; }
+
         public int? DriverId { get; set; }
 
         [ForeignKey("DriverId")]
         public virtual User? Driver { get; set; }
 
         public string? EvidenceUrl { get; set; }
+        
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

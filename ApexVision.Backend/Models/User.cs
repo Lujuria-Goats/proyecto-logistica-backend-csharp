@@ -22,19 +22,14 @@ namespace ApexVision.Backend.Models
         public string? CompanyName { get; set; }
         
         /// <summary>
-        /// ID del Admin que agregó este conductor (solo para Drivers)
+        /// Admins que han vinculado a este driver (si es Driver)
         /// </summary>
-        public int? AdminId { get; set; }
+        public ICollection<AdminDriver> LinkedToAdmins { get; set; } = new List<AdminDriver>();
         
         /// <summary>
-        /// Admin que gestiona este conductor
+        /// Drivers vinculados a este admin (si es Admin)
         /// </summary>
-        public User? Admin { get; set; }
-        
-        /// <summary>
-        /// Conductores que pertenecen a este Admin
-        /// </summary>
-        public ICollection<User> Drivers { get; set; } = new List<User>();
+        public ICollection<AdminDriver> LinkedDrivers { get; set; } = new List<AdminDriver>();
         
         public ICollection<Order> Orders { get; set; } = new List<Order>();
 
