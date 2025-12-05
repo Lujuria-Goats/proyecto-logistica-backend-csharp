@@ -22,7 +22,8 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(new ConfigurationBuilder()
-        .AddJsonFile("appsettings.Development.json")
+        .AddJsonFile("appsettings.json", optional: true)
+        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
         .Build())
     .Enrich.FromLogContext()
     .WriteTo.Console()
