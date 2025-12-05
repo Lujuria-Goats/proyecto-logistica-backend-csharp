@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApexVision.Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class AddAdminDriversTable : Migration
+    public partial class AddAdminDriversAndOrderChanges : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,8 +27,7 @@ namespace ApexVision.Backend.Migrations
                 name: "AdminId",
                 table: "Orders",
                 type: "integer",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
@@ -77,8 +76,7 @@ namespace ApexVision.Backend.Migrations
                 table: "Orders",
                 column: "AdminId",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />

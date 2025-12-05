@@ -52,7 +52,7 @@ namespace ApexVision.Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("AdminId")
+                    b.Property<int?>("AdminId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
@@ -363,9 +363,7 @@ namespace ApexVision.Backend.Migrations
                 {
                     b.HasOne("ApexVision.Backend.Models.User", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AdminId");
 
                     b.HasOne("ApexVision.Backend.Models.User", "Driver")
                         .WithMany("Orders")

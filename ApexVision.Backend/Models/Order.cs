@@ -24,7 +24,7 @@ namespace ApexVision.Backend.Models
         /// <summary>
         /// ID del Admin que creó el pedido
         /// </summary>
-        public int AdminId { get; set; }
+        public int? AdminId { get; set; }
         
         [ForeignKey("AdminId")]
         public virtual User? Admin { get; set; }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ApexVision.Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251205210533_AddAdminDriversTable")]
-    partial class AddAdminDriversTable
+    [Migration("20251205225453_AddAdminDriversAndOrderChanges")]
+    partial class AddAdminDriversAndOrderChanges
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,7 +55,7 @@ namespace ApexVision.Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("AdminId")
+                    b.Property<int?>("AdminId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
@@ -366,9 +366,7 @@ namespace ApexVision.Backend.Migrations
                 {
                     b.HasOne("ApexVision.Backend.Models.User", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AdminId");
 
                     b.HasOne("ApexVision.Backend.Models.User", "Driver")
                         .WithMany("Orders")

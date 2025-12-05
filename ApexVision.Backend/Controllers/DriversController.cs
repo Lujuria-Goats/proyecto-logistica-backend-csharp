@@ -16,7 +16,7 @@ namespace ApexVision.Backend.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class DriversController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -35,7 +35,21 @@ namespace ApexVision.Backend.Controllers
 
         private int GetCurrentAdminId()
         {
+            // Intentar con ClaimTypes.NameIdentifier primero
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            
+            // Si no funciona, intentar con "nameid" (claim corto)
+            if (string.IsNullOrEmpty(userId))
+                userId = User.FindFirst("nameid")?.Value;
+            
+            // Si aún no funciona, intentar con "sub"
+            if (string.IsNullOrEmpty(userId))
+                userId = User.FindFirst("sub")?.Value;
+
+            _logger.LogInformation("GetCurrentAdminId - userId extraído: {UserId}, Claims: {Claims}", 
+                userId ?? "NULL", 
+                string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
+            
             return int.TryParse(userId, out var id) ? id : 0;
         }
 
@@ -183,19 +197,26 @@ namespace ApexVision.Backend.Controllers
             if (adminDriver == null)
                 return NotFound(new { message = "Conductor no encontrado o no está vinculado a tu cuenta." });
 
-            // Verificar si tiene pedidos pendientes con este admin
-            var hasPendingOrders = await _context.Orders
-                .AnyAsync(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.Pending);
+            // Desasignar pedidos pendientes de este conductor con este admin
+            var pendingOrders = await _context.Orders
+                .Where(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.Pending)
+                .ToListAsync();
 
-            if (hasPendingOrders)
-                return BadRequest(new { message = "No se puede desvincular un conductor con pedidos pendientes." });
+            foreach (var order in pendingOrders)
+            {
+                order.DriverId = null;
+            }
 
             _context.AdminDrivers.Remove(adminDriver);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Admin {AdminId} desvinculó al conductor {DriverId}", adminId, driverId);
+            _logger.LogInformation("Admin {AdminId} desvinculó al conductor {DriverId}. Pedidos desasignados: {Count}", 
+                adminId, driverId, pendingOrders.Count);
 
-            return Ok(new { message = "Conductor desvinculado exitosamente." });
+            return Ok(new { 
+                message = "Conductor desvinculado exitosamente.", 
+                unassignedOrders = pendingOrders.Count 
+            });
         }
 
         /// <summary>

@@ -59,10 +59,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidAudience = configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"))),
         ClockSkew = TimeSpan.FromMinutes(30),
-        // Usar ClaimTypes.Role para que funcione con [Authorize(Roles = "...")] 
-        RoleClaimType = ClaimTypes.Role
+        // Usar los claim types completos de Microsoft
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.NameIdentifier
     };
-    // Permitir remapeo de claims para que "role" se mapee a ClaimTypes.Role
+    // Mapear claims de entrada para convertir nombres cortos a URIs
     options.MapInboundClaims = true;
 
     options.Events = new JwtBearerEvents

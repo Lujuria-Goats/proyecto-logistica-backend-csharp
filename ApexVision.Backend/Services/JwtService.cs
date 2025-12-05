@@ -41,8 +41,19 @@ namespace ApexVision.Backend.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+                new Claim("userName", user.UserName ?? string.Empty),
+                new Claim("fullName", user.FullName ?? string.Empty),
+                new Claim("phoneNumber", user.PhoneNumber ?? string.Empty)
             };
+
+            // Agregar claims de empresa para Admin
+            if (!string.IsNullOrEmpty(user.CompanyNit))
+            {
+                claims.Add(new Claim("companyId", user.Id.ToString())); // El ID del admin es el ID de la empresa
+                claims.Add(new Claim("companyNit", user.CompanyNit));
+                claims.Add(new Claim("companyName", user.CompanyName ?? string.Empty));
+            }
 
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -52,6 +63,7 @@ namespace ApexVision.Backend.Services
             }
 
             _logger.LogInformation("Roles being added to JWT for user {UserEmail}: {Roles}", user.Email, string.Join(", ", roles));
+            _logger.LogInformation("CompanyNit in token: {CompanyNit}", user.CompanyNit ?? "N/A");
 
             var expirationMinutes = _configuration.GetValue<double>("Jwt:ExpirationMinutes", 60);
 
