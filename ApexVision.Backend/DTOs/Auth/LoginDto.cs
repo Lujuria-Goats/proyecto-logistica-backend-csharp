@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿﻿using System.ComponentModel.DataAnnotations;
 
 namespace ApexVision.Backend.DTOs.Auth
 {
     public class LoginDto
     {
-        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
-        [EmailAddress(ErrorMessage = "El formato del correo electrónico no es válido.")]
+        /// <summary>
+        /// Email, nombre de usuario o número de teléfono
+        /// </summary>
+        [Required(ErrorMessage = "El correo electrónico, nombre de usuario o teléfono es obligatorio.")]
         public required string Email { get; set; }
 
         [Required(ErrorMessage = "La contraseña es obligatoria.")]

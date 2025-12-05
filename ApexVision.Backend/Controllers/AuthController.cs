@@ -14,69 +14,238 @@ namespace ApexVision.Backend.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly JwtService _jwtService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, JwtService jwtService)
+        public AuthController(
+            UserManager<User> userManager, 
+            SignInManager<User> signInManager, 
+            JwtService jwtService,
+            ILogger<AuthController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtService = jwtService;
+            _logger = logger;
         }
 
-        [HttpPost("register")]
+        /// <summary>
+        /// Registro de Admin (requiere NIT/CC y nombre de empresa)
+        /// </summary>
+        [HttpPost("register/admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterAdminDto dto)
         {
+            // Verificar si ya existe el username
+            var existingUser = await _userManager.FindByNameAsync(dto.UserName);
+            if (existingUser != null)
+                return BadRequest(new { message = "El nombre de usuario ya está en uso." });
+
+            // Verificar si ya existe el email
+            existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null)
+                return BadRequest(new { message = "El correo electrónico ya está registrado." });
+
             var user = new User
             {
-                UserName = registerDto.Email,
-                Email = registerDto.Email,
-                FullName = registerDto.FullName,
-                PhoneNumber = registerDto.PhoneNumber
+                UserName = dto.UserName,
+                Email = dto.Email,
+                FullName = dto.FullName,
+                PhoneNumber = dto.PhoneNumber,
+                CompanyNit = dto.CompanyNit,
+                CompanyName = dto.CompanyName
             };
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
-            }
+                return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
 
-            // Asignar rol basado en lo especificado en el registro
-            // Por defecto es "Driver" si no se especifica otro
-            string roleToAssign = !string.IsNullOrEmpty(registerDto.Role) ? registerDto.Role : "Driver";
+            await _userManager.AddToRoleAsync(user, "Admin");
             
-            // Validar que el rol sea válido (solo Admin o Driver permitidos)
-            if (roleToAssign != "Admin" && roleToAssign != "Driver")
-            {
-                roleToAssign = "Driver"; // Fallback a Driver si rol inválido
-            }
+            _logger.LogInformation("Nuevo Admin registrado: {UserName}, Empresa: {CompanyName}", 
+                dto.UserName, dto.CompanyName);
 
-            await _userManager.AddToRoleAsync(user, roleToAssign);
-
-            return Ok(new { message = "Usuario registrado exitosamente.", role = roleToAssign });
+            return Ok(new 
+            { 
+                message = "Admin registrado exitosamente.",
+                userId = user.Id,
+                userName = user.UserName,
+                role = "Admin",
+                companyName = user.CompanyName
+            });
         }
 
+        /// <summary>
+        /// Registro de Driver (chofer)
+        /// </summary>
+        [HttpPost("register/driver")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterDriver([FromBody] RegisterDriverDto dto)
+        {
+            // Verificar si ya existe el username
+            var existingUser = await _userManager.FindByNameAsync(dto.UserName);
+            if (existingUser != null)
+                return BadRequest(new { message = "El nombre de usuario ya está en uso." });
+
+            // Verificar si ya existe el email
+            existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null)
+                return BadRequest(new { message = "El correo electrónico ya está registrado." });
+
+            var user = new User
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                FullName = dto.FullName,
+                PhoneNumber = dto.PhoneNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+
+            await _userManager.AddToRoleAsync(user, "Driver");
+            
+            _logger.LogInformation("Nuevo Driver registrado: {UserName}", dto.UserName);
+
+            return Ok(new 
+            { 
+                message = "Driver registrado exitosamente.",
+                userId = user.Id,
+                userName = user.UserName,
+                role = "Driver"
+            });
+        }
+
+        /// <summary>
+        /// Registro genérico - El rol se determina por el campo "role" (Admin o Driver)
+        /// </summary>
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            var existingUser = await _userManager.FindByNameAsync(dto.UserName);
+            if (existingUser != null)
+                return BadRequest(new { message = "El nombre de usuario ya está en uso." });
+
+            existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null)
+                return BadRequest(new { message = "El correo electrónico ya está registrado." });
+
+            // Validar rol
+            var role = dto.Role == "Admin" ? "Admin" : "Driver";
+
+            var user = new User
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                FullName = dto.FullName,
+                PhoneNumber = dto.PhoneNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+
+            await _userManager.AddToRoleAsync(user, role);
+            
+            _logger.LogInformation("Nuevo usuario registrado: {UserName}, Rol: {Role}", dto.UserName, role);
+
+            return Ok(new 
+            { 
+                message = "Usuario registrado exitosamente.",
+                userId = user.Id,
+                userName = user.UserName,
+                role
+            });
+        }
+
+        /// <summary>
+        /// Login de usuario (Admin o Driver) - Acepta email, username o número de teléfono
+        /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            User? user = null;
+
+            // 1. Buscar por email
+            user = await _userManager.FindByEmailAsync(loginDto.Email);
+            
+            // 2. Si no encontró por email, buscar por username
+            if (user == null)
+                user = await _userManager.FindByNameAsync(loginDto.Email);
+            
+            // 3. Si no encontró por username, buscar por número de teléfono
+            if (user == null)
+            {
+                var users = _userManager.Users.Where(u => u.PhoneNumber == loginDto.Email).ToList();
+                user = users.FirstOrDefault();
+            }
 
             if (user == null)
             {
-                return Unauthorized("Credenciales inválidas.");
+                _logger.LogWarning("Intento de login fallido con identificador: {Identifier}", loginDto.Email);
+                return Unauthorized(new { message = "Credenciales inválidas." });
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (!result.Succeeded)
             {
-                return Unauthorized("Credenciales inválidas.");
+                _logger.LogWarning("Intento de login fallido para usuario: {UserName}", user.UserName);
+                return Unauthorized(new { message = "Credenciales inválidas." });
             }
 
+            var roles = await _userManager.GetRolesAsync(user);
             var token = await _jwtService.GenerateToken(user);
 
-            return Ok(new { token });
+            _logger.LogInformation("Login exitoso: {UserName}, Rol: {Role}", user.UserName, roles.FirstOrDefault());
+
+            return Ok(new 
+            { 
+                token,
+                userId = user.Id,
+                userName = user.UserName,
+                fullName = user.FullName,
+                email = user.Email,
+                phoneNumber = user.PhoneNumber,
+                role = roles.FirstOrDefault() ?? "Driver",
+                companyName = user.CompanyName,
+                companyNit = user.CompanyNit
+            });
+        }
+
+        /// <summary>
+        /// Obtener información del usuario actual
+        /// </summary>
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new
+            {
+                userId = user.Id,
+                userName = user.UserName,
+                fullName = user.FullName,
+                email = user.Email,
+                phoneNumber = user.PhoneNumber,
+                role = roles.FirstOrDefault() ?? "Driver",
+                companyName = user.CompanyName,
+                companyNit = user.CompanyNit
+            });
         }
     }
 }
