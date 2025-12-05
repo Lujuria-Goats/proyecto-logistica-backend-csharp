@@ -118,49 +118,6 @@ namespace ApexVision.Backend.Controllers
             });
         }
 
-        /// <summary>
-        /// Registro genérico - El rol se determina por el campo "role" (Admin o Driver)
-        /// </summary>
-        [HttpPost("register")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-        {
-            var existingUser = await _userManager.FindByNameAsync(dto.UserName);
-            if (existingUser != null)
-                return BadRequest(new { message = "El nombre de usuario ya está en uso." });
-
-            existingUser = await _userManager.FindByEmailAsync(dto.Email);
-            if (existingUser != null)
-                return BadRequest(new { message = "El correo electrónico ya está registrado." });
-
-            // Validar rol
-            var role = dto.Role == "Admin" ? "Admin" : "Driver";
-
-            var user = new User
-            {
-                UserName = dto.UserName,
-                Email = dto.Email,
-                FullName = dto.FullName,
-                PhoneNumber = dto.PhoneNumber
-            };
-
-            var result = await _userManager.CreateAsync(user, dto.Password);
-
-            if (!result.Succeeded)
-                return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
-
-            await _userManager.AddToRoleAsync(user, role);
-            
-            _logger.LogInformation("Nuevo usuario registrado: {UserName}, Rol: {Role}", dto.UserName, role);
-
-            return Ok(new 
-            { 
-                message = "Usuario registrado exitosamente.",
-                userId = user.Id,
-                userName = user.UserName,
-                role
-            });
-        }
 
         /// <summary>
         /// Login de usuario (Admin o Driver) - Acepta email, username o número de teléfono
