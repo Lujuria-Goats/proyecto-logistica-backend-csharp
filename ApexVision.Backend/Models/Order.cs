@@ -37,5 +37,10 @@ namespace ApexVision.Backend.Models
         public string? EvidenceUrl { get; set; }
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        /// <summary>
+        /// Fecha y hora de entrega del pedido
+        /// </summary>
+        public DateTime? DeliveredAt { get; set; }
     }
 }

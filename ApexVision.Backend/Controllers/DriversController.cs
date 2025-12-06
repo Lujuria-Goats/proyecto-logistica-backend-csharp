@@ -262,6 +262,238 @@ namespace ApexVision.Backend.Controllers
                 }
             });
         }
+
+        /// <summary>
+        /// Dashboard: Resumen de estadísticas de la empresa
+        /// Rutas activas, pedidos pendientes, conductores, etc.
+        /// </summary>
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboard()
+        {
+            var adminId = GetCurrentAdminId();
+            if (adminId == 0)
+                return Unauthorized();
+
+            // Total de conductores vinculados
+            var totalDrivers = await _context.AdminDrivers
+                .CountAsync(ad => ad.AdminId == adminId);
+
+            // Conductores activos (con pedidos pendientes o en progreso)
+            var activeDrivers = await _context.AdminDrivers
+                .Where(ad => ad.AdminId == adminId)
+                .Where(ad => ad.Driver.Orders.Any(o => 
+                    o.AdminId == adminId && 
+                    (o.Status == OrderStatus.Pending || o.Status == OrderStatus.InTransit)))
+                .CountAsync();
+
+            // Total de pedidos por estado
+            var ordersByStatus = await _context.Orders
+                .Where(o => o.AdminId == adminId)
+                .GroupBy(o => o.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                .ToListAsync();
+
+            var totalOrders = ordersByStatus.Sum(o => o.Count);
+            var pendingOrders = ordersByStatus.FirstOrDefault(o => o.Status == "Pending")?.Count ?? 0;
+            var inTransitOrders = ordersByStatus.FirstOrDefault(o => o.Status == "InTransit")?.Count ?? 0;
+            var deliveredOrders = ordersByStatus.FirstOrDefault(o => o.Status == "Delivered")?.Count ?? 0;
+
+            // Rutas guardadas activas
+            var activeRoutes = await _context.SavedRoutes
+                .Where(r => r.IsActive)
+                .Where(r => _context.AdminDrivers.Any(ad => ad.AdminId == adminId && ad.DriverId == r.DriverId))
+                .CountAsync();
+
+            // Entregas de hoy
+            var today = DateTime.UtcNow.Date;
+            var deliveriesToday = await _context.Orders
+                .Where(o => o.AdminId == adminId && o.Status == OrderStatus.Delivered)
+                .Where(o => o.DeliveredAt != null && o.DeliveredAt.Value.Date == today)
+                .CountAsync();
+
+            return Ok(new
+            {
+                totalDrivers,
+                activeDrivers,
+                totalOrders,
+                pendingOrders,
+                inTransitOrders,
+                deliveredOrders,
+                activeRoutes,
+                deliveriesToday,
+                ordersByStatus
+            });
+        }
+
+        /// <summary>
+        /// Obtener actividades recientes de los conductores vinculados
+        /// (entregas, asignaciones, rutas completadas, etc.)
+        /// </summary>
+        [HttpGet("activities")]
+        public async Task<IActionResult> GetRecentActivities([FromQuery] int limit = 20)
+        {
+            var adminId = GetCurrentAdminId();
+            if (adminId == 0)
+                return Unauthorized();
+
+            // Obtener IDs de conductores vinculados
+            var linkedDriverIds = await _context.AdminDrivers
+                .Where(ad => ad.AdminId == adminId)
+                .Select(ad => ad.DriverId)
+                .ToListAsync();
+
+            // Actividades: Pedidos entregados recientemente
+            var recentDeliveries = await _context.Orders
+                .Where(o => o.AdminId == adminId && o.Status == OrderStatus.Delivered && o.DriverId != null)
+                .OrderByDescending(o => o.DeliveredAt)
+                .Take(limit)
+                .Select(o => new ActivityDto
+                {
+                    Id = o.Id,
+                    Type = "delivery",
+                    Description = $"Pedido entregado en {o.Address}",
+                    DriverId = o.DriverId,
+                    DriverName = o.Driver != null ? o.Driver.FullName : "Desconocido",
+                    Timestamp = o.DeliveredAt ?? o.CreatedAt,
+                    Details = new { orderId = o.Id, address = o.Address }
+                })
+                .ToListAsync();
+
+            // Actividades: Pedidos asignados recientemente (creados hoy)
+            var recentAssignments = await _context.Orders
+                .Where(o => o.AdminId == adminId && o.DriverId != null && o.Status == OrderStatus.Pending)
+                .OrderByDescending(o => o.CreatedAt)
+                .Take(limit)
+                .Select(o => new ActivityDto
+                {
+                    Id = o.Id,
+                    Type = "assignment",
+                    Description = $"Pedido asignado: {o.Address}",
+                    DriverId = o.DriverId,
+                    DriverName = o.Driver != null ? o.Driver.FullName : "Desconocido",
+                    Timestamp = o.CreatedAt,
+                    Details = new { orderId = o.Id, address = o.Address }
+                })
+                .ToListAsync();
+
+            // Actividades: Rutas guardadas recientemente
+            var recentRoutes = await _context.SavedRoutes
+                .Where(r => linkedDriverIds.Contains(r.DriverId) && r.IsActive)
+                .OrderByDescending(r => r.CreatedDate)
+                .Take(limit)
+                .Select(r => new ActivityDto
+                {
+                    Id = r.Id,
+                    Type = "route_saved",
+                    Description = $"Ruta guardada: {r.RouteName}",
+                    DriverId = r.DriverId,
+                    DriverName = r.Driver != null ? r.Driver.FullName : "Desconocido",
+                    Timestamp = r.CreatedDate,
+                    Details = new { routeId = r.Id, routeName = r.RouteName }
+                })
+                .ToListAsync();
+
+            // Combinar y ordenar todas las actividades
+            var allActivities = recentDeliveries
+                .Concat(recentAssignments)
+                .Concat(recentRoutes)
+                .OrderByDescending(a => a.Timestamp)
+                .Take(limit)
+                .ToList();
+
+            return Ok(new
+            {
+                totalActivities = allActivities.Count,
+                activities = allActivities
+            });
+        }
+
+        /// <summary>
+        /// Obtener estadísticas detalladas de un conductor específico
+        /// </summary>
+        [HttpGet("{driverId}/stats")]
+        public async Task<IActionResult> GetDriverStats(int driverId)
+        {
+            var adminId = GetCurrentAdminId();
+            if (adminId == 0)
+                return Unauthorized();
+
+            // Verificar que el conductor esté vinculado
+            var isLinked = await _context.AdminDrivers
+                .AnyAsync(ad => ad.AdminId == adminId && ad.DriverId == driverId);
+
+            if (!isLinked)
+                return NotFound(new { message = "Conductor no encontrado o no está vinculado a tu cuenta." });
+
+            var driver = await _context.Users.FindAsync(driverId);
+            if (driver == null)
+                return NotFound(new { message = "Conductor no encontrado." });
+
+            // Estadísticas del conductor
+            var totalOrders = await _context.Orders
+                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId);
+
+            var deliveredOrders = await _context.Orders
+                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.Delivered);
+
+            var pendingOrders = await _context.Orders
+                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.Pending);
+
+            var inTransitOrders = await _context.Orders
+                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.InTransit);
+
+            var savedRoutes = await _context.SavedRoutes
+                .CountAsync(r => r.DriverId == driverId && r.IsActive);
+
+            // Entregas de la última semana
+            var lastWeek = DateTime.UtcNow.AddDays(-7);
+            var deliveriesLastWeek = await _context.Orders
+                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && 
+                    o.Status == OrderStatus.Delivered && o.DeliveredAt >= lastWeek);
+
+            // Entregas de hoy
+            var today = DateTime.UtcNow.Date;
+            var deliveriesToday = await _context.Orders
+                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && 
+                    o.Status == OrderStatus.Delivered && o.DeliveredAt != null && o.DeliveredAt.Value.Date == today);
+
+            return Ok(new
+            {
+                driver = new
+                {
+                    id = driver.Id,
+                    fullName = driver.FullName,
+                    userName = driver.UserName,
+                    phoneNumber = driver.PhoneNumber,
+                    email = driver.Email
+                },
+                stats = new
+                {
+                    totalOrders,
+                    deliveredOrders,
+                    pendingOrders,
+                    inTransitOrders,
+                    savedRoutes,
+                    deliveriesLastWeek,
+                    deliveriesToday,
+                    deliveryRate = totalOrders > 0 ? Math.Round((double)deliveredOrders / totalOrders * 100, 2) : 0
+                }
+            });
+        }
+    }
+
+    /// <summary>
+    /// DTO para actividades recientes
+    /// </summary>
+    public class ActivityDto
+    {
+        public int Id { get; set; }
+        public string Type { get; set; } = "";
+        public string Description { get; set; } = "";
+        public int? DriverId { get; set; }
+        public string DriverName { get; set; } = "";
+        public DateTime Timestamp { get; set; }
+        public object? Details { get; set; }
     }
 
     /// <summary>

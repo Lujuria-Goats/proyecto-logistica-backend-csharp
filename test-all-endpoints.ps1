@@ -353,6 +353,57 @@ try {
     $failed++
 }
 
+# ========== DASHBOARD Y ESTADÍSTICAS ==========
+Write-Host ""
+Write-Host "=== DASHBOARD Y ESTADÍSTICAS ===" -ForegroundColor Yellow
+
+# 23. Dashboard
+Write-Host "[23] GET /api/Drivers/dashboard..." -NoNewline
+try {
+    $resp = Invoke-RestMethod -Uri "$api/api/Drivers/dashboard" -Method GET -Headers @{Authorization="Bearer $adminToken"}
+    Write-Host " ✅" -ForegroundColor Green
+    Write-Host "   TotalDrivers: $($resp.totalDrivers), PendingOrders: $($resp.pendingOrders), ActiveRoutes: $($resp.activeRoutes)" -ForegroundColor Gray
+    $passed++
+} catch {
+    Write-Host " ❌ $($_.Exception.Message)" -ForegroundColor Red
+    $failed++
+}
+
+# 24. Actividades recientes
+Write-Host "[24] GET /api/Drivers/activities..." -NoNewline
+try {
+    $resp = Invoke-RestMethod -Uri "$api/api/Drivers/activities?limit=10" -Method GET -Headers @{Authorization="Bearer $adminToken"}
+    Write-Host " ✅" -ForegroundColor Green
+    Write-Host "   TotalActivities: $($resp.totalActivities)" -ForegroundColor Gray
+    $passed++
+} catch {
+    Write-Host " ❌ $($_.Exception.Message)" -ForegroundColor Red
+    $failed++
+}
+
+# Necesitamos re-vincular el driver para probar stats
+Write-Host "[25] POST /api/Drivers/link (re-vincular)..." -NoNewline
+try {
+    $resp = Invoke-RestMethod -Uri "$api/api/Drivers/link" -Method POST -ContentType "application/json" -Headers @{Authorization="Bearer $adminToken"} -Body $linkDto
+    Write-Host " ✅" -ForegroundColor Green
+    $passed++
+} catch {
+    Write-Host " ❌ $($_.Exception.Message)" -ForegroundColor Red
+    $failed++
+}
+
+# 26. Estadísticas de conductor
+Write-Host "[26] GET /api/Drivers/{id}/stats..." -NoNewline
+try {
+    $resp = Invoke-RestMethod -Uri "$api/api/Drivers/$driverId/stats" -Method GET -Headers @{Authorization="Bearer $adminToken"}
+    Write-Host " ✅" -ForegroundColor Green
+    Write-Host "   Driver: $($resp.driver.fullName), TotalOrders: $($resp.stats.totalOrders)" -ForegroundColor Gray
+    $passed++
+} catch {
+    Write-Host " ❌ $($_.Exception.Message)" -ForegroundColor Red
+    $failed++
+}
+
 # ========== RESUMEN ==========
 Write-Host ""
 Write-Host "========== RESUMEN ==========" -ForegroundColor Cyan
