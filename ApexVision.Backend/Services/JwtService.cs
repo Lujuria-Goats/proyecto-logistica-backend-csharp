@@ -4,6 +4,7 @@ using System.Text;
 using ApexVision.Backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace ApexVision.Backend.Services
 {
@@ -56,17 +57,23 @@ namespace ApexVision.Backend.Services
                 claims.Add(new Claim("companyName", user.CompanyName ?? string.Empty));
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
+            // Obtener roles únicos y añadirlos sin duplicados
+            var roles = (await _userManager.GetRolesAsync(user)).Where(r => !string.IsNullOrWhiteSpace(r)).Distinct();
             foreach (var role in roles)
             {
-                // Usar ClaimTypes.Role para que sea el tipo de claim estándar
-                claims.Add(new Claim(ClaimTypes.Role, role));
-                // Añadir también la versión en minúsculas 'role' para compatibilidad con front antiguo
-                claims.Add(new Claim("role", role));
+                // Añadir claim estándar de rol
+                if (!claims.Any(c => c.Type == ClaimTypes.Role && c.Value == role))
+                    claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             _logger.LogInformation("Roles being added to JWT for user {UserEmail}: {Roles}", user.Email, string.Join(", ", roles));
             _logger.LogInformation("CompanyNit in token: {CompanyNit}", user.CompanyNit ?? "N/A");
+
+            // Eliminar duplicados posibles (por seguridad) antes de crear el token
+            claims = claims
+                .GroupBy(c => new { c.Type, c.Value })
+                .Select(g => g.First())
+                .ToList();
 
             var expirationMinutes = _configuration.GetValue<double>("Jwt:ExpirationMinutes", 60);
 
