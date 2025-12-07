@@ -366,7 +366,8 @@ namespace ApexVision.Backend.Migrations
                 {
                     b.HasOne("ApexVision.Backend.Models.User", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId");
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ApexVision.Backend.Models.User", "Driver")
                         .WithMany("Orders")

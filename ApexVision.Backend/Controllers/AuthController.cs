@@ -82,19 +82,27 @@ namespace ApexVision.Backend.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RegisterDriver([FromBody] RegisterDriverDto dto)
         {
-            // Verificar si ya existe el username
-            var existingUser = await _userManager.FindByNameAsync(dto.UserName);
-            if (existingUser != null)
-                return BadRequest(new { message = "El nombre de usuario ya está en uso." });
+            // Verificar si ya existe el username (solo si fue proporcionado)
+            if (!string.IsNullOrWhiteSpace(dto.UserName))
+            {
+                var existingByUserName = await _userManager.FindByNameAsync(dto.UserName);
+                if (existingByUserName != null)
+                    return BadRequest(new { message = "El nombre de usuario ya está en uso." });
+            }
 
             // Verificar si ya existe el email
-            existingUser = await _userManager.FindByEmailAsync(dto.Email);
-            if (existingUser != null)
+            var existingByEmail = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingByEmail != null)
                 return BadRequest(new { message = "El correo electrónico ya está registrado." });
+
+            // Si no se envió username, generar uno a partir del teléfono o email
+            var userNameToUse = !string.IsNullOrWhiteSpace(dto.UserName)
+                ? dto.UserName!
+                : (!string.IsNullOrWhiteSpace(dto.PhoneNumber) ? dto.PhoneNumber! : (dto.Email ?? Guid.NewGuid().ToString()));
 
             var user = new User
             {
-                UserName = dto.UserName,
+                UserName = userNameToUse,
                 Email = dto.Email,
                 FullName = dto.FullName,
                 PhoneNumber = dto.PhoneNumber
@@ -107,7 +115,7 @@ namespace ApexVision.Backend.Controllers
 
             await _userManager.AddToRoleAsync(user, "Driver");
             
-            _logger.LogInformation("Nuevo Driver registrado: {UserName}", dto.UserName);
+            _logger.LogInformation("Nuevo Driver registrado: {UserName}", user.UserName);
 
             return Ok(new 
             { 
@@ -132,23 +140,26 @@ namespace ApexVision.Backend.Controllers
             if (string.IsNullOrEmpty(identifier))
                 return BadRequest(new { message = "El identificador es obligatorio." });
 
+            // A este punto identifier no es nulo ni vacío — crear una versión no nula para pasar a APIs que no aceptan null
+            var id = identifier!;
+            
             // 1. Buscar por email
-            user = await _userManager.FindByEmailAsync(identifier);
+            user = await _userManager.FindByEmailAsync(id);
             
             // 2. Si no encontró por email, buscar por username
             if (user == null)
-                user = await _userManager.FindByNameAsync(identifier);
+                user = await _userManager.FindByNameAsync(id);
             
             // 3. Si no encontró por username, buscar por número de teléfono
             if (user == null)
             {
-                user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == identifier);
+                user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == id);
             }
 
             // 4. Si no encontró por teléfono, buscar por NIT/documento (para Admin)
             if (user == null)
             {
-                user = _userManager.Users.FirstOrDefault(u => u.CompanyNit == identifier);
+                user = _userManager.Users.FirstOrDefault(u => u.CompanyNit == id);
             }
 
             if (user == null)

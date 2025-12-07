@@ -1,4 +1,4 @@
-﻿﻿﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ApexVision.Backend.DTOs.Auth
 {
@@ -7,10 +7,10 @@ namespace ApexVision.Backend.DTOs.Auth
     /// </summary>
     public class RegisterDto
     {
-        [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [MaxLength(50)]
         [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "El nombre de usuario solo puede contener letras, números y guiones bajos.")]
-        public required string UserName { get; set; }
+        // UserName opcional en el DTO base; se validará específicamente en RegisterAdminDto
+        public string? UserName { get; set; }
 
         [Required(ErrorMessage = "El nombre completo es obligatorio.")]
         [MaxLength(100)]
@@ -40,6 +40,11 @@ namespace ApexVision.Backend.DTOs.Auth
     /// </summary>
     public class RegisterAdminDto : RegisterDto
     {
+        [Required(ErrorMessage = "El nombre de usuario es obligatorio para Admin.")]
+        [MaxLength(50)]
+        [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "El nombre de usuario solo puede contener letras, números y guiones bajos.")]
+        public new string UserName { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "El NIT o CC de la empresa es obligatorio.")]
         [MaxLength(20)]
         [RegularExpression(@"^[\d\-]+$", ErrorMessage = "El NIT/CC solo puede contener números y guiones.")]

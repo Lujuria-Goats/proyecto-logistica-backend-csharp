@@ -98,6 +98,10 @@ namespace ApexVision.Backend.Controllers
             if (adminId == 0)
                 return Unauthorized();
 
+            // Validar modelo
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             // Buscar el conductor por teléfono
             var driver = await _context.Users
                 .FirstOrDefaultAsync(u => u.PhoneNumber == dto.PhoneNumber);
@@ -115,7 +119,7 @@ namespace ApexVision.Backend.Controllers
                 .AnyAsync(ad => ad.AdminId == adminId && ad.DriverId == driver.Id);
 
             if (alreadyLinked)
-                return BadRequest(new { message = "Este conductor ya está vinculado a tu cuenta." });
+                return Conflict(new { message = "Este conductor ya está vinculado a tu cuenta." });
 
             // Crear la vinculación
             var adminDriver = new AdminDriver
@@ -495,15 +499,4 @@ namespace ApexVision.Backend.Controllers
         public DateTime Timestamp { get; set; }
         public object? Details { get; set; }
     }
-
-    /// <summary>
-    /// DTO para vincular conductor por teléfono
-    /// </summary>
-    public class LinkDriverDto
-    {
-        [Required(ErrorMessage = "El número de teléfono es obligatorio.")]
-        [RegularExpression(@"^[\d\+\-\(\)\s]{7,}$", ErrorMessage = "Formato de teléfono inválido.")]
-        public required string PhoneNumber { get; set; }
-    }
 }
-

@@ -1,0 +1,25 @@
+BaseUrl: http://localhost:5132
+\n=== LOGIN REQUEST ===\n{
+    "identifier":  "admin@apexvision.com",
+    "password":  "Admin123!"
+}\n
+=== LOGIN RESPONSE OBJECT ===
+{
+    "token":  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwiZW1haWwiOiJhZG1pbkBhcGV4dmlzaW9uLmNvbSIsInVzZXJOYW1lIjoiYWRtaW4iLCJmdWxsTmFtZSI6IkFkbWluIFByaW5jaXBhbCIsInBob25lTnVtYmVyIjoiKzU3MzAwMTIzNDU2NyIsInJvbGUiOlsiQWRtaW4iLCJBZG1pbiJdLCJuYmYiOjE3NjUxMjcwMzksImV4cCI6MTc2NTEzMDYzOSwiaWF0IjoxNzY1MTI3MDM5LCJpc3MiOiJBcGV4VmlzaW9uSXNzdWVyIiwiYXVkIjoiQXBleFZpc2lvbkF1ZGllbmNlIn0.9QFOD2htlJ6O4PvRXBEGs7Si4-xgQlddgTNfyu_rlJ0",
+    "userId":  2,
+    "userName":  "admin",
+    "fullName":  "Admin Principal",
+    "email":  "admin@apexvision.com",
+    "phoneNumber":  "+573001234567",
+    "role":  "Admin",
+    "companyName":  null,
+    "companyNit":  null
+}
+\n=== TOKEN (truncated) ===
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwiZW1
+\n=== LINK REQUEST ===\n{
+    "phoneNumber":  "3001234567"
+}\n
+LINK FAILED: Error en el servidor remoto: (409) Conflicto.
+RESPONSE BODY:
+{"message":"Este conductor ya está vinculado a tu cuenta."}

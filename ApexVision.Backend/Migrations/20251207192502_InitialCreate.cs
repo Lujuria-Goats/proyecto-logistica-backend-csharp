@@ -34,6 +34,8 @@ namespace ApexVision.Backend.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CompanyNit = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    CompanyName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -71,6 +73,31 @@ namespace ApexVision.Backend.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AdminDrivers",
+                columns: table => new
+                {
+                    AdminId = table.Column<int>(type: "integer", nullable: false),
+                    DriverId = table.Column<int>(type: "integer", nullable: false),
+                    LinkedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AdminDrivers", x => new { x.AdminId, x.DriverId });
+                    table.ForeignKey(
+                        name: "FK_AdminDrivers_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AdminDrivers_AspNetUsers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -172,12 +199,21 @@ namespace ApexVision.Backend.Migrations
                     Address = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     RequiresEvidence = table.Column<bool>(type: "boolean", nullable: false),
+                    AdminId = table.Column<int>(type: "integer", nullable: true),
                     DriverId = table.Column<int>(type: "integer", nullable: true),
-                    EvidenceUrl = table.Column<string>(type: "text", nullable: true)
+                    EvidenceUrl = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DeliveredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Orders_AspNetUsers_DriverId",
                         column: x => x.DriverId,
@@ -186,20 +222,35 @@ namespace ApexVision.Backend.Migrations
                         onDelete: ReferentialAction.SetNull);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { 1, null, "Admin", "ADMIN" });
+            migrationBuilder.CreateTable(
+                name: "SavedRoutes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DriverId = table.Column<int>(type: "integer", nullable: false),
+                    RouteName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    OrderIds = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LastUsedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    OptimizationScore = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SavedRoutes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SavedRoutes_AspNetUsers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FullName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, "c584fd7d-98b8-4f02-9f8a-74a0257c62bd", "admin@apexvision.com", true, "Admin User", false, null, "ADMIN@APEXVISION.COM", "ADMIN@APEXVISION.COM", "AQAAAAIAAYagAAAAEHh0UCvVS1e5S8lDAzkRwqqanhx/jGN8UXWo9b5B9r0V7bGXUUZqm2OsRgrCEJQiHQ==", "+1234567890", false, "eab08912-35d9-469b-883e-7c471d4659d6", false, "admin@apexvision.com" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { 1, 1 });
+            migrationBuilder.CreateIndex(
+                name: "IX_AdminDrivers_DriverId",
+                table: "AdminDrivers",
+                column: "DriverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -239,14 +290,27 @@ namespace ApexVision.Backend.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_AdminId",
+                table: "Orders",
+                column: "AdminId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_DriverId",
                 table: "Orders",
+                column: "DriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SavedRoutes_DriverId",
+                table: "SavedRoutes",
                 column: "DriverId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AdminDrivers");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -264,6 +328,9 @@ namespace ApexVision.Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "SavedRoutes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

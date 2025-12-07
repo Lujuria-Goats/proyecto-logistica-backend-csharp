@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ApexVision.Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251205005519_AddCompanyFieldsToUser")]
-    partial class AddCompanyFieldsToUser
+    [Migration("20251207192502_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,24 @@ namespace ApexVision.Backend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ApexVision.Backend.Models.AdminDriver", b =>
+                {
+                    b.Property<int>("AdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LinkedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("AdminId", "DriverId");
+
+                    b.HasIndex("DriverId");
+
+                    b.ToTable("AdminDrivers");
+                });
 
             modelBuilder.Entity("ApexVision.Backend.Models.Order", b =>
                 {
@@ -36,6 +54,15 @@ namespace ApexVision.Backend.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("AdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeliveredAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -60,6 +87,8 @@ namespace ApexVision.Backend.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
 
                     b.HasIndex("DriverId");
 
@@ -317,12 +346,38 @@ namespace ApexVision.Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ApexVision.Backend.Models.AdminDriver", b =>
+                {
+                    b.HasOne("ApexVision.Backend.Models.User", "Admin")
+                        .WithMany("LinkedDrivers")
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ApexVision.Backend.Models.User", "Driver")
+                        .WithMany("LinkedToAdmins")
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Driver");
+                });
+
             modelBuilder.Entity("ApexVision.Backend.Models.Order", b =>
                 {
+                    b.HasOne("ApexVision.Backend.Models.User", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ApexVision.Backend.Models.User", "Driver")
                         .WithMany("Orders")
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Admin");
 
                     b.Navigation("Driver");
                 });
@@ -391,6 +446,10 @@ namespace ApexVision.Backend.Migrations
 
             modelBuilder.Entity("ApexVision.Backend.Models.User", b =>
                 {
+                    b.Navigation("LinkedDrivers");
+
+                    b.Navigation("LinkedToAdmins");
+
                     b.Navigation("Orders");
 
                     b.Navigation("SavedRoutes");

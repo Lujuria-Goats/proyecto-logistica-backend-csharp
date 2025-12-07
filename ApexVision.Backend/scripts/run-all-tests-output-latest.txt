@@ -1,0 +1,833 @@
+BaseUrl: http://localhost:5132 
+
+== 1) Login Admin ==
+Admin token (trunc): eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwiZW1
+\n== 2) Crear pedido ==
+OrderId: 65
+\n== 3) Registrar driver ==
+Driver registered: testdriver56994@test.com / 3001256994
+\n== 4) Login Driver ==
+Driver token (trunc): eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI4OSIsImV
+\n== 5) Asignar pedido ==
+Assign OK
+\n== 6) Guardar ruta (driver) ==
+Save route OK: routeId = 21
+\n== 7) Listar rutas guardadas (driver) ==
+{
+    "phoneNumber":  "3001256994",
+    "totalSavedRoutes":  1,
+    "routes":  [
+                   {
+                       "id":  21,
+                       "routeName":  "Ruta E2E Test",
+                       "orderIds":  [
+                                        65
+                                    ],
+                       "createdDate":  "2025-12-07T17:13:49.73328Z",
+                       "lastUsedDate":  null,
+                       "isActive":  true,
+                       "optimizationScore":  null
+                   }
+               ]
+}
+\n== 8) Cargar ruta guardada ==
+{
+    "message":  "Ruta cargada exitosamente.",
+    "routeName":  "Ruta E2E Test",
+    "phoneNumber":  "3001256994",
+    "totalOrders":  1,
+    "orders":  [
+                   {
+                       "id":  65,
+                       "description":  "Prueba E2E",
+                       "latitude":  6.198,
+                       "longitude":  -75.578,
+                       "address":  "Test Address",
+                       "status":  0,
+                       "requiresEvidence":  false,
+                       "driverId":  89,
+                       "evidenceUrl":  null
+                   }
+               ]
+}
+\n== 9) Rename saved route ==
+{
+    "message":  "Ruta renombrada exitosamente.",
+    "routeId":  21,
+    "newName":  "Ruta E2E Renombrada",
+    "phoneNumber":  "3001256994"
+}
+\n== 10) Delete saved route ==
+{
+    "message":  "Ruta eliminada exitosamente."
+}
+\n== 11) Listar conductores vinculados (admin) ==
+{
+    "totalDrivers":  1,
+    "drivers":  [
+                    {
+                        "id":  6,
+                        "userName":  "testdriver2@test.com",
+                        "fullName":  "TestDriver",
+                        "email":  "testdriver2@test.com",
+                        "phoneNumber":  "3001234567",
+                        "totalOrders":  0,
+                        "pendingOrders":  0,
+                        "linkedAt":  "2025-12-07T17:03:42.367816Z"
+                    }
+                ]
+}
+\n== 12) Buscar conductor por phone (admin) ==
+{
+    "found":  true,
+    "alreadyLinked":  false,
+    "driver":  {
+                   "id":  89,
+                   "fullName":  "Test Driver",
+                   "phoneNumber":  "3001256994",
+                   "email":  "testdriver56994@test.com"
+               }
+}
+\n== 13) Intentar vincular conductor (admin) ==
+{
+    "message":  "Conductor vinculado exitosamente.",
+    "driver":  {
+                   "id":  89,
+                   "userName":  "3001256994",
+                   "fullName":  "Test Driver",
+                   "email":  "testdriver56994@test.com",
+                   "phoneNumber":  "3001256994",
+                   "totalOrders":  0,
+                   "pendingOrders":  0,
+                   "linkedAt":  "2025-12-07T17:13:53.7658821Z"
+               }
+}
+\n== 14) Desvincular conductor (admin) ==
+{
+    "message":  "Conductor desvinculado exitosamente.",
+    "unassignedOrders":  1
+}
+\n== 15) Listar pedidos (admin) ==
+[
+    {
+        "id":  1,
+        "description":  "Test",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Test",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  2,
+        "description":  "Test",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Test",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  3,
+        "description":  "Pedido de Prueba",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Centro Comercial Santafe, Medellin",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  4,
+        "description":  "Pedido de Prueba - Flujo Completo",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Centro Comercial Santafe, Medellin",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  5,
+        "description":  "Pedido de Prueba - Flujo Completo",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Centro Comercial Santafe, Medellin",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  6,
+        "description":  "Pedido de Prueba - Flujo Completo",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Centro Comercial Santafe, Medellin",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  7,
+        "description":  "Pedido de Prueba - Flujo Completo",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Centro Comercial Santafe, Medellin",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  8,
+        "description":  "Test Order",
+        "latitude":  6.2176,
+        "longitude":  -75.5353,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  9,
+        "description":  "Pedido 1",
+        "latitude":  6.21,
+        "longitude":  -75.5,
+        "address":  "Dir 1",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  10,
+        "description":  "Pedido 2",
+        "latitude":  6.22,
+        "longitude":  -75.5,
+        "address":  "Dir 2",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  11,
+        "description":  "P1",
+        "latitude":  6.2,
+        "longitude":  -75.5,
+        "address":  "D1",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  12,
+        "description":  "P2",
+        "latitude":  6.2,
+        "longitude":  -75.5,
+        "address":  "D2",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  13,
+        "description":  "P1",
+        "latitude":  6.2,
+        "longitude":  -75.5,
+        "address":  "D1",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  14,
+        "description":  "P2",
+        "latitude":  6.2,
+        "longitude":  -75.5,
+        "address":  "D2",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  15,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  16,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  17,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  18,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  19,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  20,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  21,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  22,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  23,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  24,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  25,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  26,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  27,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  28,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  29,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  30,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  31,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  9,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  32,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  10,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  33,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  11,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  34,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  12,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  35,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  13,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  36,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  14,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  37,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  15,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  38,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  16,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  39,
+        "description":  "Pedido Test para Ruta",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  17,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  40,
+        "description":  "Test",
+        "latitude":  6.2,
+        "longitude":  -75.5,
+        "address":  "Test",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  41,
+        "description":  "Test",
+        "latitude":  6.2,
+        "longitude":  -75.5,
+        "address":  "Test",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  27,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  42,
+        "description":  "Test",
+        "latitude":  6.2,
+        "longitude":  -75.5,
+        "address":  "Test",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  28,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  43,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test 20251204174045",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  44,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test 20251204174413",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  45,
+        "description":  "Test",
+        "latitude":  6.22,
+        "longitude":  -75.53,
+        "address":  "Test 20251204174549",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  31,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  46,
+        "description":  "Paquete test 20251205175827",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  60,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  47,
+        "description":  "Paquete test 20251205175906",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  62,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  48,
+        "description":  "Paquete test 20251205180233",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  64,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  49,
+        "description":  "Paquete test 20251205180233",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  64,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  50,
+        "description":  "Paquete test 20251205180309714",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  66,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  51,
+        "description":  "Paquete test 20251205180543991",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  68,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  52,
+        "description":  "Paquete test 20251205180557380",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  70,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  53,
+        "description":  "Paquete test 20251205181049941",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  72,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  54,
+        "description":  "Paquete test 20251205181236673",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  55,
+        "description":  "Paquete test 20251205181348527",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  56,
+        "description":  "Paquete test 20251205194710044",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  57,
+        "description":  "Paquete test 20251205194710393",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  58,
+        "description":  "Paquete test 20251205194955830",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  59,
+        "description":  "Paquete test 20251205215243231",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle 50 #30-20, Medellin",
+        "status":  0,
+        "requiresEvidence":  true,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  60,
+        "description":  "Pedido de prueba",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  61,
+        "description":  "Pedido de prueba",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  62,
+        "description":  "Pedido de prueba",
+        "latitude":  6.2442,
+        "longitude":  -75.5812,
+        "address":  "Calle Test 123",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  63,
+        "description":  "Prueba E2E",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  64,
+        "description":  "Prueba E2E",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    },
+    {
+        "id":  65,
+        "description":  "Prueba E2E",
+        "latitude":  6.198,
+        "longitude":  -75.578,
+        "address":  "Test Address",
+        "status":  0,
+        "requiresEvidence":  false,
+        "driverId":  null,
+        "evidenceUrl":  null
+    }
+]
+\n== 16) Driver -> GET my-route ==
+\n== 17) Driver -> Optimize my route ==
+{
+    "message":  "Route optimization initiated."
+}
+\n=== TEST SUITE COMPLETED ===

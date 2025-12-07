@@ -21,21 +21,28 @@ namespace ApexVision.Backend.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure the relationship between User (Driver) and Order
+            // Relación Driver -> Pedidos
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Orders)
                 .WithOne(o => o.Driver)
                 .HasForeignKey(o => o.DriverId)
-                .OnDelete(DeleteBehavior.SetNull); // If a driver is deleted, the order's DriverId is set to null
+                .OnDelete(DeleteBehavior.SetNull); // Si se elimina un conductor, el DriverId del pedido se establece en null
 
-            // Configure the relationship between User (Driver) and SavedRoute
+            // Relación Admin -> Pedidos (FALTABA)
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Admin)
+                .WithMany() // O .WithMany(u => u.OrdersCreated) si tienes esa propiedad en User
+                .HasForeignKey(o => o.AdminId)
+                .OnDelete(DeleteBehavior.Restrict); // Para no borrar historial si se borra el admin
+
+            // Relación Driver -> SavedRoute
             modelBuilder.Entity<User>()
                 .HasMany(u => u.SavedRoutes)
                 .WithOne(r => r.Driver)
                 .HasForeignKey(r => r.DriverId)
-                .OnDelete(DeleteBehavior.Cascade); // If a driver is deleted, their saved routes are deleted
+                .OnDelete(DeleteBehavior.Cascade); // Si se elimina un conductor, sus rutas guardadas se eliminan
             
-            // Configure AdminDriver (many-to-many between Admin and Driver)
+            // Relación AdminDriver (muchos a muchos)
             modelBuilder.Entity<AdminDriver>()
                 .HasKey(ad => new { ad.AdminId, ad.DriverId });
             

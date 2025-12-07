@@ -50,7 +50,8 @@ namespace ApexVision.Backend.Services
             // Agregar claims de empresa para Admin
             if (!string.IsNullOrEmpty(user.CompanyNit))
             {
-                claims.Add(new Claim("companyId", user.Id.ToString())); // El ID del admin es el ID de la empresa
+                // CompanyId: si el usuario tiene company info, añadir companyId (usar Admin's Id como empresa id por ahora)
+                claims.Add(new Claim("companyId", user.Id.ToString())); // El ID del admin se utiliza como CompanyId
                 claims.Add(new Claim("companyNit", user.CompanyNit));
                 claims.Add(new Claim("companyName", user.CompanyName ?? string.Empty));
             }
@@ -60,6 +61,8 @@ namespace ApexVision.Backend.Services
             {
                 // Usar ClaimTypes.Role para que sea el tipo de claim estándar
                 claims.Add(new Claim(ClaimTypes.Role, role));
+                // Añadir también la versión en minúsculas 'role' para compatibilidad con front antiguo
+                claims.Add(new Claim("role", role));
             }
 
             _logger.LogInformation("Roles being added to JWT for user {UserEmail}: {Roles}", user.Email, string.Join(", ", roles));

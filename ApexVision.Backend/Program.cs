@@ -235,7 +235,13 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddControllers();
+// Configurar serialización JSON: aceptar camelCase o PascalCase, y devolver camelCase
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
