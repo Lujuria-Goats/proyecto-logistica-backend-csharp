@@ -481,5 +481,39 @@ new Order
             result.Should().BeOfType<BadRequestObjectResult>()
                 .Which.Value.Should().Be("Coordinates (0,0) are not allowed.");
         }
+
+        [Fact]
+        public async Task UnassignDriver_WithAssignedOrder_ReturnsOk()
+        {
+            // Arrange
+            var orderId = 2; // Este pedido tiene DriverId asignado en los datos de prueba
+
+            // Act
+            var result = await _controller.UnassignDriver(orderId);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.StatusCode.Should().Be(200);
+            okResult.Value.Should().NotBeNull();
+            var value = okResult.Value as dynamic;
+            string message = value?.GetType().GetProperty("message")?.GetValue(value)?.ToString();
+            message.Should().Be("Driver unassigned successfully.");
+            _testOrders.First(o => o.Id == orderId).DriverId.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task UnassignDriver_WithUnassignedOrder_ReturnsBadRequest()
+        {
+            // Arrange
+            var orderId = 1; // Este pedido no tiene DriverId asignado
+
+            // Act
+            var result = await _controller.UnassignDriver(orderId);
+
+            // Assert
+            var badRequestResult = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+            badRequestResult.StatusCode.Should().Be(400);
+            badRequestResult.Value.Should().Be("Order is not assigned to any driver.");
+        }
     }
 }

@@ -75,6 +75,24 @@ namespace ApexVision.Backend.Controllers
             return Ok(new { message = "Driver assigned successfully." });
         }
 
+        [HttpPut("{id}/unassign-driver")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UnassignDriver(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+            {
+                return NotFound("Order not found.");
+            }
+            if (order.DriverId == null)
+            {
+                return BadRequest("Order is not assigned to any driver.");
+            }
+            order.DriverId = null;
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Driver unassigned successfully." });
+        }
+
         [HttpGet]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetAllOrders()
