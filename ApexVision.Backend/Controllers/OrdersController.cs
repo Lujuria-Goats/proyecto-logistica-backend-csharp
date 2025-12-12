@@ -175,7 +175,7 @@ namespace ApexVision.Backend.Controllers
                 var isValid = await _aiValidationService.ValidateDeliveryEvidenceAsync(order.EvidenceUrl);
                 if (!isValid)
                 {
-                    return BadRequest("Invalid evidence. The image does not seem to be a valid delivery evidence.");
+                    return BadRequest("La foto no parece mostrar un paquete o entrega. Por favor, toma una foto clara del paquete.");
                 }
             }
 

@@ -200,7 +200,25 @@ else
 
 // Configure Azure AI Vision (Análisis de fotos con IA)
 builder.Services.AddScoped<IImageAnalysisService, AzureImageAnalysisService>();
-builder.Services.Configure<ApexVision.Backend.DTOs.AzureVisionSettings>(builder.Configuration.GetSection("AzureVisionSettings"));
+
+// Configuración manual para soportar variables de entorno personalizadas (AZURE_VISION_ENDPOINT)
+// y mantener compatibilidad con appsettings.json
+builder.Services.Configure<ApexVision.Backend.DTOs.AzureVisionSettings>(settings =>
+{
+    // 1. Cargar desde appsettings (AzureVision)
+    // Nota: Cambié el nombre de sección recomendada a "AzureVision" en pasos anteriores, pero el código original usaba "AzureVisionSettings".
+    // Voy a soportar ambos para seguridad o usar el nuevo.
+    // El paso anterior añadió "AzureVision" a appsettings.json.
+    configuration.GetSection("AzureVision").Bind(settings);
+    
+    // 2. Sobrescribir con variables de entorno específicas si existen (estilo Docker del usuario)
+    var envEndpoint = configuration["AZURE_VISION_ENDPOINT"];
+    var envKey = configuration["AZURE_VISION_KEY"];
+    
+    if (!string.IsNullOrEmpty(envEndpoint)) settings.Endpoint = envEndpoint;
+    if (!string.IsNullOrEmpty(envKey)) settings.Key = envKey;
+});
+
 builder.Services.AddScoped<IAiValidationService, AiValidationService>();
 
 // Configure Optimization Service (Optimización de rutas con Java backend)
