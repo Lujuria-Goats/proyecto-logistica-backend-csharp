@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace ApexVision.Backend.Controllers
 {
@@ -14,50 +13,71 @@ namespace ApexVision.Backend.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _javaBaseUrl;
+        private readonly ILogger<OptimizerController> _logger;
 
-        public OptimizerController(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public OptimizerController(IHttpClientFactory httpClientFactory, IConfiguration config, ILogger<OptimizerController> logger)
         {
             _httpClientFactory = httpClientFactory;
-            _javaBaseUrl = config["JavaOptimizationApi:BaseUrl"]?.TrimEnd('/') ?? "http://apex_java:8080";
+            _logger = logger;
+
+            // Leer desde configuración la URL base del servicio Java. Evitar doble slash al final.
+            var configured = config["JavaOptimizationApi:BaseUrl"]?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(configured))
+            {
+                // Valor por defecto apunta al nombre del servicio en docker-compose y al puerto del contenedor Java
+                configured = "http://apex_java:8080";
+            }
+
+            // Normalizar: remover slash final si existe
+            _javaBaseUrl = configured.TrimEnd('/');
         }
 
         [HttpPost("optimize")]
         public async Task<IActionResult> Optimize()
         {
             var client = _httpClientFactory.CreateClient();
-            var targetUrl = $"{_javaBaseUrl}/api/v1/optimize";
+            var targetUrl = $"{_javaBaseUrl}/api/v1/optimize"; // Siempre apuntamos al path de optimización en Java
 
-            // Enable buffering so we can read the request body and then rewind it to forward it
-            Request.EnableBuffering();
+            _logger.LogInformation("Forwarding optimize request to {TargetUrl}", targetUrl);
 
-            using var memoryStream = new MemoryStream();
-            await Request.Body.CopyToAsync(memoryStream);
-            memoryStream.Position = 0;
-
-            // Reset original request body position in case other middleware needs it
-            Request.Body.Position = 0;
+            // Copiar el body a un MemoryStream para asegurar que el contenido se puede leer y reenviar.
+            using var ms = new MemoryStream();
+            await Request.Body.CopyToAsync(ms);
+            ms.Position = 0;
 
             using var forwardRequest = new HttpRequestMessage(HttpMethod.Post, targetUrl)
             {
-                Content = new StreamContent(memoryStream)
+                Content = new StreamContent(ms)
             };
 
             if (!string.IsNullOrEmpty(Request.ContentType))
-                forwardRequest.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(Request.ContentType);
-
-            // Forward headers from the original request, excluding Host and Content-Length
-            foreach (var header in Request.Headers.Where(h => !string.Equals(h.Key, "Host", System.StringComparison.OrdinalIgnoreCase)
-                                                               && !string.Equals(h.Key, "Content-Length", System.StringComparison.OrdinalIgnoreCase)))
             {
-                // Try add to request headers first, otherwise to content headers
-                if (!forwardRequest.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray()))
+                try
                 {
-                    forwardRequest.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                    forwardRequest.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(Request.ContentType);
+                }
+                catch
+                {
+                    // Si el Content-Type viene con parámetros inesperados, lo ignoramos para no romper el reenvío
+                    _logger.LogWarning("Failed to set forwarded Content-Type header to '{ContentType}'", Request.ContentType);
                 }
             }
 
-            var resp = await client.SendAsync(forwardRequest, HttpCompletionOption.ResponseHeadersRead);
+            HttpResponseMessage resp;
+            try
+            {
+                resp = await client.SendAsync(forwardRequest);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Error forwarding request to Java optimizer at {TargetUrl}", targetUrl);
+                return StatusCode(500, new { message = "Internal server error.", details = ex.Message });
+            }
+
             var content = await resp.Content.ReadAsStringAsync();
+
+            _logger.LogInformation("Received {StatusCode} from Java optimizer", resp.StatusCode);
 
             return new ContentResult
             {
