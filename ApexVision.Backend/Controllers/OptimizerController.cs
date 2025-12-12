@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace ApexVision.Backend.Controllers
 {
@@ -24,24 +25,22 @@ namespace ApexVision.Backend.Controllers
             var client = _httpClientFactory.CreateClient();
             var targetUrl = $"{_javaBaseUrl}/api/v1/optimize";
 
-            using var forwardRequest = new HttpRequestMessage(HttpMethod.Post, targetUrl)
-            {
-                Content = new StreamContent(Request.Body)
-            };
+            // Leer el body como string
+            using var reader = new StreamReader(Request.Body);
+            var body = await reader.ReadToEndAsync();
 
-            if (!string.IsNullOrEmpty(Request.ContentType))
-                forwardRequest.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(Request.ContentType);
+            // Crear el contenido para reenviar
+            var content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
 
-            var resp = await client.SendAsync(forwardRequest);
-            var content = await resp.Content.ReadAsStringAsync();
+            var resp = await client.PostAsync(targetUrl, content);
+            var respContent = await resp.Content.ReadAsStringAsync();
 
             return new ContentResult
             {
-                Content = content,
+                Content = respContent,
                 ContentType = resp.Content.Headers.ContentType?.ToString() ?? "application/json",
                 StatusCode = (int)resp.StatusCode
             };
         }
     }
 }
-
