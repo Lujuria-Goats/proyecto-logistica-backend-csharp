@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace ApexVision.Backend.Controllers
 {
@@ -25,19 +27,41 @@ namespace ApexVision.Backend.Controllers
             var client = _httpClientFactory.CreateClient();
             var targetUrl = $"{_javaBaseUrl}/api/v1/optimize";
 
-            // Leer el body como string
-            using var reader = new StreamReader(Request.Body);
-            var body = await reader.ReadToEndAsync();
+            // Enable buffering so we can read the request body and then rewind it to forward it
+            Request.EnableBuffering();
 
-            // Crear el contenido para reenviar
-            var content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+            using var memoryStream = new MemoryStream();
+            await Request.Body.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
 
-            var resp = await client.PostAsync(targetUrl, content);
-            var respContent = await resp.Content.ReadAsStringAsync();
+            // Reset original request body position in case other middleware needs it
+            Request.Body.Position = 0;
+
+            using var forwardRequest = new HttpRequestMessage(HttpMethod.Post, targetUrl)
+            {
+                Content = new StreamContent(memoryStream)
+            };
+
+            if (!string.IsNullOrEmpty(Request.ContentType))
+                forwardRequest.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(Request.ContentType);
+
+            // Forward headers from the original request, excluding Host and Content-Length
+            foreach (var header in Request.Headers.Where(h => !string.Equals(h.Key, "Host", System.StringComparison.OrdinalIgnoreCase)
+                                                               && !string.Equals(h.Key, "Content-Length", System.StringComparison.OrdinalIgnoreCase)))
+            {
+                // Try add to request headers first, otherwise to content headers
+                if (!forwardRequest.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray()))
+                {
+                    forwardRequest.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                }
+            }
+
+            var resp = await client.SendAsync(forwardRequest, HttpCompletionOption.ResponseHeadersRead);
+            var content = await resp.Content.ReadAsStringAsync();
 
             return new ContentResult
             {
-                Content = respContent,
+                Content = content,
                 ContentType = resp.Content.Headers.ContentType?.ToString() ?? "application/json",
                 StatusCode = (int)resp.StatusCode
             };
