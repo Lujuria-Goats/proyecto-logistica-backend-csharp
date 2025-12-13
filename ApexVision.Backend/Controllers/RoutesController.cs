@@ -37,25 +37,29 @@ namespace ApexVision.Backend.Controllers
         [Authorize(Roles = "Admin,Driver")]
         public async Task<IActionResult> SaveCurrentRoute([FromBody] SaveRouteDto saveRouteDto)
         {
-            User? driver;
+            User? targetUser;
 
             if (User.IsInRole("Admin"))
             {
-                if (saveRouteDto.DriverId == null)
-                    return BadRequest("El administrador debe especificar el ID del conductor (DriverId).");
-
-                driver = await _userManager.FindByIdAsync(saveRouteDto.DriverId.Value.ToString());
-                if (driver == null)
-                    return NotFound($"No se encontró el conductor con ID {saveRouteDto.DriverId}.");
-
-                // Opcional: Verificar que el usuario destino sea realmente un Driver
-                if (!await _userManager.IsInRoleAsync(driver, "Driver"))
-                    return BadRequest("El usuario especificado no tiene el rol de conductor.");
+                if (saveRouteDto.DriverId.HasValue)
+                {
+                    // Opción Legacy/Directa: Admin guarda directamente para un conductor
+                    targetUser = await _userManager.FindByIdAsync(saveRouteDto.DriverId.Value.ToString());
+                    if (targetUser == null)
+                        return NotFound($"No se encontró el conductor con ID {saveRouteDto.DriverId}.");
+                }
+                else
+                {
+                    // Nueva Opción: Admin guarda para sí mismo (staging)
+                    var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    targetUser = await _userManager.FindByIdAsync(adminId);
+                }
             }
             else
             {
-                driver = await GetCurrentDriverAsync();
-                if (driver == null)
+                // Es Driver
+                targetUser = await GetCurrentDriverAsync();
+                if (targetUser == null)
                     return Unauthorized("No se pudo identificar al conductor.");
             }
 
@@ -63,8 +67,15 @@ namespace ApexVision.Backend.Controllers
                 return BadRequest("Debe incluir al menos un pedido en la ruta.");
 
             var orders = await _context.Orders
-                .Where(o => saveRouteDto.OrderIds.Contains(o.Id) && o.DriverId == driver.Id)
+                .Where(o => saveRouteDto.OrderIds.Contains(o.Id)) // Permitir guardar cualquier orden si eres Admin
                 .ToListAsync();
+
+            // Si es Driver, validar que las órdenes le pertenezcan
+            if (User.IsInRole("Driver"))
+            {
+                if (orders.Any(o => o.DriverId != targetUser.Id))
+                    return BadRequest("Algunos pedidos no pertenecen a este conductor.");
+            }
 
             if (orders.Count != saveRouteDto.OrderIds.Count)
                 return BadRequest("Algunos pedidos no existen o no pertenecen a este conductor.");
@@ -73,7 +84,7 @@ namespace ApexVision.Backend.Controllers
 
             var savedRoute = new SavedRoute
             {
-                DriverId = driver.Id,
+                DriverId = targetUser.Id,
                 RouteName = saveRouteDto.RouteName,
                 OrderIds = orderIdsJson,
                 CreatedDate = DateTime.UtcNow,
@@ -83,8 +94,8 @@ namespace ApexVision.Backend.Controllers
             _context.SavedRoutes.Add(savedRoute);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Ruta '{RouteName}' guardada para conductor {DriverId}", 
-                saveRouteDto.RouteName, driver.Id);
+            _logger.LogInformation("Ruta '{RouteName}' guardada para usuario {UserId}", 
+                saveRouteDto.RouteName, targetUser.Id);
 
             return Ok(new 
             { 
@@ -92,7 +103,7 @@ namespace ApexVision.Backend.Controllers
                 routeId = savedRoute.Id,
                 routeName = savedRoute.RouteName,
                 orderCount = saveRouteDto.OrderIds.Count,
-                phoneNumber = driver.PhoneNumber
+                phoneNumber = targetUser.PhoneNumber
             });
         }
 
@@ -264,6 +275,88 @@ namespace ApexVision.Backend.Controllers
                 routeId = savedRoute.Id,
                 newName = savedRoute.RouteName,
                 phoneNumber = driver.PhoneNumber
+            });
+        }
+
+        [HttpPut("saved/{routeId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateSavedRoute(int routeId, [FromBody] UpdateRouteDto updateDto)
+        {
+            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(adminId)) return Unauthorized();
+
+            var savedRoute = await _context.SavedRoutes
+                .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == int.Parse(adminId));
+
+            if (savedRoute == null)
+                return NotFound("Ruta no encontrada o no pertenece al administrador.");
+
+            // Validar existencia de órdenes
+            var ordersCount = await _context.Orders
+                .CountAsync(o => updateDto.OrderIds.Contains(o.Id));
+            
+            if (ordersCount != updateDto.OrderIds.Count)
+                 return BadRequest("Algunos pedidos no existen.");
+
+            savedRoute.RouteName = updateDto.RouteName;
+            savedRoute.OrderIds = JsonSerializer.Serialize(updateDto.OrderIds);
+            
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Ruta actualizada exitosamente." });
+        }
+
+        [HttpPost("saved/{routeId}/assign")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignSavedRoute(int routeId, [FromBody] AssignRouteDto assignDto)
+        {
+            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(adminId)) return Unauthorized();
+            
+            // 1. Buscar la ruta original (template) del Admin
+            var sourceRoute = await _context.SavedRoutes
+                .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == int.Parse(adminId));
+
+            if (sourceRoute == null)
+                return NotFound("Ruta original no encontrada en tus guardados.");
+
+            // 2. Validar Conductor destino por Teléfono
+            var targetDriver = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == assignDto.DriverPhoneNumber);
+            if (targetDriver == null)
+                return NotFound($"No se encontró ningún conductor con el teléfono {assignDto.DriverPhoneNumber}.");
+            
+            // 3. Crear copia para el conductor
+            var newRoute = new SavedRoute
+            {
+                DriverId = targetDriver.Id,
+                RouteName = sourceRoute.RouteName, // Opcional: Podríamos agregar "(Asignada)"
+                OrderIds = sourceRoute.OrderIds,
+                CreatedDate = DateTime.UtcNow,
+                IsActive = true,
+                OptimizationScore = sourceRoute.OptimizationScore
+            };
+
+            _context.SavedRoutes.Add(newRoute);
+            
+            // 4. Actualizar DriverId de las órdenes asociadas para que el conductor las vea
+            // IMPORTANTE: Al asignar la ruta, ¿debemos mover las órdenes al conductor?
+            // Generalmente SÍ, si el objetivo es que él las entregue.
+            var orderIds = JsonSerializer.Deserialize<List<int>>(sourceRoute.OrderIds) ?? new();
+            var ordersToUpdate = await _context.Orders
+                .Where(o => orderIds.Contains(o.Id))
+                .ToListAsync();
+
+            foreach(var order in ordersToUpdate)
+            {
+                order.DriverId = targetDriver.Id;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new 
+            { 
+                message = $"Ruta asignada exitosamente al conductor {targetDriver.FullName}.",
+                assignedRouteId = newRoute.Id
             });
         }
     }

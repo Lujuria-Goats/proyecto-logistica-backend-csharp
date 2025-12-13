@@ -57,16 +57,28 @@ namespace ApexVision.Backend.Controllers
         /// Obtener todos los conductores vinculados al Admin
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetMyDrivers()
+        public async Task<IActionResult> GetMyDrivers([FromQuery] string? query)
         {
             var adminId = GetCurrentAdminId();
             if (adminId == 0)
                 return Unauthorized();
 
-            var linkedDrivers = await _context.AdminDrivers
+            var driversQuery = _context.AdminDrivers
                 .Where(ad => ad.AdminId == adminId)
                 .Include(ad => ad.Driver)
                 .ThenInclude(d => d.Orders)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                query = query.ToLower();
+                driversQuery = driversQuery.Where(ad => 
+                    ad.Driver.FullName.ToLower().Contains(query) || 
+                    (ad.Driver.PhoneNumber != null && ad.Driver.PhoneNumber.Contains(query)) ||
+                    (ad.Driver.Email != null && ad.Driver.Email.ToLower().Contains(query)));
+            }
+
+            var linkedDrivers = await driversQuery
                 .Select(ad => new DriverResponseDto
                 {
                     Id = ad.Driver.Id,
