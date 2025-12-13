@@ -34,12 +34,30 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpPost("save")]
-        [Authorize(Policy = "DriverOnly")]
+        [Authorize(Roles = "Admin,Driver")]
         public async Task<IActionResult> SaveCurrentRoute([FromBody] SaveRouteDto saveRouteDto)
         {
-            var driver = await GetCurrentDriverAsync();
-            if (driver == null)
-                return Unauthorized("No se pudo identificar al conductor.");
+            User? driver;
+
+            if (User.IsInRole("Admin"))
+            {
+                if (saveRouteDto.DriverId == null)
+                    return BadRequest("El administrador debe especificar el ID del conductor (DriverId).");
+
+                driver = await _userManager.FindByIdAsync(saveRouteDto.DriverId.Value.ToString());
+                if (driver == null)
+                    return NotFound($"No se encontró el conductor con ID {saveRouteDto.DriverId}.");
+
+                // Opcional: Verificar que el usuario destino sea realmente un Driver
+                if (!await _userManager.IsInRoleAsync(driver, "Driver"))
+                    return BadRequest("El usuario especificado no tiene el rol de conductor.");
+            }
+            else
+            {
+                driver = await GetCurrentDriverAsync();
+                if (driver == null)
+                    return Unauthorized("No se pudo identificar al conductor.");
+            }
 
             if (saveRouteDto.OrderIds.Count == 0)
                 return BadRequest("Debe incluir al menos un pedido en la ruta.");

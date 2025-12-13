@@ -10,6 +10,8 @@ namespace ApexVision.Backend.DTOs
 
         [Required(ErrorMessage = "Los IDs de pedidos son obligatorios.")]
         public required List<int> OrderIds { get; set; }
+
+        public int? DriverId { get; set; } // Opcional: Solo para cuando el Admin guarda la ruta para un conductor
     }
 
     public class SavedRouteDto
