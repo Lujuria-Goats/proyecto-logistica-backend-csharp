@@ -168,6 +168,13 @@ builder.Services.AddAuthorization(options =>
         .RequireRole("Driver")
         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
         .Build());
+
+    // Política para Admin O Driver (para endpoints compartidos como Routes/save)
+    options.AddPolicy("AdminOrDriver", new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .RequireRole("Admin", "Driver")
+        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+        .Build());
 });
 
 // --- CONFIGURACIÓN DE CLOUDINARY ROBUSTA ---

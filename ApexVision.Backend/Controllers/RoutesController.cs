@@ -34,7 +34,7 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpPost("save")]
-        [Authorize(Roles = "Admin,Driver")]
+        [Authorize(Policy = "AdminOrDriver")]
         public async Task<IActionResult> SaveCurrentRoute([FromBody] SaveRouteDto saveRouteDto)
         {
             User? targetUser;

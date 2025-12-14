@@ -10,8 +10,13 @@
 
 ✨ **Autenticación Segura**: JWT con roles (Admin, Driver).  
 📍 **Gestión de Pedidos**: Creación, asignación y seguimiento de estados.  
-🛣️ **Rutas Verificadas vs. Simples**: Lógica para requerir o no evidencia fotográfica.  
-🤖 **Validación con IA**: Integración con **Azure Computer Vision** para analizar las fotos de evidencia y asegurar que sean legítimas.  
+🛣️ **Gestión de Rutas Avanzada**: 
+  - **Admins**: Guardar plantillas de rutas, editar renombrar y asignar copias a conductores.
+  - **Drivers**: Guardar y cargar sus propias rutas frecuentes.
+🤖 **Validación con IA Flexible**: 
+  - Integración con **Azure Computer Vision 4.0**.
+  - Validación de evidencia fotográfica con tags configurables ("box", "package", etc.).
+  - Rechazo automático de fotos no válidas.
 ☁️ **Almacenamiento en Nube**: Subida de imágenes a Cloudinary.  
 🚚 **Optimización de Rutas**: Microservicio Java para algoritmos de optimización de rutas.  
 📨 **Mensajería Asíncrona**: RabbitMQ para la comunicación con otros microservicios.  
@@ -40,6 +45,14 @@
 
 Este proyecto está diseñado para ser ejecutado con Docker Compose, lo que simplifica enormemente la configuración del entorno de desarrollo y producción.
 
+### Actualización en Producción (Sin Caché)
+
+Si necesitas desplegar cambios recientes y asegurarte de que se tomen las últimas versiones del código:
+
+```bash
+git pull origin dev && docker-compose build --no-cache && docker-compose up -d
+```
+
 ### 1. Preparación del Servidor (VPS)
 
 Conéctate a tu VPS a través de Termius y ejecuta los siguientes comandos para instalar Docker, Docker Compose y Git.
@@ -55,7 +68,7 @@ sudo apt-get install -y ca-certificates curl gnupg
 
 # Añadir la clave GPG oficial de Docker
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 # Añadir el repositorio a las fuentes de APT
@@ -342,8 +355,8 @@ docker-compose exec apex-backend curl -I http://apex-java:8081/
 | **"apex-java unreachable"** | Servicio tiene otro nombre | Cambiar el nombre del servicio Java en `docker-compose.yml` a `apex-java` y en `Program.cs` si está hardcodeado. |
 | **"JWT Key invalid"** | Keys no coinciden | Verificar `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience` en `docker-compose.yml` y `appsettings.json` |
 | **"Port 8080 already in use"** | Otro proceso usa el puerto | `docker-compose down` o cambiar puerto en compose |
-| **401 Unauthorized en endpoints protegidos** | Orden incorrecto de configuración de autenticación | Asegurarse de que `AddAuthentication(JwtBearerDefaults.AuthenticationScheme)` se llama ANTES de `AddIdentity()` en `Program.cs`. |
-| **`User.IsInRole("Admin")` devuelve FALSE** | Mapeo incorrecto de claims de rol | En `JwtService.cs`, usar `claims.Add(new Claim(ClaimTypes.Role, role));` en lugar de `claims.Add(new Claim("role", role));` |
+| **401 Unauthorized en endpoints protegidos** | Orden incorrecto de configuración de autenticación | Asegurarse de que `AddAuthentication` se llama ANTES de `AddIdentity`. Verificar `JwtSecurityTokenHandler.DefaultInboundClaimTypeMap`. |
+| **`User.IsInRole("Admin")` devuelve FALSE** | Mapeo incorrecto de claims de rol | Comentar `DefaultInboundClaimTypeMap.Clear()` en Program.cs o usar mapeo manual. |
 
 ---
 
@@ -495,6 +508,6 @@ MIT License - Ver LICENSE file para más detalles
 
 ---
 
-**Última actualización:** Diciembre 4, 2025  
-**Versión:** 1.0.0
+**Última actualización:** Diciembre 14, 2025  
+**Versión:** 1.1.0
 
