@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection; // Necesario para GetRequiredSer
 using Microsoft.AspNetCore.Authorization; // Añadido para AuthorizationPolicyBuilder
 
 // Limpiar el mapa de claims predeterminado para evitar remapeos automáticos.
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+// JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
