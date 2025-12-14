@@ -7,7 +7,7 @@ namespace ApexVision.Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")] // Solo administradores pueden acceder a estas funciones de IA
+    [Authorize(Policy = "AdminOnly")] // Solo administradores pueden acceder a estas funciones de IA
     public class ImageAnalysisController : ControllerBase
     {
         private readonly IImageAnalysisService _imageAnalysisService;

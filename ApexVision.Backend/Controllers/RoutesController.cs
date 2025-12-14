@@ -331,7 +331,7 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpPut("saved/{routeId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateSavedRoute(int routeId, [FromBody] UpdateRouteDto updateDto)
         {
             var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -359,7 +359,7 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpPost("saved/{routeId}/assign")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AssignSavedRoute(int routeId, [FromBody] AssignRouteDto assignDto)
         {
             var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
