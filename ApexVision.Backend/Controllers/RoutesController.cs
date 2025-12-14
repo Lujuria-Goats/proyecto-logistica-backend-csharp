@@ -169,18 +169,25 @@ namespace ApexVision.Backend.Controllers
 
             var savedRoutes = await _context.SavedRoutes
                 .Where(r => r.DriverId == driver.Id && r.IsActive)
+                .Include(r => r.AssignedByAdmin)
                 .OrderByDescending(r => r.CreatedDate)
                 .ToListAsync();
 
-            var result = savedRoutes.Select(r => new SavedRouteDto
+            var result = savedRoutes.Select(r => new 
             {
-                Id = r.Id,
-                RouteName = r.RouteName,
-                OrderIds = JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new(),
-                CreatedDate = r.CreatedDate,
-                LastUsedDate = r.LastUsedDate,
-                IsActive = r.IsActive,
-                OptimizationScore = r.OptimizationScore
+                id = r.Id,
+                routeName = r.RouteName,
+                orderIds = JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new(),
+                createdDate = r.CreatedDate,
+                lastUsedDate = r.LastUsedDate,
+                isActive = r.IsActive,
+                optimizationScore = r.OptimizationScore,
+                assignedBy = r.AssignedByAdmin != null ? new 
+                {
+                    id = r.AssignedByAdmin.Id,
+                    fullName = r.AssignedByAdmin.FullName,
+                    companyName = r.AssignedByAdmin.CompanyName
+                } : null
             }).ToList();
 
             return Ok(new 
@@ -381,11 +388,12 @@ namespace ApexVision.Backend.Controllers
             var newRoute = new SavedRoute
             {
                 DriverId = targetDriver.Id,
-                RouteName = sourceRoute.RouteName, // Opcional: Podríamos agregar "(Asignada)"
+                RouteName = sourceRoute.RouteName,
                 OrderIds = sourceRoute.OrderIds,
                 CreatedDate = DateTime.UtcNow,
                 IsActive = true,
-                OptimizationScore = sourceRoute.OptimizationScore
+                OptimizationScore = sourceRoute.OptimizationScore,
+                AssignedByAdminId = int.Parse(adminId) // Guardar quién asignó la ruta
             };
 
             _context.SavedRoutes.Add(newRoute);

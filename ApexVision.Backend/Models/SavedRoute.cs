@@ -27,6 +27,14 @@ namespace ApexVision.Backend.Models
         public bool IsActive { get; set; } = true;
 
         public int? OptimizationScore { get; set; }
+
+        /// <summary>
+        /// ID del Admin que asignó esta ruta al conductor (null si el conductor la creó él mismo)
+        /// </summary>
+        public int? AssignedByAdminId { get; set; }
+
+        [ForeignKey("AssignedByAdminId")]
+        public virtual User? AssignedByAdmin { get; set; }
     }
 }
 
