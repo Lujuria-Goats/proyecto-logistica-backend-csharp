@@ -4,6 +4,7 @@
 
 | Endpoint | Método | ¿Para qué sirve? |
 |----------|--------|------------------|
+| `GET /api/Dashboard/admin-summary` | GET | **Dashboard** - Estadísticas generales y actividad reciente |
 | `GET /api/Routes/all` | GET | **Ver todas las rutas** - Muestra templates propios + rutas asignadas a conductores |
 | `POST /api/Routes/save` | POST | **Crear ruta** - Guarda una nueva ruta (template) con lista de órdenes |
 | `PUT /api/Routes/saved/{id}` | PUT | **Editar ruta** - Cambiar nombre y/u órdenes de una ruta propia |
