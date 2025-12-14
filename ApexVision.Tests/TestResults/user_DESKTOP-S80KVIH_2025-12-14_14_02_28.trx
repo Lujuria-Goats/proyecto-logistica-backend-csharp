@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="5b40c8bd-1d73-414a-9449-20664b343693" name="user@DESKTOP-S80KVIH 2025-12-14 14:02:28" runUser="DESKTOP-S80KVIH\user" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-12-14T14:02:28.2226371-05:00" queuing="2025-12-14T14:02:28.2226375-05:00" start="2025-12-14T14:02:27.4606033-05:00" finish="2025-12-14T14:02:28.8878421-05:00" />
+  <TestSettings name="default" id="d1f1bde3-9ed3-4c3f-a0fe-3af41834e036">
+    <Deployment runDeploymentRoot="user_DESKTOP-S80KVIH_2025-12-14_14_02_28" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="5627178a-bdab-48cb-81e6-286d6f8648ca" testId="e3b6cc28-dc84-661b-4ee6-c38dbcf8609d" testName="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_WithValidData_ReturnsOk" computerName="DESKTOP-S80KVIH" duration="00:00:00.0027748" startTime="2025-12-14T14:02:28.1839181-05:00" endTime="2025-12-14T14:02:28.1839186-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5627178a-bdab-48cb-81e6-286d6f8648ca" />
+    <UnitTestResult executionId="59773499-79a1-4065-9c77-db8f827bfa8b" testId="8175dc45-6ce9-bbce-8ea6-121ddfcf89b3" testName="ApexVision.Tests.Controllers.DriversControllerTests.UnlinkDriver_NotLinked_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0085065" startTime="2025-12-14T14:02:28.6124863-05:00" endTime="2025-12-14T14:02:28.6124867-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="59773499-79a1-4065-9c77-db8f827bfa8b" />
+    <UnitTestResult executionId="e4343593-37ec-4849-8bce-c9d41210074b" testId="bece1384-758c-611c-2ed4-a507e251dfce" testName="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_WithEmptyOrderIds_ReturnsBadRequest" computerName="DESKTOP-S80KVIH" duration="00:00:00.5537605" startTime="2025-12-14T14:02:28.4943499-05:00" endTime="2025-12-14T14:02:28.4943502-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e4343593-37ec-4849-8bce-c9d41210074b" />
+    <UnitTestResult executionId="8b03a383-e679-4059-8f05-766411dad242" testId="46c52e2a-86ec-fa6b-ae36-1e27312c3e06" testName="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_AsAdmin_WithDriverId_SavesForDriver" computerName="DESKTOP-S80KVIH" duration="00:00:00.0078700" startTime="2025-12-14T14:02:28.6732999-05:00" endTime="2025-12-14T14:02:28.6733000-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8b03a383-e679-4059-8f05-766411dad242" />
+    <UnitTestResult executionId="1feadb60-a3f3-4c26-8df6-258057c08889" testId="de61aa44-d2a8-b2cb-0d27-198a395389d2" testName="ApexVision.Tests.Controllers.DriversControllerTests.SearchByPhone_WithInvalidPhone_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0055222" startTime="2025-12-14T14:02:28.6181973-05:00" endTime="2025-12-14T14:02:28.6181977-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1feadb60-a3f3-4c26-8df6-258057c08889" />
+    <UnitTestResult executionId="ed78fa62-f796-4133-addb-3d492ffde028" testId="14410cf5-4d10-795c-332b-75bdee1c307e" testName="ApexVision.Tests.Controllers.RoutesControllerTests.UpdateRoute_AsAdmin_UpdatesSuccessfully" computerName="DESKTOP-S80KVIH" duration="00:00:00.0148041" startTime="2025-12-14T14:02:28.6881280-05:00" endTime="2025-12-14T14:02:28.6881285-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ed78fa62-f796-4133-addb-3d492ffde028" />
+    <UnitTestResult executionId="6fb9a23d-44c4-43ff-9a09-23117a95b831" testId="2fa85447-641a-d4e6-a13d-c7707b199a77" testName="ApexVision.Tests.Controllers.RoutesControllerTests.AssignRoute_WithInvalidPhone_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0021053" startTime="2025-12-14T14:02:28.7399777-05:00" endTime="2025-12-14T14:02:28.7399779-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6fb9a23d-44c4-43ff-9a09-23117a95b831" />
+    <UnitTestResult executionId="47ec9457-dec0-4182-98ca-a123ee9d64d5" testId="e873693a-a385-be08-44c9-b704244b2c51" testName="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_WithInvalidEvidence_ReturnsBadRequest" computerName="DESKTOP-S80KVIH" duration="00:00:00.0055823" startTime="2025-12-14T14:02:28.1796433-05:00" endTime="2025-12-14T14:02:28.1796438-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="47ec9457-dec0-4182-98ca-a123ee9d64d5" />
+    <UnitTestResult executionId="6a33ec21-79ba-4f6a-8a11-1124fa34c6fa" testId="3a51ee76-28ab-9320-715e-f380acc48758" testName="ApexVision.Tests.Controllers.OrdersControllerTests.GetAllOrders_AsAdmin_ReturnsAllOrders" computerName="DESKTOP-S80KVIH" duration="00:00:00.0083456" startTime="2025-12-14T14:02:28.1750700-05:00" endTime="2025-12-14T14:02:28.1750700-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6a33ec21-79ba-4f6a-8a11-1124fa34c6fa" />
+    <UnitTestResult executionId="edf4647c-0dbf-4a12-a2ef-bed36f9a21bd" testId="1a7f9e88-9e90-cfe0-c9e9-136065f5df1d" testName="ApexVision.Tests.Controllers.OrdersControllerTests.OptimizeMyRoute_AsDriver_ReturnsOk" computerName="DESKTOP-S80KVIH" duration="00:00:00.0038205" startTime="2025-12-14T14:02:28.1537405-05:00" endTime="2025-12-14T14:02:28.1537412-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="edf4647c-0dbf-4a12-a2ef-bed36f9a21bd" />
+    <UnitTestResult executionId="1616cbd8-cd10-4a45-bfa1-ec09351b9a86" testId="6fccc227-94aa-c099-823b-f3b64622968e" testName="ApexVision.Tests.Controllers.DriversControllerTests.GetDriverStats_WhenLinked_ReturnsStats" computerName="DESKTOP-S80KVIH" duration="00:00:00.0545020" startTime="2025-12-14T14:02:28.6728218-05:00" endTime="2025-12-14T14:02:28.6728219-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1616cbd8-cd10-4a45-bfa1-ec09351b9a86" />
+    <UnitTestResult executionId="ed6640e6-7d5e-4885-9813-1bcd598bffc6" testId="142119c4-5626-30ba-bef2-73c3011aaacf" testName="ApexVision.Tests.Controllers.DriversControllerTests.GetDriver_WhenLinked_ReturnsDriverInfo" computerName="DESKTOP-S80KVIH" duration="00:00:00.0197996" startTime="2025-12-14T14:02:28.8128100-05:00" endTime="2025-12-14T14:02:28.8128105-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ed6640e6-7d5e-4885-9813-1bcd598bffc6" />
+    <UnitTestResult executionId="3f6d423d-f0e6-4cda-90b6-55e3c03305de" testId="c223a10b-44a4-4b95-652b-0d19bc8cd7fb" testName="ApexVision.Tests.Controllers.DriversControllerTests.LinkDriver_AlreadyLinked_ReturnsConflict" computerName="DESKTOP-S80KVIH" duration="00:00:00.0095922" startTime="2025-12-14T14:02:28.6827233-05:00" endTime="2025-12-14T14:02:28.6827236-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3f6d423d-f0e6-4cda-90b6-55e3c03305de" />
+    <UnitTestResult executionId="5f558247-afdc-4ed2-a41c-34d1d6ca134a" testId="f06fab9a-4ee3-162e-54c0-3e1e39a18e64" testName="ApexVision.Tests.Controllers.OrdersControllerTests.OptimizeMyRoute_ServiceUnavailable_ReturnsServiceUnavailable" computerName="DESKTOP-S80KVIH" duration="00:00:00.0021274" startTime="2025-12-14T14:02:28.1750930-05:00" endTime="2025-12-14T14:02:28.1750930-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5f558247-afdc-4ed2-a41c-34d1d6ca134a" />
+    <UnitTestResult executionId="5a4c86d8-3438-44c9-837c-866c0e9344ec" testId="dfeddeb9-f617-f8de-1ea2-5a24e1cd2f35" testName="ApexVision.Tests.Controllers.AuthControllerTests.Login_WithValidCredentials_ReturnsToken" computerName="DESKTOP-S80KVIH" duration="00:00:00.0010000" startTime="2025-12-14T14:02:28.1068243-05:00" endTime="2025-12-14T14:02:28.1068245-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5a4c86d8-3438-44c9-837c-866c0e9344ec">
+      <Output>
+        <ErrorInfo>
+          <Message>System.ArgumentException : Can not instantiate proxy of class: ApexVision.Backend.Services.JwtService.&#xD;
+Could not find a parameterless constructor. (Parameter 'constructorArguments')&#xD;
+---- System.MissingMethodException : Constructor on type 'Castle.Proxies.JwtServiceProxy' not found.</Message>
+          <StackTrace>   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)&#xD;
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, Object[] constructorArguments, IInterceptor[] interceptors)&#xD;
+   at Moq.CastleProxyFactory.CreateProxy(Type mockType, IInterceptor interceptor, Type[] interfaces, Object[] arguments) in /_/src/Moq/Interception/CastleProxyFactory.cs:line 110&#xD;
+   at Moq.Mock`1.InitializeInstance() in /_/src/Moq/Mock`1.cs:line 502&#xD;
+   at Moq.Mock`1.OnGetObject() in /_/src/Moq/Mock`1.cs:line 516&#xD;
+   at Moq.Mock.get_Object() in /_/src/Moq/Mock.cs:line 180&#xD;
+   at Moq.Mock`1.get_Object() in /_/src/Moq/Mock`1.cs:line 453&#xD;
+   at ApexVision.Tests.Controllers.AuthControllerTests..ctor() in C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\Controllers\AuthControllerTests.cs:line 38&#xD;
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)&#xD;
+----- Inner Stack Trace -----&#xD;
+   at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)&#xD;
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2ef5124d-f7dd-42d4-8636-0465a45a2c27" testId="c2cfec04-ba8c-b973-f448-f546cdefa840" testName="ApexVision.Tests.Controllers.DriversControllerTests.GetDriverStats_WhenNotLinked_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0023457" startTime="2025-12-14T14:02:28.7259518-05:00" endTime="2025-12-14T14:02:28.7259521-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2ef5124d-f7dd-42d4-8636-0465a45a2c27" />
+    <UnitTestResult executionId="b090538b-416e-4c1e-9ea2-f7ed3ab1a30e" testId="2e3609c2-f553-474a-715d-596487c5df6a" testName="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_WithInvalidDriverId_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0028845" startTime="2025-12-14T14:02:28.7220217-05:00" endTime="2025-12-14T14:02:28.7220220-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b090538b-416e-4c1e-9ea2-f7ed3ab1a30e" />
+    <UnitTestResult executionId="6467afc3-bb04-4374-81b6-2d5fab1678fb" testId="94930921-9910-e64e-3408-ce64d40bae9d" testName="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_AsAdmin_WithoutDriverId_SavesForSelf" computerName="DESKTOP-S80KVIH" duration="00:00:00.0064859" startTime="2025-12-14T14:02:28.7190450-05:00" endTime="2025-12-14T14:02:28.7190453-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6467afc3-bb04-4374-81b6-2d5fab1678fb" />
+    <UnitTestResult executionId="c6fc00e1-c29f-427f-893a-6f2aaed4f2e8" testId="bd56b8fe-cfcf-9ae2-e3f7-109de665d65b" testName="ApexVision.Tests.Controllers.RoutesControllerTests.GetSavedRoutes_AsDriver_ReturnsOnlyOwnRoutes" computerName="DESKTOP-S80KVIH" duration="00:00:00.0156155" startTime="2025-12-14T14:02:28.7377698-05:00" endTime="2025-12-14T14:02:28.7377701-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c6fc00e1-c29f-427f-893a-6f2aaed4f2e8" />
+    <UnitTestResult executionId="9046412a-fbbb-406d-afb8-e2274bc9b928" testId="34a45d82-aacd-fa93-2f33-b929bef9c6aa" testName="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_RequiresEvidenceButNoFile_ReturnsBadRequest" computerName="DESKTOP-S80KVIH" duration="00:00:00.0047054" startTime="2025-12-14T14:02:28.1460179-05:00" endTime="2025-12-14T14:02:28.1460180-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9046412a-fbbb-406d-afb8-e2274bc9b928" />
+    <UnitTestResult executionId="db07bbde-adfd-48a4-abc0-d37ca80e51ab" testId="00182c64-57fb-4871-10a5-eb4a62a5b3b0" testName="ApexVision.Tests.Controllers.OrdersControllerTests.UnassignDriver_WithUnassignedOrder_ReturnsBadRequest" computerName="DESKTOP-S80KVIH" duration="00:00:00.0013186" startTime="2025-12-14T14:02:28.1809880-05:00" endTime="2025-12-14T14:02:28.1809883-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="db07bbde-adfd-48a4-abc0-d37ca80e51ab" />
+    <UnitTestResult executionId="9335fe13-5c8f-4761-a7ec-4b988c62873b" testId="684d445e-4e2f-8d13-5740-d8c0bdf4022f" testName="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_AsDriver_SavesForSelf" computerName="DESKTOP-S80KVIH" duration="00:00:00.1708367" startTime="2025-12-14T14:02:28.6653592-05:00" endTime="2025-12-14T14:02:28.6653593-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9335fe13-5c8f-4761-a7ec-4b988c62873b" />
+    <UnitTestResult executionId="4eb0bd64-4b9f-4f32-8df9-e35b8121c4b9" testId="4eea751c-0dfc-4f13-fe5f-b977b00a908f" testName="ApexVision.Tests.Controllers.OrdersControllerTests.GetMyRoute_AsDriver_ReturnsAssignedOrders" computerName="DESKTOP-S80KVIH" duration="00:00:00.0031410" startTime="2025-12-14T14:02:28.1871091-05:00" endTime="2025-12-14T14:02:28.1871093-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4eb0bd64-4b9f-4f32-8df9-e35b8121c4b9" />
+    <UnitTestResult executionId="dc0ae054-962d-4785-8fc4-4b9d73be0b8c" testId="f8ba80f6-5190-e64e-f3ce-81de4193c01d" testName="ApexVision.Tests.Controllers.AuthControllerTests.Login_WithInvalidCredentials_ReturnsUnauthorized" computerName="DESKTOP-S80KVIH" duration="00:00:00.0010000" startTime="2025-12-14T14:02:28.1034900-05:00" endTime="2025-12-14T14:02:28.1035065-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc0ae054-962d-4785-8fc4-4b9d73be0b8c">
+      <Output>
+        <ErrorInfo>
+          <Message>System.ArgumentException : Can not instantiate proxy of class: ApexVision.Backend.Services.JwtService.&#xD;
+Could not find a parameterless constructor. (Parameter 'constructorArguments')&#xD;
+---- System.MissingMethodException : Constructor on type 'Castle.Proxies.JwtServiceProxy' not found.</Message>
+          <StackTrace>   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)&#xD;
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, Object[] constructorArguments, IInterceptor[] interceptors)&#xD;
+   at Moq.CastleProxyFactory.CreateProxy(Type mockType, IInterceptor interceptor, Type[] interfaces, Object[] arguments) in /_/src/Moq/Interception/CastleProxyFactory.cs:line 110&#xD;
+   at Moq.Mock`1.InitializeInstance() in /_/src/Moq/Mock`1.cs:line 502&#xD;
+   at Moq.Mock`1.OnGetObject() in /_/src/Moq/Mock`1.cs:line 516&#xD;
+   at Moq.Mock.get_Object() in /_/src/Moq/Mock.cs:line 180&#xD;
+   at Moq.Mock`1.get_Object() in /_/src/Moq/Mock`1.cs:line 453&#xD;
+   at ApexVision.Tests.Controllers.AuthControllerTests..ctor() in C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\Controllers\AuthControllerTests.cs:line 38&#xD;
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)&#xD;
+----- Inner Stack Trace -----&#xD;
+   at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)&#xD;
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fb69dd5d-ba1d-4466-a631-3b4bffaa9979" testId="be0a746e-ed53-d4aa-23fd-06e9170d277b" testName="ApexVision.Tests.Controllers.OrdersControllerTests.UnassignDriver_WithAssignedOrder_ReturnsOk" computerName="DESKTOP-S80KVIH" duration="00:00:00.1974678" startTime="2025-12-14T14:02:28.1417212-05:00" endTime="2025-12-14T14:02:28.1417217-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fb69dd5d-ba1d-4466-a631-3b4bffaa9979" />
+    <UnitTestResult executionId="611e19d7-f26e-450c-9749-98cf39f26c83" testId="02b049eb-16e2-bb49-9b22-956bf9505da0" testName="ApexVision.Tests.Controllers.DriversControllerTests.LinkDriver_WithValidPhone_LinksSuccessfully" computerName="DESKTOP-S80KVIH" duration="00:00:00.0067994" startTime="2025-12-14T14:02:28.7328661-05:00" endTime="2025-12-14T14:02:28.7328662-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="611e19d7-f26e-450c-9749-98cf39f26c83" />
+    <UnitTestResult executionId="4eab8a86-7a03-4a58-9085-7c79680ed307" testId="86e5ad61-a350-36f0-7e13-b3717db61c98" testName="ApexVision.Tests.Controllers.DriversControllerTests.GetDashboard_ReturnsStats" computerName="DESKTOP-S80KVIH" duration="00:00:00.0598659" startTime="2025-12-14T14:02:28.7929198-05:00" endTime="2025-12-14T14:02:28.7929200-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4eab8a86-7a03-4a58-9085-7c79680ed307" />
+    <UnitTestResult executionId="e10e4162-6095-40ac-bfc8-ce79c9c15922" testId="e62f845a-2ab0-fa01-7245-2a996ffba740" testName="ApexVision.Tests.Controllers.DriversControllerTests.GetDriver_WhenNotLinked_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0027707" startTime="2025-12-14T14:02:28.8156613-05:00" endTime="2025-12-14T14:02:28.8156614-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e10e4162-6095-40ac-bfc8-ce79c9c15922" />
+    <UnitTestResult executionId="c82c55b5-4f93-4fb6-a820-e5f965a0cd87" testId="6b92c236-fa17-d102-bfdb-50172c253e6c" testName="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_WithInvalidOrder_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0033720" startTime="2025-12-14T14:02:28.1749336-05:00" endTime="2025-12-14T14:02:28.1749336-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c82c55b5-4f93-4fb6-a820-e5f965a0cd87" />
+    <UnitTestResult executionId="e021b36f-c28c-4aaa-899d-de3c985b2002" testId="e4d20c80-0029-22c6-209e-f91c9a684f0d" testName="ApexVision.Tests.Controllers.DriversControllerTests.UnlinkDriver_WithLinkedDriver_UnlinksSuccessfully" computerName="DESKTOP-S80KVIH" duration="00:00:00.0138702" startTime="2025-12-14T14:02:28.8313992-05:00" endTime="2025-12-14T14:02:28.8313998-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e021b36f-c28c-4aaa-899d-de3c985b2002" />
+    <UnitTestResult executionId="f017e497-7d2c-4d52-95dd-7a1d2e451315" testId="5a38f0be-cab5-5ef4-2195-8b70c2bde6cf" testName="ApexVision.Tests.Controllers.OrdersControllerTests.CreateOrder_WithInvalidCoordinates_ReturnsBadRequest" computerName="DESKTOP-S80KVIH" duration="00:00:00.0020263" startTime="2025-12-14T14:02:28.1481299-05:00" endTime="2025-12-14T14:02:28.1481300-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f017e497-7d2c-4d52-95dd-7a1d2e451315" />
+    <UnitTestResult executionId="997fcac3-009a-4895-9ab5-33a4d2658245" testId="ad73d77e-9a74-9b5d-d916-012d7899d8db" testName="ApexVision.Tests.Controllers.DriversControllerTests.LinkDriver_WithInvalidPhone_ReturnsNotFound" computerName="DESKTOP-S80KVIH" duration="00:00:00.0016424" startTime="2025-12-14T14:02:28.8173574-05:00" endTime="2025-12-14T14:02:28.8173580-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="997fcac3-009a-4895-9ab5-33a4d2658245" />
+    <UnitTestResult executionId="66d68e37-4dc5-401b-abff-73568af229a7" testId="e2fc9694-fd63-c288-ba0c-341650127d16" testName="ApexVision.Tests.Controllers.OrdersControllerTests.AssignDriver_WithValidData_ReturnsOk" computerName="DESKTOP-S80KVIH" duration="00:00:00.0016896" startTime="2025-12-14T14:02:28.1498697-05:00" endTime="2025-12-14T14:02:28.1498699-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="66d68e37-4dc5-401b-abff-73568af229a7" />
+    <UnitTestResult executionId="e0d3e7b0-7f33-4dc7-8dd5-a341f6e5872c" testId="cba6cacc-15eb-1835-3a0a-64215a1a6206" testName="ApexVision.Tests.Controllers.DriversControllerTests.GetMyDrivers_WithNoLinkedDrivers_ReturnsEmptyList" computerName="DESKTOP-S80KVIH" duration="00:00:00.0409031" startTime="2025-12-14T14:02:28.7234577-05:00" endTime="2025-12-14T14:02:28.7234578-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e0d3e7b0-7f33-4dc7-8dd5-a341f6e5872c" />
+    <UnitTestResult executionId="2583bd27-2a1a-48e1-bfa5-3e6bab5c4c8a" testId="439e0a10-c306-3583-1228-e68813b7c8c4" testName="ApexVision.Tests.Controllers.OrdersControllerTests.CreateOrder_WithValidData_ReturnsOk" computerName="DESKTOP-S80KVIH" duration="00:00:00.0059858" startTime="2025-12-14T14:02:28.1751111-05:00" endTime="2025-12-14T14:02:28.1751112-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2583bd27-2a1a-48e1-bfa5-3e6bab5c4c8a" />
+    <UnitTestResult executionId="8eeb5608-8877-491b-bc07-54ffd34acbf0" testId="2b615860-3f55-3009-89c2-4ebf64e3393f" testName="ApexVision.Tests.Controllers.DriversControllerTests.SearchByPhone_WithValidPhone_ReturnsDriver" computerName="DESKTOP-S80KVIH" duration="00:00:00.6633450" startTime="2025-12-14T14:02:28.6038891-05:00" endTime="2025-12-14T14:02:28.6038894-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8eeb5608-8877-491b-bc07-54ffd34acbf0" />
+    <UnitTestResult executionId="51bb4b30-de33-4aae-94bd-6829542f3f72" testId="2b294d80-1a22-2298-562c-fba87256a58a" testName="ApexVision.Tests.Controllers.RoutesControllerTests.AssignRoute_ClonesRouteToDriver" computerName="DESKTOP-S80KVIH" duration="00:00:00.0242217" startTime="2025-12-14T14:02:28.7125143-05:00" endTime="2025-12-14T14:02:28.7125145-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="51bb4b30-de33-4aae-94bd-6829542f3f72" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_WithValidData_ReturnsOk" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="e3b6cc28-dc84-661b-4ee6-c38dbcf8609d">
+      <Execution id="5627178a-bdab-48cb-81e6-286d6f8648ca" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="CompleteOrder_WithValidData_ReturnsOk" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.UnassignDriver_WithUnassignedOrder_ReturnsBadRequest" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="00182c64-57fb-4871-10a5-eb4a62a5b3b0">
+      <Execution id="db07bbde-adfd-48a4-abc0-d37ca80e51ab" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="UnassignDriver_WithUnassignedOrder_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.AuthControllerTests.Login_WithInvalidCredentials_ReturnsUnauthorized" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="f8ba80f6-5190-e64e-f3ce-81de4193c01d">
+      <Execution id="dc0ae054-962d-4785-8fc4-4b9d73be0b8c" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.AuthControllerTests" name="Login_WithInvalidCredentials_ReturnsUnauthorized" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.GetDriverStats_WhenLinked_ReturnsStats" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="6fccc227-94aa-c099-823b-f3b64622968e">
+      <Execution id="1616cbd8-cd10-4a45-bfa1-ec09351b9a86" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="GetDriverStats_WhenLinked_ReturnsStats" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_AsAdmin_WithDriverId_SavesForDriver" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="46c52e2a-86ec-fa6b-ae36-1e27312c3e06">
+      <Execution id="8b03a383-e679-4059-8f05-766411dad242" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="SaveRoute_AsAdmin_WithDriverId_SavesForDriver" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.SearchByPhone_WithInvalidPhone_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="de61aa44-d2a8-b2cb-0d27-198a395389d2">
+      <Execution id="1feadb60-a3f3-4c26-8df6-258057c08889" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="SearchByPhone_WithInvalidPhone_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_AsDriver_SavesForSelf" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="684d445e-4e2f-8d13-5740-d8c0bdf4022f">
+      <Execution id="9335fe13-5c8f-4761-a7ec-4b988c62873b" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="SaveRoute_AsDriver_SavesForSelf" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.UnlinkDriver_NotLinked_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="8175dc45-6ce9-bbce-8ea6-121ddfcf89b3">
+      <Execution id="59773499-79a1-4065-9c77-db8f827bfa8b" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="UnlinkDriver_NotLinked_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.AssignRoute_WithInvalidPhone_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="2fa85447-641a-d4e6-a13d-c7707b199a77">
+      <Execution id="6fb9a23d-44c4-43ff-9a09-23117a95b831" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="AssignRoute_WithInvalidPhone_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.UnlinkDriver_WithLinkedDriver_UnlinksSuccessfully" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="e4d20c80-0029-22c6-209e-f91c9a684f0d">
+      <Execution id="e021b36f-c28c-4aaa-899d-de3c985b2002" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="UnlinkDriver_WithLinkedDriver_UnlinksSuccessfully" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.AssignDriver_WithValidData_ReturnsOk" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="e2fc9694-fd63-c288-ba0c-341650127d16">
+      <Execution id="66d68e37-4dc5-401b-abff-73568af229a7" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="AssignDriver_WithValidData_ReturnsOk" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.GetDriver_WhenNotLinked_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="e62f845a-2ab0-fa01-7245-2a996ffba740">
+      <Execution id="e10e4162-6095-40ac-bfc8-ce79c9c15922" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="GetDriver_WhenNotLinked_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_WithInvalidEvidence_ReturnsBadRequest" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="e873693a-a385-be08-44c9-b704244b2c51">
+      <Execution id="47ec9457-dec0-4182-98ca-a123ee9d64d5" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="CompleteOrder_WithInvalidEvidence_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.GetDashboard_ReturnsStats" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="86e5ad61-a350-36f0-7e13-b3717db61c98">
+      <Execution id="4eab8a86-7a03-4a58-9085-7c79680ed307" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="GetDashboard_ReturnsStats" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_RequiresEvidenceButNoFile_ReturnsBadRequest" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="34a45d82-aacd-fa93-2f33-b929bef9c6aa">
+      <Execution id="9046412a-fbbb-406d-afb8-e2274bc9b928" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="CompleteOrder_RequiresEvidenceButNoFile_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_WithInvalidDriverId_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="2e3609c2-f553-474a-715d-596487c5df6a">
+      <Execution id="b090538b-416e-4c1e-9ea2-f7ed3ab1a30e" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="SaveRoute_WithInvalidDriverId_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.GetMyRoute_AsDriver_ReturnsAssignedOrders" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="4eea751c-0dfc-4f13-fe5f-b977b00a908f">
+      <Execution id="4eb0bd64-4b9f-4f32-8df9-e35b8121c4b9" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="GetMyRoute_AsDriver_ReturnsAssignedOrders" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.LinkDriver_WithInvalidPhone_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="ad73d77e-9a74-9b5d-d916-012d7899d8db">
+      <Execution id="997fcac3-009a-4895-9ab5-33a4d2658245" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="LinkDriver_WithInvalidPhone_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.GetSavedRoutes_AsDriver_ReturnsOnlyOwnRoutes" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="bd56b8fe-cfcf-9ae2-e3f7-109de665d65b">
+      <Execution id="c6fc00e1-c29f-427f-893a-6f2aaed4f2e8" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="GetSavedRoutes_AsDriver_ReturnsOnlyOwnRoutes" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.LinkDriver_WithValidPhone_LinksSuccessfully" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="02b049eb-16e2-bb49-9b22-956bf9505da0">
+      <Execution id="611e19d7-f26e-450c-9749-98cf39f26c83" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="LinkDriver_WithValidPhone_LinksSuccessfully" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_AsAdmin_WithoutDriverId_SavesForSelf" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="94930921-9910-e64e-3408-ce64d40bae9d">
+      <Execution id="6467afc3-bb04-4374-81b6-2d5fab1678fb" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="SaveRoute_AsAdmin_WithoutDriverId_SavesForSelf" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.UpdateRoute_AsAdmin_UpdatesSuccessfully" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="14410cf5-4d10-795c-332b-75bdee1c307e">
+      <Execution id="ed78fa62-f796-4133-addb-3d492ffde028" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="UpdateRoute_AsAdmin_UpdatesSuccessfully" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.GetAllOrders_AsAdmin_ReturnsAllOrders" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="3a51ee76-28ab-9320-715e-f380acc48758">
+      <Execution id="6a33ec21-79ba-4f6a-8a11-1124fa34c6fa" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="GetAllOrders_AsAdmin_ReturnsAllOrders" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.CompleteOrder_WithInvalidOrder_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="6b92c236-fa17-d102-bfdb-50172c253e6c">
+      <Execution id="c82c55b5-4f93-4fb6-a820-e5f965a0cd87" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="CompleteOrder_WithInvalidOrder_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.SaveRoute_WithEmptyOrderIds_ReturnsBadRequest" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="bece1384-758c-611c-2ed4-a507e251dfce">
+      <Execution id="e4343593-37ec-4849-8bce-c9d41210074b" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="SaveRoute_WithEmptyOrderIds_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.CreateOrder_WithValidData_ReturnsOk" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="439e0a10-c306-3583-1228-e68813b7c8c4">
+      <Execution id="2583bd27-2a1a-48e1-bfa5-3e6bab5c4c8a" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="CreateOrder_WithValidData_ReturnsOk" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.OptimizeMyRoute_ServiceUnavailable_ReturnsServiceUnavailable" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="f06fab9a-4ee3-162e-54c0-3e1e39a18e64">
+      <Execution id="5f558247-afdc-4ed2-a41c-34d1d6ca134a" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="OptimizeMyRoute_ServiceUnavailable_ReturnsServiceUnavailable" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.UnassignDriver_WithAssignedOrder_ReturnsOk" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="be0a746e-ed53-d4aa-23fd-06e9170d277b">
+      <Execution id="fb69dd5d-ba1d-4466-a631-3b4bffaa9979" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="UnassignDriver_WithAssignedOrder_ReturnsOk" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.CreateOrder_WithInvalidCoordinates_ReturnsBadRequest" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="5a38f0be-cab5-5ef4-2195-8b70c2bde6cf">
+      <Execution id="f017e497-7d2c-4d52-95dd-7a1d2e451315" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="CreateOrder_WithInvalidCoordinates_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.GetDriverStats_WhenNotLinked_ReturnsNotFound" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="c2cfec04-ba8c-b973-f448-f546cdefa840">
+      <Execution id="2ef5124d-f7dd-42d4-8636-0465a45a2c27" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="GetDriverStats_WhenNotLinked_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.AuthControllerTests.Login_WithValidCredentials_ReturnsToken" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="dfeddeb9-f617-f8de-1ea2-5a24e1cd2f35">
+      <Execution id="5a4c86d8-3438-44c9-837c-866c0e9344ec" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.AuthControllerTests" name="Login_WithValidCredentials_ReturnsToken" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.GetMyDrivers_WithNoLinkedDrivers_ReturnsEmptyList" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="cba6cacc-15eb-1835-3a0a-64215a1a6206">
+      <Execution id="e0d3e7b0-7f33-4dc7-8dd5-a341f6e5872c" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="GetMyDrivers_WithNoLinkedDrivers_ReturnsEmptyList" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.RoutesControllerTests.AssignRoute_ClonesRouteToDriver" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="2b294d80-1a22-2298-562c-fba87256a58a">
+      <Execution id="51bb4b30-de33-4aae-94bd-6829542f3f72" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.RoutesControllerTests" name="AssignRoute_ClonesRouteToDriver" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.LinkDriver_AlreadyLinked_ReturnsConflict" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="c223a10b-44a4-4b95-652b-0d19bc8cd7fb">
+      <Execution id="3f6d423d-f0e6-4cda-90b6-55e3c03305de" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="LinkDriver_AlreadyLinked_ReturnsConflict" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.SearchByPhone_WithValidPhone_ReturnsDriver" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="2b615860-3f55-3009-89c2-4ebf64e3393f">
+      <Execution id="8eeb5608-8877-491b-bc07-54ffd34acbf0" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="SearchByPhone_WithValidPhone_ReturnsDriver" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.DriversControllerTests.GetDriver_WhenLinked_ReturnsDriverInfo" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="142119c4-5626-30ba-bef2-73c3011aaacf">
+      <Execution id="ed6640e6-7d5e-4885-9813-1bcd598bffc6" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.DriversControllerTests" name="GetDriver_WhenLinked_ReturnsDriverInfo" />
+    </UnitTest>
+    <UnitTest name="ApexVision.Tests.Controllers.OrdersControllerTests.OptimizeMyRoute_AsDriver_ReturnsOk" storage="c:\users\user\onedrive\desktop\apexvision\apexvision.tests\bin\debug\net8.0\apexvision.tests.dll" id="1a7f9e88-9e90-cfe0-c9e9-136065f5df1d">
+      <Execution id="edf4647c-0dbf-4a12-a2ef-bed36f9a21bd" />
+      <TestMethod codeBase="C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\bin\Debug\net8.0\ApexVision.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ApexVision.Tests.Controllers.OrdersControllerTests" name="OptimizeMyRoute_AsDriver_ReturnsOk" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="e3b6cc28-dc84-661b-4ee6-c38dbcf8609d" executionId="5627178a-bdab-48cb-81e6-286d6f8648ca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8175dc45-6ce9-bbce-8ea6-121ddfcf89b3" executionId="59773499-79a1-4065-9c77-db8f827bfa8b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bece1384-758c-611c-2ed4-a507e251dfce" executionId="e4343593-37ec-4849-8bce-c9d41210074b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="46c52e2a-86ec-fa6b-ae36-1e27312c3e06" executionId="8b03a383-e679-4059-8f05-766411dad242" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="de61aa44-d2a8-b2cb-0d27-198a395389d2" executionId="1feadb60-a3f3-4c26-8df6-258057c08889" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="14410cf5-4d10-795c-332b-75bdee1c307e" executionId="ed78fa62-f796-4133-addb-3d492ffde028" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2fa85447-641a-d4e6-a13d-c7707b199a77" executionId="6fb9a23d-44c4-43ff-9a09-23117a95b831" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e873693a-a385-be08-44c9-b704244b2c51" executionId="47ec9457-dec0-4182-98ca-a123ee9d64d5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3a51ee76-28ab-9320-715e-f380acc48758" executionId="6a33ec21-79ba-4f6a-8a11-1124fa34c6fa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1a7f9e88-9e90-cfe0-c9e9-136065f5df1d" executionId="edf4647c-0dbf-4a12-a2ef-bed36f9a21bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6fccc227-94aa-c099-823b-f3b64622968e" executionId="1616cbd8-cd10-4a45-bfa1-ec09351b9a86" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="142119c4-5626-30ba-bef2-73c3011aaacf" executionId="ed6640e6-7d5e-4885-9813-1bcd598bffc6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c223a10b-44a4-4b95-652b-0d19bc8cd7fb" executionId="3f6d423d-f0e6-4cda-90b6-55e3c03305de" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f06fab9a-4ee3-162e-54c0-3e1e39a18e64" executionId="5f558247-afdc-4ed2-a41c-34d1d6ca134a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dfeddeb9-f617-f8de-1ea2-5a24e1cd2f35" executionId="5a4c86d8-3438-44c9-837c-866c0e9344ec" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c2cfec04-ba8c-b973-f448-f546cdefa840" executionId="2ef5124d-f7dd-42d4-8636-0465a45a2c27" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2e3609c2-f553-474a-715d-596487c5df6a" executionId="b090538b-416e-4c1e-9ea2-f7ed3ab1a30e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="94930921-9910-e64e-3408-ce64d40bae9d" executionId="6467afc3-bb04-4374-81b6-2d5fab1678fb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bd56b8fe-cfcf-9ae2-e3f7-109de665d65b" executionId="c6fc00e1-c29f-427f-893a-6f2aaed4f2e8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="34a45d82-aacd-fa93-2f33-b929bef9c6aa" executionId="9046412a-fbbb-406d-afb8-e2274bc9b928" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="00182c64-57fb-4871-10a5-eb4a62a5b3b0" executionId="db07bbde-adfd-48a4-abc0-d37ca80e51ab" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="684d445e-4e2f-8d13-5740-d8c0bdf4022f" executionId="9335fe13-5c8f-4761-a7ec-4b988c62873b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4eea751c-0dfc-4f13-fe5f-b977b00a908f" executionId="4eb0bd64-4b9f-4f32-8df9-e35b8121c4b9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f8ba80f6-5190-e64e-f3ce-81de4193c01d" executionId="dc0ae054-962d-4785-8fc4-4b9d73be0b8c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="be0a746e-ed53-d4aa-23fd-06e9170d277b" executionId="fb69dd5d-ba1d-4466-a631-3b4bffaa9979" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="02b049eb-16e2-bb49-9b22-956bf9505da0" executionId="611e19d7-f26e-450c-9749-98cf39f26c83" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="86e5ad61-a350-36f0-7e13-b3717db61c98" executionId="4eab8a86-7a03-4a58-9085-7c79680ed307" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e62f845a-2ab0-fa01-7245-2a996ffba740" executionId="e10e4162-6095-40ac-bfc8-ce79c9c15922" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6b92c236-fa17-d102-bfdb-50172c253e6c" executionId="c82c55b5-4f93-4fb6-a820-e5f965a0cd87" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e4d20c80-0029-22c6-209e-f91c9a684f0d" executionId="e021b36f-c28c-4aaa-899d-de3c985b2002" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5a38f0be-cab5-5ef4-2195-8b70c2bde6cf" executionId="f017e497-7d2c-4d52-95dd-7a1d2e451315" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ad73d77e-9a74-9b5d-d916-012d7899d8db" executionId="997fcac3-009a-4895-9ab5-33a4d2658245" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e2fc9694-fd63-c288-ba0c-341650127d16" executionId="66d68e37-4dc5-401b-abff-73568af229a7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cba6cacc-15eb-1835-3a0a-64215a1a6206" executionId="e0d3e7b0-7f33-4dc7-8dd5-a341f6e5872c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="439e0a10-c306-3583-1228-e68813b7c8c4" executionId="2583bd27-2a1a-48e1-bfa5-3e6bab5c4c8a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2b615860-3f55-3009-89c2-4ebf64e3393f" executionId="8eeb5608-8877-491b-bc07-54ffd34acbf0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2b294d80-1a22-2298-562c-fba87256a58a" executionId="51bb4b30-de33-4aae-94bd-6829542f3f72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Resultados sin formato de lista" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="Todos los resultados cargados" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="37" executed="37" passed="35" failed="2" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.0.1+5ebf84cd75 (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.06]   Discovering: ApexVision.Tests&#xD;
+[xUnit.net 00:00:00.10]   Discovered:  ApexVision.Tests&#xD;
+[xUnit.net 00:00:00.10]   Starting:    ApexVision.Tests&#xD;
+[xUnit.net 00:00:00.29]       System.ArgumentException : Can not instantiate proxy of class: ApexVision.Backend.Services.JwtService.&#xD;
+[xUnit.net 00:00:00.29]       Could not find a parameterless constructor. (Parameter 'constructorArguments')&#xD;
+[xUnit.net 00:00:00.29]       ---- System.MissingMethodException : Constructor on type 'Castle.Proxies.JwtServiceProxy' not found.&#xD;
+[xUnit.net 00:00:00.29]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.29]            at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)&#xD;
+[xUnit.net 00:00:00.29]            at Castle.DynamicProxy.ProxyGenerator.CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, Object[] constructorArguments, IInterceptor[] interceptors)&#xD;
+[xUnit.net 00:00:00.29]         /_/src/Moq/Interception/CastleProxyFactory.cs(110,0): at Moq.CastleProxyFactory.CreateProxy(Type mockType, IInterceptor interceptor, Type[] interfaces, Object[] arguments)&#xD;
+[xUnit.net 00:00:00.29]         /_/src/Moq/Mock`1.cs(502,0): at Moq.Mock`1.InitializeInstance()&#xD;
+[xUnit.net 00:00:00.29]         /_/src/Moq/Mock`1.cs(516,0): at Moq.Mock`1.OnGetObject()&#xD;
+[xUnit.net 00:00:00.29]         /_/src/Moq/Mock.cs(180,0): at Moq.Mock.get_Object()&#xD;
+[xUnit.net 00:00:00.29]         /_/src/Moq/Mock`1.cs(453,0): at Moq.Mock`1.get_Object()&#xD;
+[xUnit.net 00:00:00.29]         C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\Controllers\AuthControllerTests.cs(38,0): at ApexVision.Tests.Controllers.AuthControllerTests..ctor()&#xD;
+[xUnit.net 00:00:00.29]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)&#xD;
+[xUnit.net 00:00:00.29]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:00.29]            at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)&#xD;
+[xUnit.net 00:00:00.29]            at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)&#xD;
+[xUnit.net 00:00:00.30]       System.ArgumentException : Can not instantiate proxy of class: ApexVision.Backend.Services.JwtService.&#xD;
+[xUnit.net 00:00:00.30]       Could not find a parameterless constructor. (Parameter 'constructorArguments')&#xD;
+[xUnit.net 00:00:00.30]       ---- System.MissingMethodException : Constructor on type 'Castle.Proxies.JwtServiceProxy' not found.&#xD;
+[xUnit.net 00:00:00.30]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.30]            at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)&#xD;
+[xUnit.net 00:00:00.30]            at Castle.DynamicProxy.ProxyGenerator.CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, Object[] constructorArguments, IInterceptor[] interceptors)&#xD;
+[xUnit.net 00:00:00.30]         /_/src/Moq/Interception/CastleProxyFactory.cs(110,0): at Moq.CastleProxyFactory.CreateProxy(Type mockType, IInterceptor interceptor, Type[] interfaces, Object[] arguments)&#xD;
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(502,0): at Moq.Mock`1.InitializeInstance()&#xD;
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(516,0): at Moq.Mock`1.OnGetObject()&#xD;
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(180,0): at Moq.Mock.get_Object()&#xD;
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(453,0): at Moq.Mock`1.get_Object()&#xD;
+[xUnit.net 00:00:00.30]         C:\Users\user\OneDrive\Desktop\ApexVision\ApexVision.Tests\Controllers\AuthControllerTests.cs(38,0): at ApexVision.Tests.Controllers.AuthControllerTests..ctor()&#xD;
+[xUnit.net 00:00:00.30]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)&#xD;
+[xUnit.net 00:00:00.30]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:00.30]            at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)&#xD;
+[xUnit.net 00:00:00.30]            at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)&#xD;
+[xUnit.net 00:00:01.03]   Finished:    ApexVision.Tests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="DESKTOP-S80KVIH" outcome="Error" timestamp="2025-12-14T14:02:28.1005386-05:00">
+        <Text>[xUnit.net 00:00:00.29]     ApexVision.Tests.Controllers.AuthControllerTests.Login_WithInvalidCredentials_ReturnsUnauthorized [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="DESKTOP-S80KVIH" outcome="Error" timestamp="2025-12-14T14:02:28.1065462-05:00">
+        <Text>[xUnit.net 00:00:00.30]     ApexVision.Tests.Controllers.AuthControllerTests.Login_WithValidCredentials_ReturnsToken [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

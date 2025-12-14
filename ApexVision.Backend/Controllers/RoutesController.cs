@@ -107,6 +107,58 @@ namespace ApexVision.Backend.Controllers
             });
         }
 
+        /// <summary>
+        /// [ADMIN] Obtener todas las rutas guardadas de todos los conductores vinculados
+        /// </summary>
+        [HttpGet("all")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> GetAllRoutes()
+        {
+            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(adminId) || !int.TryParse(adminId, out var adminIdInt))
+                return Unauthorized();
+
+            // Obtener IDs de conductores vinculados al admin
+            var linkedDriverIds = await _context.AdminDrivers
+                .Where(ad => ad.AdminId == adminIdInt)
+                .Select(ad => ad.DriverId)
+                .ToListAsync();
+
+            // Incluir también las rutas del propio admin (templates)
+            linkedDriverIds.Add(adminIdInt);
+
+            var routesFromDb = await _context.SavedRoutes
+                .Where(r => linkedDriverIds.Contains(r.DriverId) && r.IsActive)
+                .Include(r => r.Driver)
+                .OrderByDescending(r => r.CreatedDate)
+                .ToListAsync();
+
+            var allRoutes = routesFromDb.Select(r => new
+            {
+                routeId = r.Id,
+                routeName = r.RouteName,
+                createdDate = r.CreatedDate,
+                lastUsedDate = r.LastUsedDate,
+                orderIds = JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new List<int>(),
+                orderCount = (JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new List<int>()).Count,
+                isTemplate = r.DriverId == adminIdInt,
+                driver = new
+                {
+                    id = r.Driver.Id,
+                    fullName = r.Driver.FullName,
+                    phoneNumber = r.Driver.PhoneNumber,
+                    email = r.Driver.Email
+                }
+            }).ToList();
+
+            return Ok(new
+            {
+                totalRoutes = allRoutes.Count,
+                templates = allRoutes.Where(r => r.isTemplate).ToList(),
+                assignedRoutes = allRoutes.Where(r => !r.isTemplate).ToList()
+            });
+        }
+
         [HttpGet("saved")]
         [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> GetSavedRoutes()

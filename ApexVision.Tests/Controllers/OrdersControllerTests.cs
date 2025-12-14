@@ -417,7 +417,7 @@ new Order
 
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>()
-                .Which.Value.Should().Be("Invalid evidence. The image does not seem to be a valid delivery evidence.");
+                .Which.Value.Should().Be("La foto no parece mostrar un paquete o entrega. Por favor, toma una foto clara del paquete.");
         }
 
         [Fact]
