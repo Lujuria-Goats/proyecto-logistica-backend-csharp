@@ -37,7 +37,7 @@ namespace ApexVision.Backend.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.ToTable("AdminDrivers");
+                    b.ToTable("AdminDrivers", (string)null);
                 });
 
             modelBuilder.Entity("ApexVision.Backend.Models.Order", b =>
@@ -89,7 +89,7 @@ namespace ApexVision.Backend.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("ApexVision.Backend.Models.Role", b =>
@@ -162,7 +162,7 @@ namespace ApexVision.Backend.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.ToTable("SavedRoutes");
+                    b.ToTable("SavedRoutes", (string)null);
                 });
 
             modelBuilder.Entity("ApexVision.Backend.Models.User", b =>

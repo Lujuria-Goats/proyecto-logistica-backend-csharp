@@ -8,6 +8,7 @@
 | `POST /api/Routes/save` | POST | **Crear ruta** - Guarda una nueva ruta (template) con lista de órdenes |
 | `PUT /api/Routes/saved/{id}` | PUT | **Editar ruta** - Cambiar nombre y/u órdenes de una ruta propia |
 | `POST /api/Routes/saved/{id}/assign` | POST | **Asignar ruta** - Copia la ruta a un conductor (por teléfono) |
+| `GET /api/Drivers/{driverId}/routes` | GET | **Ver rutas de conductor** - Ver historial de rutas asignadas a un conductor específico |
 | `DELETE /api/Routes/saved/{id}` | DELETE | **Eliminar ruta** - Desactiva una ruta |
 
 ---

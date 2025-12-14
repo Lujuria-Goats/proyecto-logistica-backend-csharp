@@ -496,6 +496,59 @@ namespace ApexVision.Backend.Controllers
                 }
             });
         }
+
+        /// <summary>
+        /// Obtener rutas asignadas a un conductor específico
+        /// </summary>
+        [HttpGet("{driverId}/routes")]
+        public async Task<IActionResult> GetDriverRoutes(int driverId)
+        {
+            var adminId = GetCurrentAdminId();
+            if (adminId == 0) return Unauthorized();
+
+            // Verificar si el conductor está vinculado a este admin
+            var isLinked = await _context.AdminDrivers
+                .AnyAsync(ad => ad.AdminId == adminId && ad.DriverId == driverId);
+
+            if (!isLinked)
+                return NotFound("El conductor no está vinculado a tu cuenta.");
+
+            var driverName = await _context.Users
+                .Where(u => u.Id == driverId)
+                .Select(u => u.FullName)
+                .FirstOrDefaultAsync();
+
+            var routes = await _context.SavedRoutes
+                .Where(r => r.DriverId == driverId && r.IsActive)
+                .Include(r => r.AssignedByAdmin)
+                .OrderByDescending(r => r.CreatedDate)
+                .ToListAsync();
+
+            var result = routes.Select(r => new
+            {
+                id = r.Id,
+                routeName = r.RouteName,
+                orderIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new(),
+                orderCount = (System.Text.Json.JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new()).Count,
+                createdDate = r.CreatedDate,
+                lastUsedDate = r.LastUsedDate,
+                isActive = r.IsActive,
+                optimizationScore = r.OptimizationScore,
+                assignedBy = r.AssignedByAdmin != null ? new
+                {
+                    id = r.AssignedByAdmin.Id,
+                    fullName = r.AssignedByAdmin.FullName
+                } : null
+            }).ToList();
+
+            return Ok(new
+            {
+                driverId,
+                driverName,
+                totalRoutes = result.Count,
+                routes = result
+            });
+        }
     }
 
     /// <summary>
