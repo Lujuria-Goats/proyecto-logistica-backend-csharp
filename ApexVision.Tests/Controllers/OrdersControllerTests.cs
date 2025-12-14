@@ -515,5 +515,97 @@ new Order
             badRequestResult.StatusCode.Should().Be(400);
             badRequestResult.Value.Should().Be("Order is not assigned to any driver.");
         }
+        [Fact]
+        public async Task UpdateOrder_WithValidData_ReturnsOk()
+        {
+            // Arrange
+            var orderId = 1;
+            var updateDto = new UpdateOrderDto
+            {
+                Description = "Updated Description",
+                Address = "Updated Address",
+                Latitude = 1.0,
+                Longitude = 1.0
+            };
+
+            // Act
+            var result = await _controller.UpdateOrder(orderId, updateDto);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.StatusCode.Should().Be(200);
+            
+            var updatedOrder = _testOrders.First(o => o.Id == orderId);
+            updatedOrder.Description.Should().Be("Updated Description");
+            updatedOrder.Address.Should().Be("Updated Address");
+            updatedOrder.Latitude.Should().Be(1.0);
+            updatedOrder.Longitude.Should().Be(1.0);
+        }
+
+        [Fact]
+        public async Task UpdateOrder_WithInvalidCoordinates_ReturnsBadRequest()
+        {
+            // Arrange
+            var orderId = 1;
+            var updateDto = new UpdateOrderDto
+            {
+                Description = "Updated Description",
+                Address = "Updated Address",
+                Latitude = 0,
+                Longitude = 0
+            };
+
+            // Act
+            var result = await _controller.UpdateOrder(orderId, updateDto);
+
+            // Assert
+            result.Should().BeOfType<BadRequestObjectResult>()
+                .Which.Value.Should().Be("Coordinates (0,0) are not allowed.");
+        }
+
+        [Fact]
+        public async Task UpdateOrder_OrderNotFound_ReturnsNotFound()
+        {
+            // Arrange
+            var orderId = 999;
+            var updateDto = new UpdateOrderDto
+            {
+                Description = "Updated Description",
+                Address = "Updated Address",
+                Latitude = 1.0,
+                Longitude = 1.0
+            };
+
+            // Act
+            var result = await _controller.UpdateOrder(orderId, updateDto);
+
+            // Assert
+            result.Should().BeOfType<NotFoundObjectResult>()
+                .Which.Value.Should().Be("Order not found.");
+        }
+
+        [Fact]
+        public async Task UpdateOrder_DifferentAdmin_ReturnsUnauthorized()
+        {
+            // Arrange
+            var orderId = 1;
+            // Set order to belong to a different admin
+            _testOrders[0].AdminId = 99; 
+            
+            var updateDto = new UpdateOrderDto
+            {
+                Description = "Updated Description",
+                Address = "Updated Address",
+                Latitude = 1.0,
+                Longitude = 1.0
+            };
+
+            // Act
+            var result = await _controller.UpdateOrder(orderId, updateDto);
+
+            // Assert
+            result.Should().BeOfType<UnauthorizedObjectResult>()
+                .Which.Value.Should().Be("You do not have permission to edit this order.");
+        }
     }
 }

@@ -59,6 +59,52 @@ namespace ApexVision.Backend.Controllers
             return Ok(new { message = "Order created successfully", orderId = order.Id });
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderDto updateOrderDto)
+        {
+            if (updateOrderDto.Latitude == 0 && updateOrderDto.Longitude == 0)
+            {
+                return BadRequest("Coordinates (0,0) are not allowed.");
+            }
+
+            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            if (adminId == 0)
+                return Unauthorized();
+
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+            {
+                return NotFound("Order not found.");
+            }
+
+            // Verify order belongs to admin? 
+            // The current requirement just says AdminOnly, but typically admins should manage their own orders.
+            // However, existing endpoints like 'GetAllOrders' don't filter by AdminId strictly in the query (wait, checking GetAllOrders...).
+            // GetAllOrders in line 98 DOES NOT filter by AdminId! It returns ALL orders.
+            // But CreateOrder sets AdminId.
+            // Let's implement a check if we want strict ownership, but for now I'll follow the pattern. 
+            // Actually, let's enforce AdminId check if the order has one, just to be safe, OR minimal implementation first.
+            // Given the user prompt didn't specify strict isolation, but previous context did ("filtered per admin"), 
+            // I should probably ensure the admin can only update their own orders OR simply update it if they are an admin.
+            // Let's look at `DriversController` - it uses `GetCurrentAdminId` and filters.
+            // Let's refine this to be safe: check if order.AdminId == adminId.
+
+            if (order.AdminId != null && order.AdminId != adminId)
+            {
+                return Unauthorized("You do not have permission to edit this order.");
+            }
+
+            order.Description = updateOrderDto.Description;
+            order.Latitude = updateOrderDto.Latitude;
+            order.Longitude = updateOrderDto.Longitude;
+            order.Address = updateOrderDto.Address;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Order updated successfully." });
+        }
+
         [HttpPut("{id}/assign/{driverId}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AssignDriver(int id, int driverId)
