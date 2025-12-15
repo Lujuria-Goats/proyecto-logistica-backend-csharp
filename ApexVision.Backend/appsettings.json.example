@@ -23,6 +23,6 @@
   "AzureVision": {
     "Endpoint": "YOUR_AZURE_VISION_ENDPOINT",
     "Key": "YOUR_AZURE_VISION_KEY",
-    "ValidTags": [ "box", "package", "parcel", "delivery", "gift", "envelope", "shipping", "cargo", "courier", "truck", "carton", "container" ]
+    "ValidTags": [ "box", "package", "parcel", "delivery", "gift", "envelope", "shipping", "cargo", "courier", "truck", "carton", "container", "caja", "paquete", "bulto", "bolsa", "bag" ]
   }
 }

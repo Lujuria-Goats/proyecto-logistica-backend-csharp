@@ -33,14 +33,20 @@ namespace ApexVision.Backend.Services
             var features = new List<VisualFeatureTypes?> { VisualFeatureTypes.Tags };
             var result = await _client.AnalyzeImageAsync(imageUrl, features);
 
-            if (_validTags == null || _validTags.Length == 0)
-            {
-                // Fallback to default if not configured, or log warning? 
-                // For now, let's assume config is populated as per plan.
-                 return false; 
-            }
+            // Lista de respaldo hardcoded por si la config falla o está vacía
+            var defaultTags = new[] { 
+                "box", "package", "parcel", "delivery", "shipping", "cardboard", "carton", "container", 
+                "caja", "paquete", "envio", "bulto", "regalo", "bolsa", "bag" 
+            };
 
-            return result.Tags.Any(tag => _validTags.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.7);
+            var tagsToValidate = (_validTags != null && _validTags.Length > 0) ? _validTags : defaultTags;
+
+            // Log de los tags encontrados para depuración
+            var foundTags = string.Join(", ", result.Tags.Select(t => $"{t.Name} ({t.Confidence:P0})"));
+            // Console.WriteLine($"AI Analysis Tags: {foundTags}"); // Opcional para logs
+
+            // Bajamos la confianza requerida a 0.5 (50%) para ser más permisivos
+            return result.Tags.Any(tag => tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.5);
         }
     }
 }
