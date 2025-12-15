@@ -259,7 +259,7 @@ namespace ApexVision.Backend.Controllers
             await _context.SaveChangesAsync();
 
             var orderIds = JsonSerializer.Deserialize<List<int>>(savedRoute.OrderIds) ?? new();
-            var orders = await _context.Orders
+            var ordersFromDb = await _context.Orders
                 .Where(o => orderIds.Contains(o.Id))
                 .Select(o => new OrderDto
                 {
@@ -275,6 +275,22 @@ namespace ApexVision.Backend.Controllers
                 })
                 .ToListAsync();
 
+            // Reordenar en memoria para respetar la secuencia guardada
+            var orderedList = new List<OrderDto>();
+            int currentStop = 1;
+
+            foreach (var id in orderIds)
+            {
+                var order = ordersFromDb.FirstOrDefault(o => o.Id == id);
+                if (order != null)
+                {
+                    order.StopOrder = currentStop;
+                    order.StopNumber = currentStop;
+                    orderedList.Add(order);
+                    currentStop++;
+                }
+            }
+
             _logger.LogInformation("Ruta '{RouteName}' cargada para conductor {DriverId}", 
                 savedRoute.RouteName, driver.Id);
 
@@ -283,8 +299,8 @@ namespace ApexVision.Backend.Controllers
                 message = "Ruta cargada exitosamente.",
                 routeName = savedRoute.RouteName,
                 phoneNumber = driver.PhoneNumber,
-                totalOrders = orders.Count,
-                orders
+                totalOrders = orderedList.Count,
+                orders = orderedList
             });
         }
 

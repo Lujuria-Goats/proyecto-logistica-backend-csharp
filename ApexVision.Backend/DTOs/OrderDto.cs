@@ -13,5 +13,7 @@ namespace ApexVision.Backend.DTOs
         public bool RequiresEvidence { get; set; }
         public int? DriverId { get; set; }
         public string? EvidenceUrl { get; set; }
+        public int? StopOrder { get; set; }
+        public int? StopNumber { get; set; }
     }
 }

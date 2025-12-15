@@ -338,5 +338,49 @@ namespace ApexVision.Tests.Controllers
             // Assert
             result.Should().BeOfType<NotFoundObjectResult>();
         }
+
+        [Fact]
+        public async Task LoadSavedRoute_ReturnsOrdersInCorrectSequence()
+        {
+            // Arrange
+            var route = new SavedRoute
+            {
+                DriverId = 2,
+                RouteName = "Ordered Route",
+                OrderIds = JsonSerializer.Serialize(new List<int> { 2, 1, 3 }), // Specific sequence: 2 -> 1 -> 3
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            };
+            _context.SavedRoutes.Add(route);
+            await _context.SaveChangesAsync();
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = _driverUser }
+            };
+
+            // Act
+            var result = await _controller.LoadSavedRoute(route.Id);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            
+            // Reflection to access anonymous type properties
+            var val = okResult.Value;
+            var ordersProp = val.GetType().GetProperty("orders");
+            var orders = (List<OrderDto>)ordersProp.GetValue(val);
+
+            orders.Should().HaveCount(3);
+            
+            // Verify sequence and StopOrder
+            orders[0].Id.Should().Be(2);
+            orders[0].StopOrder.Should().Be(1);
+            
+            orders[1].Id.Should().Be(1);
+            orders[1].StopOrder.Should().Be(2);
+            
+            orders[2].Id.Should().Be(3);
+            orders[2].StopOrder.Should().Be(3);
+        }
     }
 }

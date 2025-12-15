@@ -61,6 +61,23 @@ Lista las rutas que le han sido asignadas o que ha guardado.
 }
 ```
 
+### Renombrar Ruta ✏️
+Permite al conductor cambiar el nombre de una de sus rutas guardadas.
+
+**Endpoint:** `POST /api/Routes/saved/{id}/rename`
+**Body:**
+```json
+{
+  "newName": "Nueva Ruta Martes"
+}
+```
+
+### Eliminar Ruta 🗑️
+Elimina (o desactiva) una ruta de la lista del conductor.
+
+**Endpoint:** `DELETE /api/Routes/saved/{id}`
+
+
 ### Cargar una Ruta (Activar)
 Cuando el conductor selecciona una ruta para trabajar, debe "cargarla". Esto trae todas las órdenes asociadas.
 
@@ -75,6 +92,8 @@ Cuando el conductor selecciona una ruta para trabajar, debe "cargarla". Esto tra
     {
       "id": 101,
       "address": "Calle 10 # 5-20",
+      "stopOrder": 1,
+      "stopNumber": 1,
       "latitude": 6.251,
       "longitude": -75.563,
       "status": "Pending",
@@ -136,11 +155,19 @@ Como los conductores pueden perder señal:
 
 ---
 
+
+## 🔄 4.5. Obtener Ruta Actual (Sincronización)
+Si la app se reinicia o necesita refrescar la lista de pedidos pendientes asignados al conductor:
+
+**Endpoint:** `GET /api/Orders/my-route`
+
+---
+
 ## 🗺️ 5. Optimización (Opcional)
 
 Si el conductor quiere reordenar sus puntos actuales para ser más eficiente:
 
-**Endpoint:** `POST /api/Orders/optimize-my-route`
+**Endpoint:** `POST /api/Orders/my-route/optimize`
 
 **Response:**
 Retorna la lista de órdenes reordenada óptimamente.

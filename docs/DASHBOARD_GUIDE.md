@@ -73,6 +73,48 @@ El objeto JSON raíz tiene dos bloques principales: `stats` (contadores) y `rece
 
 ---
 
+## 🗺️ Gestión de Rutas
+
+Permite a los administradores crear rutas, reordenar paradas y asignarlas a conductores.
+
+### Crear Ruta (Guardar)
+Guarda una nueva ruta (template) o asigna directamente.
+
+**Endpoint:** `POST /api/Routes/save`
+**Body:**
+```json
+{
+  "routeName": "Ruta Lunes Zona 1",
+  "orderIds": [105, 102, 108], // El ORDEN de esta lista define la secuencia de paradas
+  "driverId": null // null = guardar como plantilla para mí (Admin)
+}
+```
+
+### Actualizar Ruta (Reordenar) ✏️
+Permite cambiar el nombre o **reordenar** las paradas.
+
+**Endpoint:** `PUT /api/Routes/saved/{id}`
+**Body:**
+```json
+{
+  "routeName": "Ruta Lunes (Optimized)",
+  "orderIds": [108, 105, 102] // Nuevo orden aplicado
+}
+```
+
+### Asignar a Conductor 👨‍✈️
+Clona una plantilla del admin y se la asigna a un conductor específico.
+
+**Endpoint:** `POST /api/Routes/saved/{id}/assign`
+**Body:**
+```json
+{
+  "driverPhoneNumber": "+573001234567"
+}
+```
+
+---
+
 ## 🚨 Manejo de Errores
 *   **401 Unauthorized:** El token expiró o no es Admin. Redirigir a login.
 *   **500 Server Error:** Fallo en base de datos. Mostrar "Error cargando métricas".
