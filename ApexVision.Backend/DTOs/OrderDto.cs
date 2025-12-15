@@ -15,5 +15,6 @@ namespace ApexVision.Backend.DTOs
         public string? EvidenceUrl { get; set; }
         public int? StopOrder { get; set; }
         public int? StopNumber { get; set; }
+        public DateTime? DeliveredAt { get; set; }
     }
 }

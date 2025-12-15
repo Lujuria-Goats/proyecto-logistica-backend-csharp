@@ -173,6 +173,55 @@ namespace ApexVision.Backend.Controllers
             return Ok(orders);
         }
 
+        // NUEVO: Historial de entregas (todo lo completado)
+        [HttpGet("history")]
+        [Authorize(Policy = "DriverOnly")]
+        public async Task<IActionResult> GetOrderHistory()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            // Retornar solo las completadas. Podríamos añadir Paginación aquí (Take/Skip).
+            var history = await _context.Orders
+                .Where(o => o.Driver != null && o.Driver.Id.ToString() == userId && o.Status == OrderStatus.Completed)
+                .OrderByDescending(o => o.DeliveredAt ?? o.Id) // Ordenar por fecha entrega o ID
+                .Take(50) // Limite de seguridad para no explotar el payload
+                .Select(o => new OrderDto
+                {
+                    Id = o.Id,
+                    Description = o.Description,
+                    Address = o.Address,
+                    Status = o.Status,
+                    EvidenceUrl = o.EvidenceUrl,
+                    DeliveredAt = o.DeliveredAt // Asegurarse de tener esta propiedad en OrderDto si es necesario, o usar metadatos
+                })
+                .ToListAsync();
+
+            return Ok(history);
+        }
+
+        // NUEVO: Resumen de Ruta (Estadísticas para barra de progreso)
+        [HttpGet("route-summary")]
+        [Authorize(Policy = "DriverOnly")]
+        public async Task<IActionResult> GetRouteSummary()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var stats = await _context.Orders
+                .Where(o => o.Driver != null && o.Driver.Id.ToString() == userId)
+                .GroupBy(o => 1) // Grupo dummy para agregar todo
+                .Select(g => new
+                {
+                    Total = g.Count(),
+                    Pending = g.Count(o => o.Status == OrderStatus.Pending || o.Status == OrderStatus.InTransit),
+                    Completed = g.Count(o => o.Status == OrderStatus.Completed)
+                })
+                .FirstOrDefaultAsync();
+
+            return Ok(stats ?? new { Total = 0, Pending = 0, Completed = 0 });
+        }
+
         // Método protegido virtual para facilitar las pruebas
         protected virtual async Task<List<OrderDto>> GetDriverOrdersAsync(string userId)
         {

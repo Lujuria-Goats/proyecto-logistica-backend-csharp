@@ -317,7 +317,45 @@ Reordena los puntos de entrega actuales para minimizar la distancia recorrida.
 ```json
 { "message": "Route optimization initiated." }
 ```
-*Nota: La optimización puede tomar unos segundos. Después de llamar esto, se debe recargar la lista de pedidos (`GET /api/Orders/my-route`) para ver el nuevo orden en `stopOrder`.*
+
+---
+
+### 3.4 Historial de Entregas (Nuevo) 🕒
+Obtiene la lista de los últimos 50 pedidos que ya han sido completados por el conductor.
+
+**Endpoint:** `GET /api/Orders/history`
+**Auth:** Bearer Token
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 105,
+    "description": "Entrega Paquete #123",
+    "address": "Calle 10 # 5-50",
+    "status": "Completed",
+    "evidenceUrl": "https://res.cloudinary.com/...",
+    "deliveredAt": "2024-12-15T15:30:00Z" // Fecha de entrega
+  }
+]
+```
+
+---
+
+### 3.5 Resumen de Ruta (Estadísticas) 📊
+Perfecto para mostrar una barra de progreso o dashboard. Obtiene el conteo exacto de pedidos asignados.
+
+**Endpoint:** `GET /api/Orders/route-summary`
+**Auth:** Bearer Token
+
+**Response (200 OK):**
+```json
+{
+  "total": 10,
+  "pending": 6,
+  "completed": 4
+}
+```
 
 ---
 
