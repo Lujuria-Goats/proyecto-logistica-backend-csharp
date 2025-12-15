@@ -52,7 +52,10 @@ namespace ApexVision.Backend.Controllers
                 {
                     // Nueva Opción: Admin guarda para sí mismo (staging)
                     var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (adminId == null) return Unauthorized();
+                    
                     targetUser = await _userManager.FindByIdAsync(adminId);
+                    if (targetUser == null) return Unauthorized("Admin user not found.");
                 }
             }
             else
@@ -144,7 +147,7 @@ namespace ApexVision.Backend.Controllers
                 isTemplate = r.DriverId == adminIdInt,
                 driver = new
                 {
-                    id = r.Driver.Id,
+                    id = r.Driver!.Id,
                     fullName = r.Driver.FullName,
                     phoneNumber = r.Driver.PhoneNumber,
                     email = r.Driver.Email

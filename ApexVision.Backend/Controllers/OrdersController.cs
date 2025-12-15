@@ -184,7 +184,8 @@ namespace ApexVision.Backend.Controllers
             // Retornar solo las completadas. Podríamos añadir Paginación aquí (Take/Skip).
             var history = await _context.Orders
                 .Where(o => o.Driver != null && o.Driver.Id.ToString() == userId && o.Status == OrderStatus.Completed)
-                .OrderByDescending(o => o.DeliveredAt ?? o.Id) // Ordenar por fecha entrega o ID
+                .OrderByDescending(o => o.DeliveredAt)
+                .ThenByDescending(o => o.Id) // Ordenar por fecha entrega o ID
                 .Take(50) // Limite de seguridad para no explotar el payload
                 .Select(o => new OrderDto
                 {
