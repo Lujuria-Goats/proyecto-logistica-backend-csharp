@@ -224,5 +224,33 @@ namespace ApexVision.Backend.Controllers
                 companyNit = user.CompanyNit
             });
         }
+        /// <summary>
+        /// Cambiar contraseña del usuario actual
+        /// </summary>
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { 
+                    message = "No se pudo cambiar la contraseña.",
+                    errors = result.Errors.Select(e => e.Description) 
+                });
+            }
+
+            _logger.LogInformation("Usuario {UserName} cambió su contraseña exitosamente.", user.UserName);
+            return Ok(new { message = "Contraseña actualizada correctamente." });
+        }
     }
 }

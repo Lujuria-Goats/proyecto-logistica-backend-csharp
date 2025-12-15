@@ -93,6 +93,52 @@ Valida si el token sigue activo y obtiene datos actualizados del perfil.
 
 ---
 
+### 1.4 Cambiar Contraseña 🔐
+Permite a cualquier usuario autenticado (Driver o Admin) cambiar su contraseña actual.
+
+**Endpoint:** `POST /api/Auth/change-password`
+**Auth:** Bearer Token
+
+**Cuerpo (JSON):**
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `currentPassword` | string | **Sí** | Contraseña actual del usuario. |
+| `newPassword` | string | **Sí** | Nueva contraseña (min 6 caracteres). |
+
+**Ejemplo:**
+```json
+{
+  "currentPassword": "OldPassword123!",
+  "newPassword": "NewPassword456!"
+}
+```
+
+**Response (200 OK):**
+```json
+{ "message": "Contraseña actualizada correctamente." }
+```
+
+---
+
+## 🚦 Consultas de Estado (Dashboard)
+
+### 1.5 Estado de la Ruta Asignada
+Para saber el "estado" de la ruta (cuántos pedidos faltan, completados, etc.), el frontend debe consultar la lista de pedidos y calcularlo localmente.
+
+**Endpoint:** `GET /api/Orders/my-route`
+*   **Total Pedidos:** `response.length`
+*   **Pendientes:** Filtrar por `status: "Pending"`
+*   **Completados:** Filtrar por `status: "Completed"`
+
+### 1.6 Transportadores Activos (Admin)
+Para ver qué conductores están trabajando.
+
+**Endpoint:** `GET /api/Drivers` (Lista todos) ó `GET /api/Drivers/dashboard` (Resumen numérico).
+*   El endpoint `GET /api/Drivers` devuelve la lista de conductores.
+*   El frontend puede inferir "Activo" si tienen pedidos pendientes asignados (requiere lógica de negocio adicional si se necesita un flag específico 'IsOnline').
+
+---
+
 ## 🛣️ 2. Gestión de Rutas (Saved Routes)
 
 El conductor puede tener múltiples rutas "guardadas" (plantillas) y seleccionar cuál cargar para trabajar hoy.
