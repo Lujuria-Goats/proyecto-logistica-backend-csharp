@@ -24,6 +24,8 @@ namespace ApexVision.Backend.Models
 
         public DateTime? LastUsedDate { get; set; }
 
+        public DateTime? CompletedDate { get; set; }
+
         public bool IsActive { get; set; } = true;
 
         public int? OptimizationScore { get; set; }

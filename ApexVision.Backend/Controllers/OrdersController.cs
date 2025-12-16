@@ -276,8 +276,48 @@ namespace ApexVision.Backend.Controllers
             }
 
             order.Status = OrderStatus.Completed;
-            // In a real app, you\'d probably set a completion timestamp here
+            // In a real app, you'd probably set a completion timestamp here
             await _context.SaveChangesAsync();
+
+            // --- AUTO-DELETE ROUTE LOGIC ---
+            // Si el pedido pertenece a una ruta guardada activa, verificar si la ruta se completó totalmente
+            if (order.DriverId != null)
+            {
+                var activeRoutes = await _context.SavedRoutes
+                    .Where(r => r.DriverId == order.DriverId && r.IsActive)
+                    .ToListAsync();
+
+                bool routeUpdated = false;
+                foreach (var route in activeRoutes)
+                {
+                    List<int> routeOrderIds;
+                    try 
+                    {
+                        routeOrderIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(route.OrderIds) ?? new List<int>();
+                    }
+                    catch { continue; }
+
+                    if (routeOrderIds.Contains(id))
+                    {
+                        // Verificar si quedan pedidos pendientes en esta ruta
+                        var pendingCount = await _context.Orders
+                            .CountAsync(o => routeOrderIds.Contains(o.Id) && o.Status != OrderStatus.Completed);
+
+                        if (pendingCount == 0)
+                        {
+                            route.IsActive = false; // "Eliminar" (desactivar) la ruta
+                            route.CompletedDate = DateTime.UtcNow; // Registrar fecha de finalización para Logs
+                            routeUpdated = true;
+                        }
+                    }
+                }
+
+                if (routeUpdated)
+                {
+                    await _context.SaveChangesAsync();
+                }
+            }
+            // -------------------------------
 
             return Ok(new { message = "Order completed successfully." });
         }

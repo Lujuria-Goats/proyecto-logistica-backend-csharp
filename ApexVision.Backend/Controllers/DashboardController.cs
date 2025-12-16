@@ -78,7 +78,7 @@ namespace ApexVision.Backend.Controllers
                     Type = "Entrega",
                     Message = $"Pedido a {o.Address} completado",
                     Subtext = o.Driver != null ? o.Driver.FullName : "Sin conductor",
-                    Date = o.DeliveredAt ?? o.CreatedAt
+                    Date = (DateTime?)(o.DeliveredAt ?? o.CreatedAt)
                 })
                 .ToListAsync();
 
@@ -90,11 +90,27 @@ namespace ApexVision.Backend.Controllers
                     Type = "Ruta",
                     Message = r.AssignedByAdminId != null ? $"Ruta '{r.RouteName}' asignada" : $"Plantilla '{r.RouteName}' creada",
                     Subtext = r.Driver != null ? r.Driver.FullName : "Admin",
-                    Date = r.CreatedDate
+                    Date = (DateTime?)r.CreatedDate
                 })
                 .ToListAsync();
 
-            var recentActivity = recentDeliveries.Concat(recentRoutes)
+            // NUEVO: Rutas completadas (para que aparezcan en el log como "Finalizada")
+            var recentCompletedRoutes = await myRoutesQuery
+                .Where(r => r.CompletedDate != null)
+                .OrderByDescending(r => r.CompletedDate)
+                .Take(5)
+                .Select(r => new
+                {
+                    Type = "Ruta Completada",
+                    Message = $"Ruta '{r.RouteName}' finalizada",
+                    Subtext = r.Driver != null ? r.Driver.FullName : "Conductor",
+                    Date = r.CompletedDate
+                })
+                .ToListAsync();
+
+            var recentActivity = recentDeliveries
+                .Concat(recentRoutes)
+                .Concat(recentCompletedRoutes)
                 .OrderByDescending(x => x.Date)
                 .Take(10)
                 .ToList();
