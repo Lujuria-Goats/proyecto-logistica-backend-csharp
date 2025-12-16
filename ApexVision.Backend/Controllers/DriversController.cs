@@ -524,21 +524,44 @@ namespace ApexVision.Backend.Controllers
                 .OrderByDescending(r => r.CreatedDate)
                 .ToListAsync();
 
-            var result = routes.Select(r => new
-            {
-                id = r.Id,
-                routeName = r.RouteName,
-                orderIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new(),
-                orderCount = (System.Text.Json.JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new()).Count,
-                createdDate = r.CreatedDate,
-                lastUsedDate = r.LastUsedDate,
-                isActive = r.IsActive,
-                optimizationScore = r.OptimizationScore,
-                assignedBy = r.AssignedByAdmin != null ? new
+            // Obtener todos los IDs de órdenes de estas rutas para consultarlas en una sola query
+            var allOrderIds = routes.SelectMany(r => System.Text.Json.JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new List<int>()).Distinct().ToList();
+            
+            var ordersStatus = await _context.Orders
+                .Where(o => allOrderIds.Contains(o.Id))
+                .Select(o => new { o.Id, o.Status })
+                .ToDictionaryAsync(o => o.Id, o => o.Status);
+
+            var result = routes.Select(r => {
+                var orderIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(r.OrderIds) ?? new();
+                var total = orderIds.Count;
+                var completed = orderIds.Count(id => ordersStatus.ContainsKey(id) && ordersStatus[id] == OrderStatus.Completed);
+                
+                string statusString;
+                if (total == 0) statusString = "Empty";
+                else if (completed == 0) statusString = "Pending";
+                else if (completed == total) statusString = "Completed";
+                else statusString = "InProgress";
+
+                return new
                 {
-                    id = r.AssignedByAdmin.Id,
-                    fullName = r.AssignedByAdmin.FullName
-                } : null
+                    id = r.Id,
+                    routeName = r.RouteName,
+                    orderIds = orderIds,
+                    orderCount = total,
+                    completedCount = completed,
+                    progress = $"{completed}/{total}",
+                    status = statusString,
+                    createdDate = r.CreatedDate,
+                    lastUsedDate = r.LastUsedDate,
+                    isActive = r.IsActive,
+                    optimizationScore = r.OptimizationScore,
+                    assignedBy = r.AssignedByAdmin != null ? new
+                    {
+                        id = r.AssignedByAdmin.Id,
+                        fullName = r.AssignedByAdmin.FullName
+                    } : null
+                };
             }).ToList();
 
             return Ok(new
