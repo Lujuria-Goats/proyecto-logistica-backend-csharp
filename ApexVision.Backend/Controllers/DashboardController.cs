@@ -66,7 +66,7 @@ namespace ApexVision.Backend.Controllers
                 .Where(r => r.DriverId == adminId || r.AssignedByAdminId == adminId);
 
             var totalRoutes = await myRoutesQuery.CountAsync();
-            var activeRoutes = await myRoutesQuery.CountAsync(r => r.IsActive);
+            var activeRoutes = await myRoutesQuery.CountAsync(r => r.IsActive && r.DriverId != adminId);
             
             // 5. Recent Activity (Últimas 5 entregas + Últimas 5 rutas creadas/asignadas)
             var recentDeliveries = await ordersQuery
