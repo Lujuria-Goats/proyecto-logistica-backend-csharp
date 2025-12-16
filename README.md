@@ -11,6 +11,32 @@
 📊 **Logging Estructurado**: Serilog para una trazabilidad completa de la aplicación.  
 🚀 **Listo para Despliegue**: Configuración completa con Docker y Docker Compose para un despliegue sencillo en cualquier VPS.
 
+## 🚀 Funcionalidades Principales
+
+### 📱 Para Conductores (App Móvil)
+- **Rutas Optimizadas**: Visualización clara de la ruta del día.
+- **Evidencia con IA**: Validación automática de fotos (cajas, paquetes) usando Azure Vision con un umbral optimizado (15%).
+- **Dashboard en App**:
+  - Barra de progreso real (Pedidos pendientes vs completados).
+  - Historial de entregas realizadas.
+- **Navegación**: Posibilidad de usar apps externas (Waze/Maps).
+
+### 💻 Para Administradores (Dashboard Web)
+- **Gestión de Rutas**:
+  - Crear, editar y guardar plantillas de rutas.
+  - Asignar rutas guardadas a conductores específicos.
+  - Ver el progreso en tiempo real de cada ruta (ej: "8/10 entregas").
+- **Monitoreo**:
+  - Dashboard global con métricas de operación.
+  - Feed de actividades recientes.
+- **Gestión de Usuarios**:
+  - Vinculación de conductores por teléfono.
+  - Control de acceso y roles.
+
+### 🧠 Inteligencia Artificial y Optimización
+- **Azure Computer Vision**: Analiza las fotos de entrega para asegurar que muestran un paquete válido antes de cerrar la orden.
+- **Algoritmo de Ruteo (Java)**: Microservicio dedicado para el cálculo de la ruta más eficiente (TSP/VRP).
+
 ---
 
 ## 🛠️ Tecnologías Utilizadas

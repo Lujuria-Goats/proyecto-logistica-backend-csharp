@@ -45,8 +45,8 @@ namespace ApexVision.Backend.Services
             var foundTags = string.Join(", ", result.Tags.Select(t => $"{t.Name} ({t.Confidence:P0})"));
             // Console.WriteLine($"AI Analysis Tags: {foundTags}"); // Opcional para logs
 
-            // Bajamos la confianza requerida a 0.3 (30%) para ser aún más permisivos y rápidos
-            return result.Tags.Any(tag => tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.3);
+            // Bajamos la confianza requerida a 0.15 (15%) para ser extremadamente permisivos
+            return result.Tags.Any(tag => tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.15);
         }
     }
 }
