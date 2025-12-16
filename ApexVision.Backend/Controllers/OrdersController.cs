@@ -322,6 +322,52 @@ namespace ApexVision.Backend.Controllers
             return Ok(new { message = "Order completed successfully." });
         }
 
+        [HttpPost("{id}/rollback")]
+        [Authorize(Policy = "DriverOnly")]
+        public async Task<IActionResult> RollbackOrder(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) return NotFound("Order not found.");
+
+            // 1. Revertir Estado del Pedido
+            order.Status = OrderStatus.Pending;
+            order.DeliveredAt = null;
+            order.EvidenceUrl = null;
+
+            // 2. Reactivar Ruta (si estaba cerrada)
+            if (order.DriverId != null)
+            {
+                // Buscar la ruta a la que pertenece este pedido
+                // Nota: Podría pertenecer a varias, buscamos la mas reciente o activa
+                // La lógica ideal busca en SavedRoutes del conductor
+                var myRoutes = await _context.SavedRoutes
+                    .Where(r => r.DriverId == order.DriverId)
+                    .ToListAsync();
+
+                foreach (var route in myRoutes)
+                {
+                    List<int> routeOrderIds;
+                    try { routeOrderIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(route.OrderIds) ?? new List<int>(); }
+                    catch { continue; }
+
+                    if (routeOrderIds.Contains(id))
+                    {
+                        // Si la ruta estaba marcada como inactiva (completada), reactivarla
+                        // OJO: Solo reactivar si NO es una plantilla (AssignedByAdminId != null o Driver creador)
+                        // Asumimos reactivación general para que aparezca en el dashboard
+                        if (!route.IsActive)
+                        {
+                            route.IsActive = true;
+                            route.CompletedDate = null; // Limpiar fecha de finalización
+                        }
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Order reverted successfully. Route reactivated if necessary." });
+        }
+
         [HttpPost("my-route/optimize")]
         [Authorize(Policy = "DriverOnly")]
         public async Task<IActionResult> OptimizeMyRoute()
