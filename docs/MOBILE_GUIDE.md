@@ -282,6 +282,11 @@ Si la app se cierra y abre, usar este endpoint para recuperar el estado actual d
 
 **Response:** Devuelve una lista de `OrderDto` (igual que en "Cargar Ruta").
 
+> ⚠️ **IMPORTANTE: Cambio en `status`**
+> Ahora el campo `status` devuelve un **texto (String)** en lugar de un número.
+> Asegúrate de que tu modelo en la App (Java/Kotlin/Dart) espere un `String`.
+> *   Valores posibles: `"Pending"`, `"InTransit"`, `"Delivered"`, `"Completed"`.
+
 ---
 
 ### 3.2 Completar Pedido y Subir Evidencia 📸
