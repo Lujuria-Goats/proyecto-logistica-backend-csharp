@@ -6,18 +6,6 @@
 
 **Apex Vision** es el backend para una plataforma de logística avanzada que optimiza y gestiona rutas de entrega. Construido con **.NET 8** y diseñado para ser desplegado con **Docker**, utiliza una arquitectura de microservicios escalable que integra inteligencia artificial para la validación de entregas, almacenamiento en la nube y procesamiento asíncrono de tareas.
 
-### Características Clave
-
-✨ **Autenticación Segura**: JWT con roles (Admin, Driver).  
-📍 **Gestión de Pedidos**: Creación, asignación y seguimiento de estados.  
-🛣️ **Gestión de Rutas Avanzada**: 
-  - **Admins**: Guardar plantillas de rutas, editar renombrar y asignar copias a conductores.
-  - **Drivers**: Guardar y cargar sus propias rutas frecuentes.
-🤖 **Validación con IA Flexible**: 
-  - Integración con **Azure Computer Vision 4.0**.
-  - Validación de evidencia fotográfica con tags configurables ("box", "package", etc.).
-  - Rechazo automático de fotos no válidas.
-☁️ **Almacenamiento en Nube**: Subida de imágenes a Cloudinary.  
 🚚 **Optimización de Rutas**: Microservicio Java para algoritmos de optimización de rutas.  
 📨 **Mensajería Asíncrona**: RabbitMQ para la comunicación con otros microservicios.  
 📊 **Logging Estructurado**: Serilog para una trazabilidad completa de la aplicación.  
