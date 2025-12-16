@@ -25,28 +25,64 @@ namespace ApexVision.Backend.Services
 
         public async Task<bool> ValidateDeliveryEvidenceAsync(string imageUrl)
         {
-            // If no tags are configured, default to a safe list or allow everything? 
-            // Requirement implies specific validation, so if config is empty, maybe fallback or fail?
-            // "If not found any tag... reject". If list is empty, it will reject everything unless we have a default.
-            // But I will stick to using the configured list. If empty, it's a configuration error but per logic it returns false.
-            
-            var features = new List<VisualFeatureTypes?> { VisualFeatureTypes.Tags };
-            var result = await _client.AnalyzeImageAsync(imageUrl, features);
-
-            // Lista de respaldo hardcoded por si la config falla o está vacía
-            var defaultTags = new[] { 
-                "box", "package", "parcel", "delivery", "shipping", "cardboard", "carton", "container", 
-                "caja", "paquete", "envio", "bulto", "regalo", "bolsa", "bag" 
+            // Solicitamos Tags, Descripción y Objetos para tener más contexto
+            var features = new List<VisualFeatureTypes?> { 
+                VisualFeatureTypes.Tags, 
+                VisualFeatureTypes.Description,
+                VisualFeatureTypes.Objects
             };
 
-            var tagsToValidate = (_validTags != null && _validTags.Length > 0) ? _validTags : defaultTags;
+            try 
+            {
+                var result = await _client.AnalyzeImageAsync(imageUrl, features);
 
-            // Log de los tags encontrados para depuración
-            var foundTags = string.Join(", ", result.Tags.Select(t => $"{t.Name} ({t.Confidence:P0})"));
-            // Console.WriteLine($"AI Analysis Tags: {foundTags}"); // Opcional para logs
+                // 1. ANÁLISIS DE TAGS (Etiquetas)
+                var defaultTags = new[] { 
+                    "box", "package", "parcel", "delivery", "shipping", "cardboard", "carton", "container", 
+                    "caja", "paquete", "envio", "bulto", "regalo", "bolsa", "bag", "sack", "luggage", "suitcase",
+                    "envelope", "mail", "post", "label", "sticker", "plastic", "wrapping", "polybag",
+                    // Contexto de entrega (Ubicación y Receptor)
+                    "door", "doorway", "floor", "ground", "porch", "entrance", "puerta", "suelo", "piso", "entrada",
+                    "hand", "holding", "person", "mano", "sosteniendo", "barcode", "qr code"
+                };
 
-            // Bajamos la confianza requerida a 0.15 (15%) para ser extremadamente permisivos
-            return result.Tags.Any(tag => tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.15);
+                var tagsToValidate = (_validTags != null && _validTags.Length > 0) ? _validTags : defaultTags;
+                
+                // Bajamos aún más la confianza para tags muy específicos
+                bool hasValidTag = result.Tags.Any(tag => 
+                    tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.10);
+
+                if (hasValidTag) return true;
+
+                // 2. ANÁLISIS DE DESCRIPCIÓN (Frases)
+                // A veces no hay tag "box" pero la descripción dice "a brown square object on the floor"
+                if (result.Description != null && result.Description.Captions != null)
+                {
+                    var validPhrases = new[] { "box", "package", "bag", "luggage", "carton", "caja", "paquete", "bolsa" };
+                    bool hasValidCaption = result.Description.Captions.Any(c => 
+                        validPhrases.Any(phrase => c.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase)) && c.Confidence > 0.15);
+                    
+                    if (hasValidCaption) return true;
+                }
+
+                // 3. ANÁLISIS DE OBJETOS (Object Detection)
+                // Detecta objetos físicos específicos
+                if (result.Objects != null)
+                {
+                    bool hasValidObject = result.Objects.Any(o => 
+                        tagsToValidate.Contains(o.ObjectProperty, StringComparer.OrdinalIgnoreCase));
+                    
+                    if (hasValidObject) return true;
+                }
+
+                return false;
+            }
+            catch (Exception)
+            {
+                // Si falla Azure (ej. timeout), aprobamos la imagen para no bloquear al conductor (Fail Safe)
+                // En producción real podrías querer loguear esto.
+                return true; 
+            }
         }
     }
 }

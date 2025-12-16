@@ -106,7 +106,7 @@ namespace ApexVision.Backend.Controllers
                 routeId = savedRoute.Id,
                 routeName = savedRoute.RouteName,
                 orderCount = saveRouteDto.OrderIds.Count,
-                phoneNumber = targetUser.PhoneNumber
+                phoneNumber = User.IsInRole("Admin") ? null : targetUser.PhoneNumber
             });
         }
 
@@ -149,7 +149,7 @@ namespace ApexVision.Backend.Controllers
                 {
                     id = r.Driver!.Id,
                     fullName = r.Driver.FullName,
-                    phoneNumber = r.Driver.PhoneNumber,
+                    phoneNumber = (r.DriverId == adminIdInt) ? null : r.Driver.PhoneNumber,
                     email = r.Driver.Email
                 }
             }).ToList();
@@ -308,18 +308,18 @@ namespace ApexVision.Backend.Controllers
         }
 
         [HttpDelete("saved/{routeId}")]
-        [Authorize(Policy = "DriverOnly")]
+        [Authorize(Policy = "AdminOrDriver")]
         public async Task<IActionResult> DeleteSavedRoute(int routeId)
         {
-            var driver = await GetCurrentDriverAsync();
-            if (driver == null)
-                return Unauthorized("No se pudo identificar al conductor.");
+            var currentUser = await GetCurrentDriverAsync(); // Works for both Admin and Driver
+            if (currentUser == null)
+                return Unauthorized("No se pudo identificar al usuario.");
 
             var savedRoute = await _context.SavedRoutes
-                .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == driver.Id);
+                .FirstOrDefaultAsync(r => r.Id == routeId && r.DriverId == currentUser.Id);
 
             if (savedRoute == null)
-                return NotFound("Ruta guardada no encontrada.");
+                return NotFound("Ruta guardada no encontrada o no tienes permiso para eliminarla.");
 
             savedRoute.IsActive = false;
             await _context.SaveChangesAsync();
