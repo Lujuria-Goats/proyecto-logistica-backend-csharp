@@ -48,9 +48,9 @@ namespace ApexVision.Backend.Services
 
                 var tagsToValidate = (_validTags != null && _validTags.Length > 0) ? _validTags : defaultTags;
                 
-                // Bajamos aún más la confianza para tags muy específicos
+                // Ajustamos la confianza al 20%
                 bool hasValidTag = result.Tags.Any(tag => 
-                    tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.10);
+                    tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.20);
 
                 if (hasValidTag) return true;
 
@@ -60,7 +60,7 @@ namespace ApexVision.Backend.Services
                 {
                     var validPhrases = new[] { "box", "package", "bag", "luggage", "carton", "caja", "paquete", "bolsa" };
                     bool hasValidCaption = result.Description.Captions.Any(c => 
-                        validPhrases.Any(phrase => c.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase)) && c.Confidence > 0.15);
+                        validPhrases.Any(phrase => c.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase)) && c.Confidence > 0.20);
                     
                     if (hasValidCaption) return true;
                 }
