@@ -41,16 +41,14 @@ namespace ApexVision.Backend.Services
                     "box", "package", "parcel", "delivery", "shipping", "cardboard", "carton", "container", 
                     "caja", "paquete", "envio", "bulto", "regalo", "bolsa", "bag", "sack", "luggage", "suitcase",
                     "envelope", "mail", "post", "label", "sticker", "plastic", "wrapping", "polybag",
-                    // Contexto de entrega (Ubicación y Receptor)
-                    "door", "doorway", "floor", "ground", "porch", "entrance", "puerta", "suelo", "piso", "entrada",
                     "hand", "holding", "person", "mano", "sosteniendo", "barcode", "qr code"
                 };
 
                 var tagsToValidate = (_validTags != null && _validTags.Length > 0) ? _validTags : defaultTags;
                 
-                // Ajustamos la confianza al 70% (muy estricto)
+                // Ajustamos la confianza al 50%
                 bool hasValidTag = result.Tags.Any(tag => 
-                    tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.70);
+                    tagsToValidate.Contains(tag.Name, StringComparer.OrdinalIgnoreCase) && tag.Confidence > 0.50);
 
                 if (hasValidTag) return true;
 
@@ -60,7 +58,7 @@ namespace ApexVision.Backend.Services
                 {
                     var validPhrases = new[] { "box", "package", "bag", "luggage", "carton", "caja", "paquete", "bolsa" };
                     bool hasValidCaption = result.Description.Captions.Any(c => 
-                        validPhrases.Any(phrase => c.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase)) && c.Confidence > 0.70);
+                        validPhrases.Any(phrase => c.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase)) && c.Confidence > 0.50);
                     
                     if (hasValidCaption) return true;
                 }
