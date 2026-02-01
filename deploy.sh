@@ -11,11 +11,11 @@ echo "================================="
 
 # 1. Verificar estructura de directorios
 if [ ! -d "proyecto-logistica-backend-java" ]; then
-    echo "📦 Cloning Java Backend..."
-    git clone https://github.com/Lujuria-Goats/proyecto-logistica-backend-java.git
+    echo "📦 Cloning Java Backend (dev branch)..."
+    git clone -b dev https://github.com/Lujuria-Goats/proyecto-logistica-backend-java.git
 else
-    echo "📦 Pulling latest Java Backend..."
-    cd proyecto-logistica-backend-java && git pull origin main && cd ..
+    echo "📦 Pulling latest Java Backend (dev branch)..."
+    cd proyecto-logistica-backend-java && git fetch && git checkout dev && git pull origin dev && cd ..
 fi
 
 if [ ! -d "proyecto-logistica-frontend-web" ]; then
