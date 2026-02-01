@@ -85,6 +85,8 @@ fi
 
 # 6. Despliegue
 echo "🛑 Stopping containers..."
+# Limpieza agresiva de contenedores conflictivos
+docker rm -f frontend-web csharp-backend java-backend || true
 docker compose down
 
 echo "🔨 Building containers..."
