@@ -12,7 +12,11 @@
 # Secrets and environment files
 .env
 appsettings.Development.json
+appsettings.Production.json
 docker-compose.yml
+docker-compose.prod.yml
+# Keep appsettings.json with real credentials out of git
+ApexVision.Backend/appsettings.json
 
 # Logs
 logs/

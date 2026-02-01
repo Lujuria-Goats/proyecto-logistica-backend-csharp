@@ -1,61 +1,69 @@
 ﻿version: '3.8'
 
 services:
-  # API Backend (.NET)
-  backend:
+  # API Backend (.NET 8)
+  apex-backend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: apex_backend
     restart: always
     ports:
-      - "8080:8080" # Expone el puerto de la API al host
-    depends_on:
-      - db
+      - "8080:8080"
     environment:
-      # --- IMPORTANTE: Reemplaza estos valores con tus secretos reales en tu archivo docker-compose.yml ---
+      # ============================================
+      # DATABASE CONFIGURATION
+      # ============================================
+      # External PostgreSQL Database (replace with your database IP/host)
+      - ConnectionStrings__DefaultConnection=Host=YOUR_DB_HOST;Port=5432;Database=postgres;Username=YOUR_DB_USER;Password=YOUR_DB_PASSWORD
       
-      # Base de Datos (apunta al servicio 'db' de este archivo)
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=postgres;Username=root;Password=TU_PASSWORD_DE_POSTGRES
-      
-      # JSON Web Tokens (Usa una clave larga y segura)
-      - Jwt__Key=TU_CLAVE_SECRETA_PARA_JWT_DE_MAS_DE_32_CARACTERES
-      - Jwt__Issuer=ApexVisionAPI
+      # ============================================
+      # JWT AUTHENTICATION
+      # ============================================
+      - Jwt__Key=YOUR_SECRET_KEY_AT_LEAST_32_CHARACTERS_LONG
+      - Jwt__Issuer=ApexVision
       - Jwt__Audience=ApexVisionUsers
-      - Jwt__ExpirationMinutes=1440 # 24 horas
+      - Jwt__ExpirationMinutes=1440
       
-      # Cloudinary
-      - Cloudinary__CloudName=TU_CLOUDINARY_CLOUD_NAME
-      - Cloudinary__ApiKey=TU_CLOUDINARY_API_KEY
-      - Cloudinary__ApiSecret=TU_CLOUDINARY_API_SECRET
+      # ============================================
+      # CLOUDINARY (Image Storage)
+      # ============================================
+      - Cloudinary__CloudName=YOUR_CLOUDINARY_CLOUD_NAME
+      - Cloudinary__ApiKey=YOUR_CLOUDINARY_API_KEY
+      - Cloudinary__ApiSecret=YOUR_CLOUDINARY_API_SECRET
       
-      # RabbitMQ (apunta a tu dominio existente)
-      - RabbitMQ__HostName=rabbitmq.lujuria.crudzaso.com
-      - RabbitMQ__UserName=TU_USUARIO_DE_RABBITMQ
-      - RabbitMQ__Password=TU_PASSWORD_DE_RABBITMQ
+      # ============================================
+      # RABBITMQ (Message Queue)
+      # ============================================
+      # External RabbitMQ Server (replace with your RabbitMQ host)
+      - RabbitMQ__HostName=rabbitmq.apexvision.crudzaso.com
+      - RabbitMQ__UserName=YOUR_RABBITMQ_USER
+      - RabbitMQ__Password=YOUR_RABBITMQ_PASSWORD
       
-      # Azure Computer Vision
-      - AZURE_VISION_ENDPOINT=TU_AZURE_VISION_ENDPOINT
-      - AZURE_VISION_KEY=TU_AZURE_VISION_KEY
+      # ============================================
+      # AZURE COMPUTER VISION (AI)
+      # ============================================
+      - AzureVisionSettings__Endpoint=https://YOUR_AZURE_ENDPOINT.cognitiveservices.azure.com/
+      - AzureVisionSettings__Key=YOUR_AZURE_VISION_KEY
       
-      # Entorno de ASP.NET Core
+      # ============================================
+      # ASP.NET CORE ENVIRONMENT
+      # ============================================
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
+    
+    networks:
+      - apex-network
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
-  # Base de Datos (PostgreSQL)
-  db:
-    image: postgres:15-alpine
-    container_name: apex_db
-    restart: always
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=TU_PASSWORD_DE_POSTGRES
-      - POSTGRES_DB=postgres
-    ports:
-      - "5432:5432" # Expone el puerto de la BD al host (útil para DBeaver)
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
-    driver: local
+networks:
+  apex-network:
+    driver: bridge

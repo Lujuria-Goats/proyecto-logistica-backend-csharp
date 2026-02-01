@@ -224,7 +224,7 @@ services:
       - Cloudinary__CloudName=TU_CLOUDINARY_CLOUD_NAME
       - Cloudinary__ApiKey=TU_CLOUDINARY_API_KEY
       - Cloudinary__ApiSecret=TU_CLOUDINARY_API_SECRET
-      - RabbitMQ__HostName=rabbitmq.lujuria.crudzaso.com
+      - RabbitMQ__HostName=rabbitmq.apexvision.crudzaso.com
       - RabbitMQ__UserName=TU_USUARIO_RABBITMQ
       - RabbitMQ__Password=TU_PASSWORD_RABBITMQ
       - AzureVisionSettings__Endpoint=TU_AZURE_VISION_ENDPOINT
@@ -277,8 +277,8 @@ docker logs apex_java
 ```
 
 Configura el Dominio (Reverse Proxy):
-*   Crea un registro `A` para `service.lujuria.crudzaso.com` que apunte a la IP de tu VPS.
-*   En tu VPS (usando Nginx Proxy Manager o similar), crea un nuevo "Proxy Host" que redirija el tráfico de `service.lujuria.crudzaso.com` a `http://localhost:8080`.
+*   Crea un registro `A` para `service.apexvision.crudzaso.com` que apunte a la IP de tu VPS.
+*   En tu VPS (usando Nginx Proxy Manager o similar), crea un nuevo "Proxy Host" que redirija el tráfico de `service.apexvision.crudzaso.com` a `http://localhost:8080`.
 *   Activa el SSL en Nginx para tener `https://`.
 
 ---
@@ -314,7 +314,7 @@ Todas las configuraciones sensibles se gestionan a través de variables de entor
 | `Cloudinary__CloudName` | Nombre de tu nube en Cloudinary. | `my-cloud` |
 | `Cloudinary__ApiKey` | API Key de Cloudinary. | `1234567890` |
 | `Cloudinary__ApiSecret` | API Secret de Cloudinary. | `ABCDEFG-HIJKLMNOP` |
-| `RabbitMQ__HostName` | Dominio o nombre del servicio de RabbitMQ. | `rabbitmq.lujuria.crudzaso.com` |
+| `RabbitMQ__HostName` | Dominio o nombre del servicio de RabbitMQ. | `rabbitmq.apexvision.crudzaso.com` |
 | `RabbitMQ__UserName` | Nombre de usuario para RabbitMQ. | `admin` |
 | `RabbitMQ__Password` | Contraseña para RabbitMQ. | `Kj9#mP2$qR5@vX8&` |
 | `AzureVisionSettings__Endpoint` | Endpoint de tu servicio Azure Computer Vision. | `https://my-vision.cognitiveservices.azure.com/` |
