@@ -49,11 +49,17 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 EOF
 fi
 
-# 3. Verificar/Crear Dockerfile para Frontend
-# IMPORTANTE: Usamos Node 22 para compatibilidad con Vite 7+
-if [ ! -f "proyecto-logistica-frontend-web/Dockerfile" ]; then
-    echo "📝 Creating Dockerfile for Frontend (Node 22)..."
-    cat <<EOF > proyecto-logistica-frontend-web/Dockerfile
+# 3. VERIFICAR SI EXISTE nginx.conf ANTES DE CREAR DOCKERFILE
+# Si existe nginx.conf en el repo, lo copiamos. Si no, no.
+NGINX_CONF_CMD=""
+if [ -f "proyecto-logistica-frontend-web/nginx.conf" ]; then
+    echo "ℹ️ nginx.conf found, including in Dockerfile"
+    NGINX_CONF_CMD="COPY nginx.conf /etc/nginx/conf.d/default.conf"
+fi
+
+# 4. Forzar Creación de Dockerfile para Frontend (Node 22)
+echo "📝 Updating Dockerfile for Frontend (Node 22)..."
+cat <<EOF > proyecto-logistica-frontend-web/Dockerfile
 # Build Stage
 FROM node:22-alpine as build-stage
 WORKDIR /app
@@ -65,23 +71,24 @@ RUN npm run build
 # Production Stage
 FROM nginx:stable-alpine as production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+$NGINX_CONF_CMD
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 EOF
-fi
 
-# 4. Verificar docker-compose.yml
+# 5. Verificar docker-compose.yml
 if [ ! -f "docker-compose.yml" ]; then
     echo "❌ Error: docker-compose.yml not found!"
     echo "Please upload docker-compose.prod.yml -> docker-compose.yml via SFTP"
     exit 1
 fi
 
-# 5. Despliegue
+# 6. Despliegue
 echo "🛑 Stopping containers..."
 docker compose down
 
 echo "🔨 Building containers..."
+# Usamos --no-cache para asegurar que tome los cambios en Dockerfiles
 docker compose build --no-cache
 
 echo "🚀 Starting services..."
