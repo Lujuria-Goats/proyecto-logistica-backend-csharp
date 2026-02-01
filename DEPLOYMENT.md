@@ -1,213 +1,107 @@
-# 🚀 Guía de Despliegue en Producción
+# 🚀 Despliegue Unificado en Producción
 
-## 📋 Archivos para Subir al Servidor VPS
+Este documento detalla los pasos para desplegar toda la plataforma (C# Backend, Java Backend, Frontend, Databases) en el servidor VPS.
 
-Debes subir **manualmente** vía SFTP los siguientes archivos al servidor:
+## 📋 Prerrequisitos en el Servidor
 
-### 1. `docker-compose.prod.yml`
-**Ubicación local**: `/proyecto-logistica-backend-csharp/docker-compose.prod.yml`  
-**Ubicación en servidor**: `/root/deploy/proyecto-logistica-backend-csharp/docker-compose.yml`
+El servidor debe tener instalado:
+- Docker y Docker Compose
+- Git
 
-> [!IMPORTANT]
-> Renombra `docker-compose.prod.yml` a `docker-compose.yml` en el servidor
+## 📂 Directorio de Despliegue
 
-Este archivo contiene todas las credenciales de producción:
-- ✅ Conexión a PostgreSQL externa (46.224.92.193)
-- ✅ Credenciales de Cloudinary
-- ✅ Credenciales de Azure Vision
-- ✅ JWT Key de producción
-- ✅ Configuración de RabbitMQ externo (rabbitmq.apexvision.crudzaso.com)
+La estructura final en el servidor (`/root/deploy`) será:
 
-### 2. `appsettings.json` (Opcional)
-**Ubicación local**: `/proyecto-logistica-backend-csharp/ApexVision.Backend/appsettings.json`  
-**Ubicación en servidor**: No es necesario subirlo
+```text
+/root/deploy
+├── docker-compose.yml              # Archivo MAESTRO con credenciales (subido por SFTP)
+├── deploy.sh                       # Script de automatización
+├── Dockerfile                      # Dockerfile de C#
+├── ApexVision.Backend/             # Código de C#
+├── proyecto-logistica-backend-java/ # Clonado automáticamente
+└── proyecto-logistica-frontend-web/ # Clonado automáticamente
+```
 
-> [!NOTE]
-> No necesitas subir este archivo porque el Dockerfile ya lo copia durante el build. Las variables de entorno en docker-compose.yml tienen prioridad sobre este archivo.
+## 🔐 Archivo Maestro: `docker-compose.prod.yml`
 
----
+Este es el archivo más importante. Contiene la definición de **TODOS** los servicios y **TODAS** las credenciales de producción.
 
-## 🔐 Seguridad de Credenciales
+**Ubicación local**: `/proyecto-logistica-backend-csharp/docker-compose.prod.yml`
 
-### Archivos Protegidos (NO se suben a GitHub)
-
-El `.gitignore` está configurado para proteger:
-- ✅ `appsettings.json` (credenciales reales)
-- ✅ `docker-compose.yml` (configuración local)
-- ✅ `docker-compose.prod.yml` (credenciales de producción)
-- ✅ `appsettings.Production.json`
-
-### Archivos en GitHub (Seguros)
-
-- ✅ `appsettings.Template.json` - Plantilla con valores dummy
-- ✅ `docker-compose.example.yml` - Ejemplo con placeholders
-- ✅ `Dockerfile` - Sin credenciales
-- ✅ Código fuente
+> [!CAUTION]
+> Este archivo contiene secretos reales. NUNCA lo compartas ni lo subas a GitHub.
 
 ---
 
-## 📝 Pasos de Despliegue
+## 🛠️ Pasos de Despliegue
 
-### 1. Conectar al Servidor VPS
+### 1. Preparar el Servidor
 
 ```bash
+# Conectar al VPS
 ssh root@46.224.92.193
-cd /root/deploy/proyecto-logistica-backend-csharp
+
+# Crear carpeta de despliegue (si no existe)
+mkdir -p /root/deploy
+cd /root/deploy
+
+# Clonar el repo principal (C#) si es la primera vez
+# Nota: Si ya tienes los archivos ahí, asegúrate de hacer git pull
+git clone https://github.com/Lujuria-Goats/proyecto-logistica-backend-csharp.git .
+# O si ya existe:
+git pull origin dev
 ```
 
-### 2. Actualizar el Código desde GitHub
+### 2. Subir el Archivo Maestro (SFTP)
+
+Desde tu máquina local, sube el archivo de producción y renómbralo:
 
 ```bash
-git pull origin main
+# Sube docker-compose.prod.yml y guárdalo como docker-compose.yml en el servidor
+scp docker-compose.prod.yml root@46.224.92.193:/root/deploy/docker-compose.yml
 ```
 
-> [!NOTE]
-> Esto NO sobrescribirá tu `docker-compose.yml` porque está en .gitignore
+### 3. Ejecutar el Despliegue
 
-### 3. Subir docker-compose.prod.yml (Primera vez o si cambió)
-
-**Opción A: Usando SFTP (Recomendado)**
-```bash
-# En tu máquina local
-sftp root@46.224.92.193
-cd /root/deploy/proyecto-logistica-backend-csharp
-put docker-compose.prod.yml docker-compose.yml
-exit
-```
-
-**Opción B: Usando SCP**
-```bash
-# En tu máquina local
-scp docker-compose.prod.yml root@46.224.92.193:/root/deploy/proyecto-logistica-backend-csharp/docker-compose.yml
-```
-
-### 4. Construir y Desplegar
+En el servidor:
 
 ```bash
-# En el servidor VPS
-cd /root/deploy/proyecto-logistica-backend-csharp
+cd /root/deploy
 
-# Detener contenedores anteriores
-docker compose down
+# Dar permisos al script
+chmod +x deploy.sh
 
-# Construir sin caché (para asegurar última versión)
-docker compose build --no-cache
-
-# Iniciar en modo detached
-docker compose up -d
+# Ejecutar despliegue
+./deploy.sh
 ```
 
-### 5. Verificar el Despliegue
-
-```bash
-# Ver logs del backend
-docker logs apex_backend -f
-
-# Verificar que el contenedor esté corriendo
-docker ps | grep apex_backend
-
-# Probar el endpoint de salud
-curl http://localhost:8080/swagger
-```
+El script se encargará de:
+1. Clonar/Actualizar el repositorio de Java
+2. Clonar/Actualizar el repositorio de Frontend
+3. Construir todas las imágenes
+4. Levantar todos los contenedores
 
 ---
+
+## 🌐 Servicios Desplegados
+
+| Servicio | Puerto Externo | URL Interna Docker |
+|----------|----------------|--------------------|
+| **C# Backend** | `8080` | `http://csharp-backend:8080` |
+| **Java Backend** | `8081` | `http://java-backend:8080` |
+| **Frontend** | `8084` | `http://frontend-web:80` |
+| **RabbitMQ** | `5672` / `15672` | `rabbitmq` |
+| **PostgreSQL** | `5432` | `postgres-db` |
+| **MySQL** | `3306` | `mysql-db` |
 
 ## 🔄 Actualizaciones Futuras
 
-### Si solo cambió el código (sin cambios en credenciales):
-
+### Para actualizar C# Backend:
 ```bash
-# En el servidor
-cd /root/deploy/proyecto-logistica-backend-csharp
-git pull origin main
-docker compose build --no-cache
-docker compose up -d
+cd /root/deploy
+git pull origin dev
+./deploy.sh
 ```
 
-### Si cambiaron las credenciales:
-
-1. Actualiza `docker-compose.prod.yml` en tu máquina local
-2. Sube el archivo actualizado al servidor (paso 3 de arriba)
-3. Ejecuta el despliegue completo
-
----
-
-## 🌐 Configuración de Nginx Proxy Manager
-
-Una vez que el contenedor esté corriendo, configura el reverse proxy:
-
-### Backend API
-- **Domain**: `service.apexvision.crudzaso.com`
-- **Forward Hostname/IP**: `localhost` o `46.224.92.193`
-- **Forward Port**: `8080`
-- **SSL**: Activado (Let's Encrypt)
-
-### RabbitMQ Management UI (si aplica)
-- **Domain**: `rabbitmq.apexvision.crudzaso.com`
-- **Forward Port**: `15672`
-- **SSL**: Activado
-
----
-
-## ⚠️ Troubleshooting
-
-### Error: "Cannot connect to database"
-```bash
-# Verificar que PostgreSQL en 46.224.92.193 esté accesible
-docker exec apex_backend ping 46.224.92.193
-
-# Verificar logs de conexión
-docker logs apex_backend | grep -i "database\|postgres"
-```
-
-### Error: "RabbitMQ connection failed"
-```bash
-# Verificar conectividad a RabbitMQ
-docker exec apex_backend ping rabbitmq.apexvision.crudzaso.com
-
-# Verificar logs de RabbitMQ
-docker logs apex_backend | grep -i "rabbitmq"
-```
-
-### Error: "Port 8080 already in use"
-```bash
-# Ver qué está usando el puerto
-sudo lsof -i :8080
-
-# Detener el contenedor conflictivo
-docker compose down
-```
-
----
-
-## 📊 Monitoreo
-
-### Ver logs en tiempo real
-```bash
-docker logs apex_backend -f --tail 100
-```
-
-### Ver uso de recursos
-```bash
-docker stats apex_backend
-```
-
-### Reiniciar el servicio
-```bash
-docker compose restart apex_backend
-```
-
----
-
-## 🎯 Checklist de Despliegue
-
-- [ ] Subir `docker-compose.prod.yml` al servidor (renombrado a `docker-compose.yml`)
-- [ ] Verificar que PostgreSQL (46.224.92.193) esté accesible
-- [ ] Verificar que RabbitMQ (rabbitmq.apexvision.crudzaso.com) esté accesible
-- [ ] Ejecutar `git pull` en el servidor
-- [ ] Ejecutar `docker compose build --no-cache`
-- [ ] Ejecutar `docker compose up -d`
-- [ ] Verificar logs: `docker logs apex_backend`
-- [ ] Configurar Nginx Proxy Manager para `service.apexvision.crudzaso.com`
-- [ ] Probar endpoint: `https://service.apexvision.crudzaso.com/swagger`
-- [ ] Verificar que el admin puede hacer login
+### Para actualizar Java o Frontend:
+El script `./deploy.sh` automáticamente hace pull de los repositorios de Java y Frontend cada vez que se ejecuta.
