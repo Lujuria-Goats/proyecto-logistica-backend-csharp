@@ -86,7 +86,7 @@ fi
 # 6. Despliegue
 echo "🛑 Stopping containers..."
 # Limpieza agresiva de contenedores conflictivos
-docker rm -f frontend-web csharp-backend java-backend mysql-db postgres-db rabbitmq || true
+docker rm -f frontend-web csharp-backend java-backend mysql-db postgres-db rabbitmq nginx-proxy-manager || true
 docker compose down
 
 echo "🔨 Building containers..."
