@@ -14,16 +14,16 @@ if [ ! -d "proyecto-logistica-backend-java" ]; then
     echo "📦 Cloning Java Backend (dev branch)..."
     git clone -b dev https://github.com/Lujuria-Goats/proyecto-logistica-backend-java.git
 else
-    echo "📦 Pulling latest Java Backend (dev branch)..."
-    cd proyecto-logistica-backend-java && git fetch && git checkout dev && git pull origin dev && cd ..
+    echo "📦 Using LOCAL Java Backend (skipping git pull)..."
+    # cd proyecto-logistica-backend-java && git fetch && git checkout dev && git pull origin dev && cd ..
 fi
 
 if [ ! -d "proyecto-logistica-frontend-web" ]; then
     echo "📦 Cloning Frontend..."
     git clone https://github.com/Lujuria-Goats/proyecto-logistica-frontend-web.git
 else
-    echo "📦 Pulling latest Frontend..."
-    cd proyecto-logistica-frontend-web && git pull origin main && cd ..
+    echo "📦 Using LOCAL Frontend (skipping git pull)..."
+    # cd proyecto-logistica-frontend-web && git pull origin main && cd ..
 fi
 
 # 2. Verificar/Crear Dockerfile para Java
