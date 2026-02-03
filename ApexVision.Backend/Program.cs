@@ -223,6 +223,10 @@ builder.Services.Configure<ApexVision.Backend.DTOs.AzureVisionSettings>(settings
     
     if (!string.IsNullOrEmpty(envEndpoint)) settings.Endpoint = envEndpoint;
     if (!string.IsNullOrEmpty(envKey)) settings.Key = envKey;
+
+    // Logging para depuración en producción
+    Console.WriteLine($"[IA CONFIG]: Usando Endpoint = {settings.Endpoint}");
+    Console.WriteLine($"[IA CONFIG]: Key configurada = {!string.IsNullOrEmpty(settings.Key)}");
 });
 
 builder.Services.AddScoped<IAiValidationService, AiValidationService>();
