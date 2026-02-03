@@ -239,7 +239,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddHttpClient("JavaOptimizationApi", client =>
 {
-    client.BaseAddress = new Uri("http://apex-java:8081/");
+    client.BaseAddress = new Uri("http://java-backend:8080/");
     // Configure other HttpClient settings like headers if needed
 });
 
