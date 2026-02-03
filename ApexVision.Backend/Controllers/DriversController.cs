@@ -323,7 +323,7 @@ namespace ApexVision.Backend.Controllers
             // Entregas de hoy
             var today = DateTime.UtcNow.Date;
             var deliveriesToday = await _context.Orders
-                .Where(o => o.AdminId == adminId && o.Status == OrderStatus.Delivered)
+                .Where(o => o.AdminId == adminId && (o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Completed))
                 .Where(o => o.DeliveredAt != null && o.DeliveredAt.Value.Date == today)
                 .CountAsync();
 
@@ -360,7 +360,7 @@ namespace ApexVision.Backend.Controllers
 
             // Actividades: Pedidos entregados recientemente
             var recentDeliveries = await _context.Orders
-                .Where(o => o.AdminId == adminId && o.Status == OrderStatus.Delivered && o.DriverId != null)
+                .Where(o => o.AdminId == adminId && (o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Completed) && o.DriverId != null)
                 .OrderByDescending(o => o.DeliveredAt)
                 .Take(limit)
                 .Select(o => new ActivityDto
@@ -450,7 +450,7 @@ namespace ApexVision.Backend.Controllers
                 .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId);
 
             var deliveredOrders = await _context.Orders
-                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.Delivered);
+                .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && (o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Completed));
 
             var pendingOrders = await _context.Orders
                 .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && o.Status == OrderStatus.Pending);
@@ -471,7 +471,7 @@ namespace ApexVision.Backend.Controllers
             var today = DateTime.UtcNow.Date;
             var deliveriesToday = await _context.Orders
                 .CountAsync(o => o.DriverId == driverId && o.AdminId == adminId && 
-                    o.Status == OrderStatus.Delivered && o.DeliveredAt != null && o.DeliveredAt.Value.Date == today);
+                    (o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Completed) && o.DeliveredAt != null && o.DeliveredAt.Value.Date == today);
 
             return Ok(new
             {

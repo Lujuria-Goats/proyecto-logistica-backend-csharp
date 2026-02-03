@@ -276,7 +276,7 @@ namespace ApexVision.Backend.Controllers
             }
 
             order.Status = OrderStatus.Completed;
-            // In a real app, you'd probably set a completion timestamp here
+            order.DeliveredAt = DateTime.UtcNow; // Registrar fecha de entrega exacta
             await _context.SaveChangesAsync();
 
             // --- AUTO-DELETE ROUTE LOGIC ---

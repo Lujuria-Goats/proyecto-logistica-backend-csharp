@@ -40,7 +40,7 @@ namespace ApexVision.Backend.Controllers
             // Completados hoy (Completed o Delivered)
             var completedToday = await ordersQuery.CountAsync(o => 
                 (o.Status == OrderStatus.Completed || o.Status == OrderStatus.Delivered) && 
-                o.DeliveredAt >= today);
+                o.DeliveredAt != null && o.DeliveredAt.Value.Date >= today);
 
             var canceledOrders = await ordersQuery.CountAsync(o => o.Status == OrderStatus.Cancelled);
 
@@ -52,7 +52,7 @@ namespace ApexVision.Backend.Controllers
             // Conductores activos hoy (los que han entregado pedidos de este admin hoy)
             var activeDriversToday = await ordersQuery
                 .Where(o => (o.Status == OrderStatus.Completed || o.Status == OrderStatus.Delivered) && 
-                            o.DeliveredAt >= today && 
+                            o.DeliveredAt != null && o.DeliveredAt.Value.Date >= today && 
                             o.DriverId != null)
                 .Select(o => o.DriverId)
                 .Distinct()

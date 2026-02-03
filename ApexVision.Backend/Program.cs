@@ -210,17 +210,16 @@ builder.Services.AddScoped<IImageAnalysisService, AzureImageAnalysisService>();
 
 // Configuración manual para soportar variables de entorno personalizadas (AZURE_VISION_ENDPOINT)
 // y mantener compatibilidad con appsettings.json
+// Configuración manual para soportar variables de entorno personalizadas
 builder.Services.Configure<ApexVision.Backend.DTOs.AzureVisionSettings>(settings =>
 {
-    // 1. Cargar desde appsettings (AzureVision)
-    // Nota: Cambié el nombre de sección recomendada a "AzureVision" en pasos anteriores, pero el código original usaba "AzureVisionSettings".
-    // Voy a soportar ambos para seguridad o usar el nuevo.
-    // El paso anterior añadió "AzureVision" a appsettings.json.
+    // 1. Intentar cargar desde "AzureVision" o "AzureVisionSettings"
     configuration.GetSection("AzureVision").Bind(settings);
+    if (string.IsNullOrEmpty(settings.Endpoint)) configuration.GetSection("AzureVisionSettings").Bind(settings);
     
-    // 2. Sobrescribir con variables de entorno específicas si existen (estilo Docker del usuario)
-    var envEndpoint = configuration["AZURE_VISION_ENDPOINT"];
-    var envKey = configuration["AZURE_VISION_KEY"];
+    // 2. Sobrescribir con variables de entorno directas (Prioridad Máxima)
+    var envEndpoint = configuration["AZURE_VISION_ENDPOINT"] ?? configuration["AzureVisionSettings__Endpoint"];
+    var envKey = configuration["AZURE_VISION_KEY"] ?? configuration["AzureVisionSettings__Key"];
     
     if (!string.IsNullOrEmpty(envEndpoint)) settings.Endpoint = envEndpoint;
     if (!string.IsNullOrEmpty(envKey)) settings.Key = envKey;

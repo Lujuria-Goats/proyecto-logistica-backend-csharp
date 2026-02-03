@@ -41,7 +41,7 @@ namespace ApexVision.Backend.Services
                     "box", "package", "parcel", "delivery", "shipping", "cardboard", "carton", "container", 
                     "caja", "paquete", "envio", "bulto", "regalo", "bolsa", "bag", "sack", "luggage", "suitcase",
                     "envelope", "mail", "post", "label", "sticker", "plastic", "wrapping", "polybag",
-                    "person", "barcode", "qr code"
+                    "barcode", "qr code"
                 };
 
                 var tagsToValidate = (_validTags != null && _validTags.Length > 0) ? _validTags : defaultTags;
@@ -53,7 +53,6 @@ namespace ApexVision.Backend.Services
                 if (hasValidTag) return true;
 
                 // 2. ANÁLISIS DE DESCRIPCIÓN (Frases)
-                // A veces no hay tag "box" pero la descripción dice "a brown square object on the floor"
                 if (result.Description != null && result.Description.Captions != null)
                 {
                     var validPhrases = new[] { "box", "package", "bag", "luggage", "carton", "caja", "paquete", "bolsa" };
@@ -64,7 +63,6 @@ namespace ApexVision.Backend.Services
                 }
 
                 // 3. ANÁLISIS DE OBJETOS (Object Detection)
-                // Detecta objetos físicos específicos
                 if (result.Objects != null)
                 {
                     bool hasValidObject = result.Objects.Any(o => 
@@ -75,10 +73,11 @@ namespace ApexVision.Backend.Services
 
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Si falla Azure (ej. timeout), aprobamos la imagen para no bloquear al conductor (Fail Safe)
-                // En producción real podrías querer loguear esto.
+                // FAIL SAFE: Si falla Azure, aprobamos la imagen para no bloquear al conductor, 
+                // pero dejamos rastro en los logs para el administrador.
+                Console.WriteLine($"[AI VALIDATION ERROR]: {ex.Message}");
                 return true; 
             }
         }
