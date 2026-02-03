@@ -66,7 +66,10 @@ namespace ApexVision.Backend.Controllers
                 .Where(r => r.DriverId == adminId || r.AssignedByAdminId == adminId);
 
             var totalRoutes = await myRoutesQuery.CountAsync();
-            var activeRoutes = await myRoutesQuery.CountAsync(r => r.IsActive && r.DriverId != adminId);
+            
+            // Rutas activas: Rutas marcadas como IsActive que no han sido terminadas (CompletedDate == null)
+            // Filtramos las que tienen AssignedByAdminId para saber que son rutas en ejecución y no solo plantillas sueltas.
+            var activeRoutes = await myRoutesQuery.CountAsync(r => r.IsActive && r.CompletedDate == null);
             
             // 5. Recent Activity (Últimas 5 entregas + Últimas 5 rutas creadas/asignadas)
             var recentDeliveries = await ordersQuery
