@@ -26,7 +26,7 @@ namespace ApexVision.Backend.Controllers
             if (string.IsNullOrEmpty(configured))
             {
                 // Valor por defecto apunta al nombre del servicio en docker-compose y al puerto del contenedor Java
-                configured = "http://apex_java:8080";
+                configured = "http://java-backend:8080";
             }
 
             // Normalizar: remover slash final si existe
