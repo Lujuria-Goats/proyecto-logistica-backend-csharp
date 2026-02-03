@@ -41,7 +41,7 @@ namespace ApexVision.Backend.Services
                     "box", "package", "parcel", "delivery", "shipping", "cardboard", "carton", "container", 
                     "caja", "paquete", "envio", "bulto", "regalo", "bolsa", "bag", "sack", "luggage", "suitcase",
                     "envelope", "mail", "post", "label", "sticker", "plastic", "wrapping", "polybag",
-                    "barcode", "qr code"
+                    "barcode", "person", "qr code"
                 };
 
                 var tagsToValidate = (_validTags != null && _validTags.Length > 0) ? _validTags : defaultTags;
