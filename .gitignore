@@ -26,3 +26,6 @@ logs/
 [Bb]in/
 [Oo]bj/
 
+# Nested Projects
+proyecto-logistica-backend-java/
+proyecto-logistica-frontend-web/
